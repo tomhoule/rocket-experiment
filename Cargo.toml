@@ -1,0 +1,16 @@
+[package]
+name = "hen-panta"
+version = "0.1.0"
+authors = ["Tom Houlé <tom@tomhoule.com>"]
+
+[dependencies]
+chrono = "*"
+diesel = "*"
+handlebars = "*"
+rocket = "*"
+rocket_codegen = "*"
+rocket_contrib = { version = "*", features = ["handlebars_templates"] }
+serde = "1.0"
+serde_derive = "1.0"
+strum = "*"
+uuid = { version = "*", features = ["v4"] }
