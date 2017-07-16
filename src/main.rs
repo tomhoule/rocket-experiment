@@ -1,20 +1,25 @@
-#![feature(plugin)]
+#![feature(plugin, custom_derive)]
 #![plugin(rocket_codegen)]
 
 extern crate chrono;
 extern crate diesel;
+#[macro_use]
+extern crate error_chain;
 extern crate handlebars;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate serde_urlencoded;
 extern crate uuid;
 
-use rocket::response::NamedFile;
+use rocket::request::{Form};
+use rocket::response::{Flash, Redirect, NamedFile};
 use std::path::{Path, PathBuf};
 
 use rocket_contrib::Template;
+use std::collections::BTreeMap;
 
 mod models;
 mod schemas;
@@ -45,9 +50,32 @@ fn index() -> Template {
     })
 }
 
+#[get("/ethica/editions/new")]
+fn editions_new() -> Template {
+    let mut context = BTreeMap::new();
+    context.insert("schema", schemas::ethica::ETHICA);
+    Template::render("ethica/editions/new", context)
+}
+
+#[post("/ethica/editions/create", data="<edition>")]
+fn editions_create(edition: Result<models::EditionNew, models::ValidationError>) -> Flash<Redirect> {
+    match edition {
+        Ok(edition) => {
+            println!("Parsed an edition! {:?}", edition);
+            unimplemented!()
+        },
+        Err(models::ValidationError(models::ValidationErrorKind::Serde(edition), _)) => {
+            println!("Invalid form -> {:?}", edition);
+            unimplemented!()
+        },
+        _ => panic!(),
+    }
+    println!("{:?}", edition);
+}
+
 fn main() {
     rocket::ignite()
-        .mount("/", routes![index, files])
+        .mount("/", routes![index, editions_new, editions_create, files])
         .attach(Template::fairing())
         .launch();
 }
