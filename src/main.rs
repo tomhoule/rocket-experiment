@@ -15,7 +15,8 @@ extern crate serde_urlencoded;
 extern crate uuid;
 
 use rocket::request::{Form};
-use rocket::response::{Flash, Redirect, NamedFile};
+use rocket::response::{Flash, Redirect, NamedFile, Responder};
+use rocket::response::content::Json;
 use std::path::{Path, PathBuf};
 
 use rocket_contrib::Template;
@@ -43,39 +44,28 @@ fn files(file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("css/").join(file)).ok()
 }
 
-#[get("/")]
-fn index() -> Template {
+#[get("/ethica")]
+fn ethica_index() -> Template {
     Template::render("index", ParsContainer {
         pars: vec!["pars 1", "pars 2", "pars 3", "pars 4"].into_iter().map(m).collect()
     })
 }
 
-#[get("/ethica/editions/new")]
-fn editions_new() -> Template {
+#[get("/intern")]
+fn intern_index() -> Template {
     let mut context = BTreeMap::new();
     context.insert("schema", schemas::ethica::ETHICA);
-    Template::render("ethica/editions/new", context)
+    Template::render("intern", context)
 }
 
-#[post("/ethica/editions/create", data="<edition>")]
-fn editions_create(edition: Result<models::EditionNew, models::ValidationError>) -> Flash<Redirect> {
-    match edition {
-        Ok(edition) => {
-            println!("Parsed an edition! {:?}", edition);
-            unimplemented!()
-        },
-        Err(models::ValidationError(models::ValidationErrorKind::Serde(edition), _)) => {
-            println!("Invalid form -> {:?}", edition);
-            unimplemented!()
-        },
-        _ => panic!(),
-    }
-    println!("{:?}", edition);
+#[post("/intern/editions/create", data="<edition>")]
+fn editions_create(edition: models::EditionNew) -> Json<String> {
+    unimplemented!();
 }
 
 fn main() {
     rocket::ignite()
-        .mount("/", routes![index, editions_new, editions_create, files])
+        .mount("/", routes![ethica_index, intern_index, files])
         .attach(Template::fairing())
         .launch();
 }

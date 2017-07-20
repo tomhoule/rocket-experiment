@@ -10,6 +10,7 @@ use rocket::http::Status;
 
 use models::fields::*;
 
+#[derive(Serialize)]
 pub struct Edition {
     id: Uuid,
     title: String,
@@ -26,6 +27,13 @@ pub struct EditionNew {
     editor: String,
     year: i32,
     language_code: i32,
+}
+
+pub struct EditionPatch {
+    title: Option<NonEmptyString>,
+    editor: Option<String>,
+    year: Option<i32>,
+    language_code: Option<String>,
 }
 
 impl FromData for EditionNew {
