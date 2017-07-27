@@ -5,13 +5,12 @@ authors = ["Tom Houlé <tom@tomhoule.com>"]
 
 [dependencies]
 chrono = { version = "*", features = ["serde"] }
-diesel = "*"
-diesel_codegen = "*"
+diesel = { version = "*", features = ["postgres", "uuid"] }
+diesel_codegen = { version = "*", default-features = false, features = ["postgres"] }
 error-chain = "*"
-handlebars = "*"
 rocket = "*"
 rocket_codegen = "*"
-rocket_contrib = { version = "*", features = ["handlebars_templates"] }
+rocket_contrib = "*"
 serde = "1.0"
 serde_derive = "1.0"
 serde_urlencoded = "*"
