@@ -8,11 +8,14 @@ chrono = { version = "*", features = ["serde"] }
 diesel = { version = "*", features = ["postgres", "uuid"] }
 diesel_codegen = { version = "*", default-features = false, features = ["postgres"] }
 error-chain = "*"
+r2d2 = "*"
+r2d2-diesel = "*"
 rocket = "*"
 rocket_codegen = "*"
 rocket_contrib = "*"
 serde = "1.0"
 serde_derive = "1.0"
+serde_json = "1.0"
 serde_urlencoded = "*"
 strum = "*"
 uuid = { version = "*", features = ["v4", "serde"] }

@@ -43,25 +43,6 @@ pub struct ScopeDescriptor {
 // fn empty_vec<T>() -> &'static [T; 0] { &[] }
 // fn none<T>() -> Option<T> { None }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn schema_json_serializes() {
-        use json::from_slice;
-        use std::fs::File;
-        use std::io::prelude::*;
-
-        let bytes = File::open("src/schema.json")
-            .unwrap()
-            .bytes()
-            .collect::<Result<Vec<u8>, _>>()
-            .unwrap();
-        from_slice::<Layout>(&bytes).unwrap();
-    }
-}
-
 macro_rules! nf {
     ($num:expr => $( $descendant:expr ),*) => {
         NumberedFragment {
