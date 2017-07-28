@@ -5,7 +5,7 @@ table! {
         editor -> Text,
         year -> Int4,
         language_code -> Text,
-        created_at -> Nullable<Timestamp>,
-        updated_at -> Nullable<Timestamp>,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
     }
 }

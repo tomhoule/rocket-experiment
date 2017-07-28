@@ -4,8 +4,8 @@ CREATE TABLE editions (
     editor TEXT NOT NULL,
     year INTEGER NOT NULL,
     language_code TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT now(),
-    updated_at TIMESTAMP DEFAULT now()
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
 SELECT diesel_manage_updated_at('editions');

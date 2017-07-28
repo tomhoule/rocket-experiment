@@ -5,7 +5,7 @@ authors = ["Tom Houlé <tom@tomhoule.com>"]
 
 [dependencies]
 chrono = { version = "*", features = ["serde"] }
-diesel = { version = "*", features = ["postgres", "uuid"] }
+diesel = { version = "*", features = ["chrono", "postgres", "uuid"] }
 diesel_codegen = { version = "*", default-features = false, features = ["postgres"] }
 error-chain = "*"
 r2d2 = "*"

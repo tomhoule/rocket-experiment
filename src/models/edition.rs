@@ -14,6 +14,7 @@ use models::fields::*;
 use db::schema::*;
 
 #[derive(Serialize)]
+#[derive(Queryable)]
 pub struct Edition {
     id: Uuid,
     title: String,
@@ -34,11 +35,11 @@ pub struct EditionNew {
 }
 
 impl EditionNew {
-    pub fn save(&self, conn: &PgConnection) -> Result<usize, diesel::result::Error> {
+    pub fn save(&self, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
         use db::schema::editions::dsl::*;
         use diesel::*;
 
-        insert(self).into(editions).execute(conn)
+        insert(self).into(editions).get_result(conn)
     }
 }
 

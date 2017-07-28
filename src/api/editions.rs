@@ -1,5 +1,6 @@
 use models;
 
+use api::error::*;
 use diesel::pg::PgConnection;
 use rocket::State;
 use rocket::request::{Form};
@@ -7,12 +8,13 @@ use rocket::response::{NamedFile, Responder};
 use rocket_contrib::Json;
 // use std::sync::Arc;
 use r2d2::Pool;
+use db::schema;
 use r2d2_diesel::ConnectionManager;
 
 #[post("/api/editions", data="<edition>")]
-pub fn editions_create(edition: Json<models::EditionNew>, conn: State<Pool<ConnectionManager<PgConnection>>>) -> Json<String> {
-    edition.into_inner().save(&conn.inner().get().unwrap());
-    Json("oh".to_string())
+pub fn editions_create(edition: Json<models::EditionNew>, conn: State<Pool<ConnectionManager<PgConnection>>>) -> Result<Json<models::Edition>, Error> {
+    let edition = edition.into_inner().save(&*conn.inner().get()?)?;
+    Ok(Json(edition))
 }
 
 #[get("/api/editions")]
