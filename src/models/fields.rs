@@ -11,7 +11,7 @@ impl<'d> Deserialize<'d> for NonEmptyString {
         let raw = String::deserialize(de)?;
 
         if raw.is_empty() {
-            return Err(D::Error::invalid_length(0, &"non-empty string"))
+            return Err(D::Error::invalid_length(0, &"non-empty string"));
         }
 
         Ok(NonEmptyString(raw))

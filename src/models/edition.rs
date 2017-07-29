@@ -18,7 +18,7 @@ pub struct Edition {
 }
 
 #[derive(Debug, Deserialize, Serialize, Insertable)]
-#[table_name="editions"]
+#[table_name = "editions"]
 pub struct EditionNew {
     pub title: String,
     pub editor: String,
@@ -27,7 +27,7 @@ pub struct EditionNew {
 }
 
 #[derive(Debug, Deserialize, Serialize, AsChangeset)]
-#[table_name="editions"]
+#[table_name = "editions"]
 pub struct EditionPatch {
     pub title: Option<String>,
     pub editor: Option<String>,
@@ -54,7 +54,11 @@ impl Edition {
         delete(editions.find(uuid)).execute(conn)
     }
 
-    pub fn update(uuid: Uuid, patch: EditionPatch, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
+    pub fn update(
+        uuid: Uuid,
+        patch: EditionPatch,
+        conn: &PgConnection,
+    ) -> Result<Edition, diesel::result::Error> {
         use db::schema::editions::dsl::*;
         use diesel::*;
         update(editions.find(uuid)).set(&patch).get_result(conn)

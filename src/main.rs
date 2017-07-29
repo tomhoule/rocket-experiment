@@ -39,19 +39,25 @@ fn files(file: PathBuf) -> Option<NamedFile> {
 
 fn main() {
     let pool_config = r2d2::Config::default();
-    let pool_manager = ConnectionManager::<PgConnection>::new(::std::env::var("DATABASE_URL").unwrap());
-    let pool: r2d2::Pool<ConnectionManager<PgConnection>> = r2d2::Pool::new(pool_config, pool_manager).expect("Failed to create a database connection pool");
+    let pool_manager =
+        ConnectionManager::<PgConnection>::new(::std::env::var("DATABASE_URL").unwrap());
+    let pool: r2d2::Pool<ConnectionManager<PgConnection>> =
+        r2d2::Pool::new(pool_config, pool_manager)
+            .expect("Failed to create a database connection pool");
 
     rocket::ignite()
-        .mount("/", routes![
-               edition,
-               editions_index,
-               editions_create,
-               edition_delete,
-               edition_patch,
-               files,
-               schema
-        ])
+        .mount(
+            "/",
+            routes![
+                edition,
+                editions_index,
+                editions_create,
+                edition_delete,
+                edition_patch,
+                files,
+                schema
+            ],
+        )
         .manage(pool)
         .launch();
 }

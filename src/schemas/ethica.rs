@@ -22,7 +22,7 @@ pub enum Node {
     Praefatio,
     Propositio(NumberedFragment),
     Scholium(NumberedFragment),
-    Titulus(&'static str)
+    Titulus(&'static str),
 }
 
 #[derive(Serialize, Debug)]

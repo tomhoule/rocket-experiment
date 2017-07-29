@@ -9,8 +9,11 @@ use r2d2_diesel::ConnectionManager;
 
 type DbConn<'a> = State<'a, Pool<ConnectionManager<PgConnection>>>;
 
-#[post("/api/editions", data="<edition>")]
-pub fn editions_create(edition: Json<models::EditionNew>, conn: DbConn) -> Result<Json<models::Edition>, Error> {
+#[post("/api/editions", data = "<edition>")]
+pub fn editions_create(
+    edition: Json<models::EditionNew>,
+    conn: DbConn,
+) -> Result<Json<models::Edition>, Error> {
     let edition = edition.into_inner().save(&*conn.inner().get()?)?;
     Ok(Json(edition))
 }
@@ -22,7 +25,9 @@ pub fn editions_index(conn: DbConn) -> Result<Json<Vec<models::Edition>>, Error>
 
 #[get("/api/editions/<id>")]
 pub fn edition(id: String, conn: DbConn) -> Result<Json<models::Edition>, Error> {
-    Ok(Json(models::Edition::by_id(id.parse()?, &*conn.inner().get()?)?))
+    Ok(Json(
+        models::Edition::by_id(id.parse()?, &*conn.inner().get()?)?,
+    ))
 }
 
 #[delete("/api/editions/<id>")]
@@ -31,8 +36,12 @@ pub fn edition_delete(id: String, conn: DbConn) -> Result<(), Error> {
     Ok(())
 }
 
-#[patch("/api/editions/<id>", data="<patch>")]
-pub fn edition_patch(patch: Json<models::EditionPatch>, id: String, conn: DbConn) -> Result<Json<models::Edition>, Error> {
+#[patch("/api/editions/<id>", data = "<patch>")]
+pub fn edition_patch(
+    patch: Json<models::EditionPatch>,
+    id: String,
+    conn: DbConn,
+) -> Result<Json<models::Edition>, Error> {
     let edition = models::Edition::update(id.parse()?, patch.into_inner(), &*conn.inner().get()?)?;
     Ok(Json(edition))
 }
@@ -49,20 +58,24 @@ mod tests {
     use rocket::local::Client;
 
     pub fn test_post<H, B: AsRef<[u8]>>(body: B, uri: &str, header: H, status: Status)
-        where H: Into<Header<'static>>
-        {
-            let pool_config = r2d2::Config::default();
-            let pool_manager = ConnectionManager::<PgConnection>::new(::std::env::var("DATABASE_URL").unwrap());
-            let pool: r2d2::Pool<ConnectionManager<PgConnection>> = r2d2::Pool::new(pool_config, pool_manager).expect("Failed to create a database connection pool");
+    where
+        H: Into<Header<'static>>,
+    {
+        let pool_config = r2d2::Config::default();
+        let pool_manager =
+            ConnectionManager::<PgConnection>::new(::std::env::var("DATABASE_URL").unwrap());
+        let pool: r2d2::Pool<ConnectionManager<PgConnection>> =
+            r2d2::Pool::new(pool_config, pool_manager)
+                .expect("Failed to create a database connection pool");
 
-            let rocket = rocket::ignite()
-                .manage(pool)
-                .mount("/", routes![super::editions_create]);
+        let rocket = rocket::ignite()
+            .manage(pool)
+            .mount("/", routes![super::editions_create]);
 
-            let client = Client::new(rocket).unwrap();
-            let response = client.post(uri).header(header).body(body).dispatch();
-            assert_eq!(response.status(), status);
-        }
+        let client = Client::new(rocket).unwrap();
+        let response = client.post(uri).header(header).body(body).dispatch();
+        assert_eq!(response.status(), status);
+    }
 
     #[test]
     fn edition_create_happy_path() {
