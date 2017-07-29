@@ -1,16 +1,8 @@
 use chrono::{DateTime, Utc};
-use models::validation::*;
 use uuid::Uuid;
-use std::io::prelude::*;
 use diesel;
 use diesel::pg::PgConnection;
-use rocket::data::*;
-use rocket::request::Request;
-use serde_urlencoded;
-use rocket::outcome as o;
-use rocket::http::Status;
 
-use models::fields::*;
 use db::schema::*;
 
 #[derive(Serialize)]
@@ -34,6 +26,15 @@ pub struct EditionNew {
     pub language_code: String,
 }
 
+#[derive(Debug, Deserialize, Serialize, AsChangeset)]
+#[table_name="editions"]
+pub struct EditionPatch {
+    pub title: Option<String>,
+    pub editor: Option<String>,
+    pub year: Option<i32>,
+    pub language_code: Option<String>,
+}
+
 impl Edition {
     pub fn all(conn: &PgConnection) -> Result<Vec<Edition>, diesel::result::Error> {
         use db::schema::editions::dsl::*;
@@ -41,22 +42,22 @@ impl Edition {
         editions.load(conn)
     }
 
-    pub fn by_id(id: Uuid, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
+    pub fn by_id(uuid: Uuid, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
         use db::schema::editions::dsl::*;
         use diesel::*;
-        editions.find(id).first(conn)
+        editions.find(uuid).first(conn)
     }
 
-    pub fn delete(id: Uuid, conn: &PgConnection) -> Result<usize, diesel::result::Error> {
+    pub fn delete(uuid: Uuid, conn: &PgConnection) -> Result<usize, diesel::result::Error> {
         use db::schema::editions::dsl::*;
         use diesel::*;
-        delete(editions.find(id)).execute(conn)
+        delete(editions.find(uuid)).execute(conn)
     }
 
-    pub fn update(id: Uuid, patch: EditionPatch, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
+    pub fn update(uuid: Uuid, patch: EditionPatch, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
         use db::schema::editions::dsl::*;
         use diesel::*;
-        update(editions.find(id)).set(&patch).get_result(conn)
+        update(editions.find(uuid)).set(&patch).get_result(conn)
     }
 }
 
@@ -67,13 +68,4 @@ impl EditionNew {
 
         insert(self).into(editions).get_result(conn)
     }
-}
-
-#[derive(Debug, Deserialize, Serialize, AsChangeset)]
-#[table_name="editions"]
-pub struct EditionPatch {
-    pub title: Option<String>,
-    pub editor: Option<String>,
-    pub year: Option<i32>,
-    pub language_code: Option<String>,
 }

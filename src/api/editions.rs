@@ -3,14 +3,9 @@ use models;
 use api::error::*;
 use diesel::pg::PgConnection;
 use rocket::State;
-use rocket::request::{Form};
-use rocket::response::{NamedFile, Responder};
 use rocket_contrib::Json;
-// use std::sync::Arc;
 use r2d2::Pool;
-use db::schema;
 use r2d2_diesel::ConnectionManager;
-use uuid::Uuid;
 
 type DbConn<'a> = State<'a, Pool<ConnectionManager<PgConnection>>>;
 
@@ -45,15 +40,13 @@ pub fn edition_patch(patch: Json<models::EditionPatch>, id: String, conn: DbConn
 #[cfg(test)]
 mod tests {
     use r2d2;
-    use r2d2_diesel;
     use diesel::pg::PgConnection;
     use r2d2_diesel::ConnectionManager;
     use models::EditionNew;
     use json::to_string;
     use rocket;
-    use rocket::http::{Accept, ContentType, Header, MediaType, Method, Status};
+    use rocket::http::{ContentType, Header, Status};
     use rocket::local::Client;
-
 
     pub fn test_post<H, B: AsRef<[u8]>>(body: B, uri: &str, header: H, status: Status)
         where H: Into<Header<'static>>
@@ -67,7 +60,7 @@ mod tests {
                 .mount("/", routes![super::editions_create]);
 
             let client = Client::new(rocket).unwrap();
-            let mut response = client.post(uri).header(header).body(body).dispatch();
+            let response = client.post(uri).header(header).body(body).dispatch();
             assert_eq!(response.status(), status);
         }
 

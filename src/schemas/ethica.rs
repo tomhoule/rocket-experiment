@@ -64,7 +64,7 @@ macro_rules! nf {
     };
 }
 
-mod schema {
+pub mod schema {
     use super::*;
     use super::Node::*;
 

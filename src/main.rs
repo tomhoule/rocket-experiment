@@ -19,16 +19,10 @@ extern crate serde_json as json;
 extern crate serde_urlencoded;
 extern crate uuid;
 
-use rocket::request::{Form};
-use rocket::response::{Flash, Redirect, NamedFile, Responder};
-use rocket_contrib::Json;
+use rocket::response::NamedFile;
 use std::path::{Path, PathBuf};
-use schemas::ethica::Schema;
-
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
-
-use std::collections::BTreeMap;
 
 mod api;
 mod db;
@@ -36,15 +30,11 @@ mod models;
 mod schemas;
 
 use api::editions::*;
+use api::ethica::*;
 
 #[get("/static/<file..>")]
 fn files(file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("css/").join(file)).ok()
-}
-
-#[get("/api/schemas/ethica")]
-fn schemas_ethica() -> Json<Schema> {
-    unimplemented!();
 }
 
 fn main() {
@@ -53,7 +43,15 @@ fn main() {
     let pool: r2d2::Pool<ConnectionManager<PgConnection>> = r2d2::Pool::new(pool_config, pool_manager).expect("Failed to create a database connection pool");
 
     rocket::ignite()
-        .mount("/", routes![edition, editions_index, editions_create, schemas_ethica])
+        .mount("/", routes![
+               edition,
+               editions_index,
+               editions_create,
+               edition_delete,
+               edition_patch,
+               files,
+               schema
+        ])
         .manage(pool)
         .launch();
 }
