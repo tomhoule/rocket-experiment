@@ -1,5 +1,6 @@
 use diesel::result::Error as DieselError;
 use r2d2::GetTimeout;
+use uuid;
 
 error_chain! {
     types {
@@ -9,5 +10,6 @@ error_chain! {
     foreign_links {
         Db(DieselError);
         DbTimeout(GetTimeout);
+        UuidParseError(uuid::ParseError);
     }
 }

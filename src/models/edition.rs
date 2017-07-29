@@ -34,6 +34,32 @@ pub struct EditionNew {
     pub language_code: String,
 }
 
+impl Edition {
+    pub fn all(conn: &PgConnection) -> Result<Vec<Edition>, diesel::result::Error> {
+        use db::schema::editions::dsl::*;
+        use diesel::*;
+        editions.load(conn)
+    }
+
+    pub fn by_id(id: Uuid, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
+        use db::schema::editions::dsl::*;
+        use diesel::*;
+        editions.find(id).first(conn)
+    }
+
+    pub fn delete(id: Uuid, conn: &PgConnection) -> Result<usize, diesel::result::Error> {
+        use db::schema::editions::dsl::*;
+        use diesel::*;
+        delete(editions.find(id)).execute(conn)
+    }
+
+    pub fn update(id: Uuid, patch: EditionPatch, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
+        use db::schema::editions::dsl::*;
+        use diesel::*;
+        update(editions.find(id)).set(&patch).get_result(conn)
+    }
+}
+
 impl EditionNew {
     pub fn save(&self, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
         use db::schema::editions::dsl::*;
@@ -43,9 +69,11 @@ impl EditionNew {
     }
 }
 
+#[derive(Debug, Deserialize, Serialize, AsChangeset)]
+#[table_name="editions"]
 pub struct EditionPatch {
-    title: Option<NonEmptyString>,
-    editor: Option<String>,
-    year: Option<i32>,
-    language_code: Option<String>,
+    pub title: Option<String>,
+    pub editor: Option<String>,
+    pub year: Option<i32>,
+    pub language_code: Option<String>,
 }
