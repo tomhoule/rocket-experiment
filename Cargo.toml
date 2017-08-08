@@ -10,6 +10,8 @@ diesel_codegen = { version = "*", default-features = false, features = ["postgre
 error-chain = "*"
 r2d2 = "*"
 r2d2-diesel = "*"
+purescript_waterslide = { version = "0.3.1", features = ["chrono_support", "uuid_support"] }
+purescript_waterslide_derive = "0.3.1"
 rocket = "*"
 rocket_codegen = "*"
 rocket_contrib = "*"

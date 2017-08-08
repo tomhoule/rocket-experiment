@@ -1,9 +1,9 @@
 pub use self::schema::ETHICA;
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, AsPursType)]
 pub struct Schema(pub &'static [Node]);
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, AsPursType)]
 #[serde(tag = "nodeType", content = "content")]
 pub enum Node {
     AnonymousFragment(NumberedFragment),
@@ -25,7 +25,7 @@ pub enum Node {
     Titulus(&'static str),
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, AsPursType)]
 pub struct NumberedFragment {
     // #[serde(default = "none")]
     num: Option<u8>,
@@ -34,7 +34,7 @@ pub struct NumberedFragment {
 }
 
 /// A nested fragment with a title
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, AsPursType)]
 pub struct ScopeDescriptor {
     title: &'static str,
     children: &'static [Node],

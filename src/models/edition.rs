@@ -5,8 +5,7 @@ use diesel::pg::PgConnection;
 
 use db::schema::*;
 
-#[derive(Serialize)]
-#[derive(Queryable)]
+#[derive(Queryable, AsPursType, Serialize)]
 pub struct Edition {
     id: Uuid,
     title: String,
@@ -17,7 +16,7 @@ pub struct Edition {
     updated_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Insertable)]
+#[derive(Debug, Deserialize, Serialize, Insertable, AsPursType)]
 #[table_name = "editions"]
 pub struct EditionNew {
     pub title: String,
