@@ -12,6 +12,7 @@ extern crate r2d2;
 extern crate r2d2_diesel;
 extern crate rocket;
 extern crate rocket_contrib;
+extern crate rocket_cors;
 extern crate purescript_waterslide;
 #[macro_use]
 extern crate purescript_waterslide_derive;
@@ -30,10 +31,12 @@ use r2d2_diesel::ConnectionManager;
 mod api;
 mod db;
 mod models;
+use rocket_cors::{AllowedOrigins, AllowedHeaders};
 mod schemas;
 
 use api::editions::*;
 use api::ethica::*;
+use rocket::http::*;
 
 #[get("/static/<file..>")]
 fn files(file: PathBuf) -> Option<NamedFile> {
@@ -41,6 +44,20 @@ fn files(file: PathBuf) -> Option<NamedFile> {
 }
 
 fn main() {
+    let allowed_origins = AllowedOrigins::all();
+    let cors_options = rocket_cors::Cors {
+        allowed_origins: allowed_origins,
+        allowed_methods: vec![
+            Method::Get,
+            Method::Post,
+            Method::Patch,
+            Method::Put,
+        ].into_iter().map(From::from).collect(),
+        allowed_headers: AllowedHeaders::some(&["Authorization"]),
+        allow_credentials: true,
+        ..Default::default()
+    };
+
     let pool_config = r2d2::Config::default();
     let pool_manager =
         ConnectionManager::<PgConnection>::new(::std::env::var("DATABASE_URL").unwrap());
@@ -61,6 +78,7 @@ fn main() {
                 schema
             ],
         )
+        .attach(cors_options)
         .manage(pool)
         .launch();
 }
