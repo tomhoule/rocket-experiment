@@ -4,7 +4,7 @@ pub use self::schema::ETHICA;
 pub struct Schema(pub &'static [Node]);
 
 #[derive(Serialize, Debug, AsPursType)]
-#[serde(tag = "nodeType", content = "content")]
+#[serde(tag = "tag", content = "contents")]
 pub enum Node {
     AnonymousFragment(NumberedFragment),
     Aliter,
