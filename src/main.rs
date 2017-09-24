@@ -21,6 +21,9 @@ extern crate serde;
 extern crate serde_derive;
 extern crate serde_json as json;
 extern crate uuid;
+#[macro_use]
+extern crate validator_derive;
+extern crate validator;
 
 use rocket::response::NamedFile;
 use std::path::{Path, PathBuf};
@@ -64,6 +67,7 @@ fn main() {
             routes![
                 index,
                 ethica_index,
+                ethica_create,
                 ethica_new,
                 edition,
                 editions_index,

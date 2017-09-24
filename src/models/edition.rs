@@ -2,6 +2,7 @@ use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use diesel;
 use diesel::pg::PgConnection;
+use validator::Validate;
 
 use db::schema::*;
 
@@ -28,13 +29,18 @@ pub struct Edition {
     slug: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Insertable, AsPursType)]
+#[derive(Debug, FromForm, Deserialize, Serialize, Insertable, AsPursType, Validate)]
 #[table_name = "editions"]
 pub struct EditionNew {
+    #[validate(length(message = "Please specify a title", min = "1"))]
     pub title: String,
+    #[validate(length(message = "The editor is missing", min = "1"))]
     pub editor: String,
+    #[validate(range(message = "Please specify a valid year", min = "1500", max = "3000"))]
     pub year: i32,
+    #[validate(length(equal = "2"))]
     pub language_code: String,
+    #[validate(length(message = "The edition needs a valid slug", min = "2"))]
     pub slug: String,
 }
 

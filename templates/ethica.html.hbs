@@ -1,7 +1,18 @@
 {{> top }}
 <div class="section">
     <div class="container">
-        hullo
+        {{#if success}}
+        <div class="message is-success">
+            <div class="message-body">
+                {{success}}
+            </div>
+        </div>
+        {{/if}}
+        <div class="box">
+            {{edition.title}} <br />
+            {{edition.year}} <br />
+            {{edition.editor}} <br />
+        </div>
     </div>
 </div>
 {{> bottom }}

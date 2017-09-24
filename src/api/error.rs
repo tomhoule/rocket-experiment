@@ -13,6 +13,7 @@ error_chain! {
     foreign_links {
         Db(DieselError);
         DbTimeout(GetTimeout);
+        Json(::json::Error);
         UuidParseError(uuid::ParseError);
     }
 }
