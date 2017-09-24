@@ -5,6 +5,17 @@ use diesel::pg::PgConnection;
 
 use db::schema::*;
 
+pub static LANGUAGE_CODES: &'static [&'static str] = &[
+    "de",
+    "en",
+    "es",
+    "fr",
+    "ja",
+    "la",
+    "ru",
+    "zh",
+];
+
 #[derive(Queryable, AsPursType, Serialize)]
 pub struct Edition {
     id: Uuid,
@@ -24,6 +35,7 @@ pub struct EditionNew {
     pub editor: String,
     pub year: i32,
     pub language_code: String,
+    pub slug: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, AsChangeset)]

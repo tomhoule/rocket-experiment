@@ -37,16 +37,23 @@ use api::editions::*;
 use api::ethica::*;
 use pages::*;
 
-#[get("/static/<file..>")]
-fn files(file: PathBuf) -> Option<NamedFile> {
+#[get("/static/css/<file..>")]
+fn css(file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("css/").join(file)).ok()
 }
+
+#[get("/static/js/<file..>")]
+fn js(file: PathBuf) -> Option<NamedFile> {
+    NamedFile::open(Path::new("js/dist/").join(file)).ok()
+}
+
 
 fn main() {
     dotenv::dotenv().ok();
     let pool_config = r2d2::Config::default();
+    let database_url = ::std::env::var("DATABASE_URL").unwrap();
     let pool_manager =
-        ConnectionManager::<PgConnection>::new(::std::env::var("DATABASE_URL").unwrap());
+        ConnectionManager::<PgConnection>::new(database_url);
     let pool: r2d2::Pool<ConnectionManager<PgConnection>> =
         r2d2::Pool::new(pool_config, pool_manager)
             .expect("Failed to create a database connection pool");
@@ -57,12 +64,14 @@ fn main() {
             routes![
                 index,
                 ethica_index,
+                ethica_new,
                 edition,
                 editions_index,
                 editions_create,
                 edition_delete,
                 edition_patch,
-                files,
+                css,
+                js,
                 schema
             ],
         )

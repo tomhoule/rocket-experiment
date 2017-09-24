@@ -1,4 +1,3 @@
-use api::error::*;
 use rocket_contrib::Template;
 use chrono::*;
 

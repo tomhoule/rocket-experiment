@@ -1,0 +1,16 @@
+{
+  "name": "locutions-rs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "ssh://git@github.com/tomhoule/rocket-experiment",
+  "author": "Tom Houlé <tom@tomhoule.com>",
+  "license": "MIT",
+  "scripts": {
+    "watch": "webpack --watch --config js/webpack.config.js"
+  },
+  "devDependencies": {
+    "awesome-typescript-loader": "^3.2.3",
+    "typescript": "^2.5.2",
+    "webpack": "^3.6.0"
+  }
+}
