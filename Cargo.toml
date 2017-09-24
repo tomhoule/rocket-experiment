@@ -7,20 +7,20 @@ authors = ["Tom Houlé <tom@tomhoule.com>"]
 chrono = { version = "*", features = ["serde"] }
 diesel = { version = "*", features = ["chrono", "postgres", "uuid"] }
 diesel_codegen = { version = "*", default-features = false, features = ["postgres"] }
+dotenv = "*"
 error-chain = "*"
+handlebars = "*"
 r2d2 = "*"
 r2d2-diesel = "*"
 purescript_waterslide = { version = "0.3.1", features = ["chrono_support", "uuid_support"] }
 purescript_waterslide_derive = "0.3.1"
 rocket = "*"
 rocket_codegen = "*"
-rocket_contrib = "*"
+rocket_contrib = { version = "*", features = ["handlebars_templates"] }
 rocket_cors = "*"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
-serde_urlencoded = "*"
-strum = "*"
 uuid = { version = "*", features = ["v4", "serde"] }
 
 [[bin]]

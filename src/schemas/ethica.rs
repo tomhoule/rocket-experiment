@@ -5,15 +5,15 @@ pub struct Schema(pub &'static [Node]);
 
 type Path = String;
 
-impl Schema {
-    fn contains_path(&self, path: &Path) -> bool {
-        unimplemented!();
-    }
+// impl Schema {
+//     fn contains_path(&self, path: &Path) -> bool {
+//         unimplemented!();
+//     }
 
-    fn all_paths(&self) -> Vec<Path> {
-        unimplemented!();
-    }
-}
+//     fn all_paths(&self) -> Vec<Path> {
+//         unimplemented!();
+//     }
+// }
 
 
 #[derive(Serialize, Debug, AsPursType)]

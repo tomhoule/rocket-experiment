@@ -7,6 +7,7 @@ table! {
         language_code -> Text,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
+        slug -> Varchar,
     }
 }
 

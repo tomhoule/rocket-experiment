@@ -50,6 +50,7 @@ pub fn edition_patch(
 mod tests {
     use r2d2;
     use diesel::pg::PgConnection;
+    use dotenv;
     use r2d2_diesel::ConnectionManager;
     use models::EditionNew;
     use json::to_string;
@@ -61,6 +62,7 @@ mod tests {
     where
         H: Into<Header<'static>>,
     {
+        dotenv::dotenv().ok();
         let pool_config = r2d2::Config::default();
         let pool_manager =
             ConnectionManager::<PgConnection>::new(::std::env::var("DATABASE_URL").unwrap());

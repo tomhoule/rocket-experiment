@@ -7,8 +7,8 @@ use diesel::*;
 #[derive(Queryable, AsPursType, Serialize)]
 pub struct Fragment {
     id: Uuid,
-    edition_id: Uuid,
     fragment_path: String,
+    edition_id: Uuid,
     value: String,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,

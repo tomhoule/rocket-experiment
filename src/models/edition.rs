@@ -14,6 +14,7 @@ pub struct Edition {
     language_code: String,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+    slug: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Insertable, AsPursType)]
@@ -45,6 +46,12 @@ impl Edition {
         use db::schema::editions::dsl::*;
         use diesel::*;
         editions.find(uuid).first(conn)
+    }
+
+    pub fn by_slug(req_slug: &str, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
+        use db::schema::editions::dsl::*;
+        use diesel::*;
+        editions.filter(slug.eq(req_slug)).first(conn)
     }
 
     pub fn delete(uuid: Uuid, conn: &PgConnection) -> Result<usize, diesel::result::Error> {
