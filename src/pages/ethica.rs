@@ -8,20 +8,26 @@ use validator::Validate;
 use rocket::State;
 use r2d2::Pool;
 use r2d2_diesel::ConnectionManager;
+use super::utils::*;
 
 type DbConn<'a> = State<'a, Pool<ConnectionManager<PgConnection>>>;
 
 #[derive(Serialize)]
 struct EditionIndex {
     edition: Edition,
-    success: Option<String>,
+    success: Option<::json::Value>,
 }
 
 #[get("/ethica/<edition_slug>")]
-pub fn ethica_index(edition_slug: String, conn: DbConn, flash: Option<FlashMessage>) -> Result<Template, Error> {
-    let success = flash.and_then(|f| extract_flash(f, "success"));
+pub fn ethica_index(edition_slug: String, conn: DbConn, flash: Option<SuccessFlash>) -> Result<Template, Error> {
     let edition = Edition::by_slug(&edition_slug, &*conn.inner().get()?)?;
-    Ok(Template::render("ethica", EditionIndex { edition, success }))
+    Ok(Template::render(
+        "ethica",
+        EditionIndex {
+            edition,
+            success: flash.map(|f| f.0)
+        }
+    ))
 }
 
 #[derive(Serialize)]
@@ -30,24 +36,10 @@ struct EditionNewVars {
     language_codes: &'static [&'static str],
 }
 
-fn extract_flash(flash: FlashMessage, name: &'static str) -> Option<String> {
-    if flash.name() == name {
-        Some(flash.msg().to_string())
-    } else {
-        None
-    }
-}
-
 #[get("/ethica/new")]
-pub fn ethica_new(flash: Option<FlashMessage>) -> Result<Template, Error> {
-    let error = if let Some(error) = flash.and_then(|f| extract_flash(f, "error")) {
-        ::json::from_str(&error).unwrap_or(None)
-    } else {
-        None
-    };
-
+pub fn ethica_new(flash: Option<ErrorFlash>) -> Result<Template, Error> {
     Ok(Template::render("editions/new", EditionNewVars {
-        error,
+        error: flash.map(|f| f.0),
         language_codes: LANGUAGE_CODES,
     }))
 }
