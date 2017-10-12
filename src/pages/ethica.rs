@@ -2,13 +2,13 @@ use api::error::*;
 use diesel::pg::PgConnection;
 use models::edition::{Edition, EditionNew, LANGUAGE_CODES};
 use rocket_contrib::Template;
-use rocket::request::{FlashMessage, Form};
-use rocket::response::{Flash, Redirect};
+use rocket::request::Form;
+use rocket::response::{Flash as RocketFlash, Redirect};
 use validator::Validate;
 use rocket::State;
 use r2d2::Pool;
 use r2d2_diesel::ConnectionManager;
-use super::utils::*;
+use pages::utils::*;
 
 type DbConn<'a> = State<'a, Pool<ConnectionManager<PgConnection>>>;
 
@@ -19,7 +19,7 @@ struct EditionIndex {
 }
 
 #[get("/ethica/<edition_slug>")]
-pub fn ethica_index(edition_slug: String, conn: DbConn, flash: Option<SuccessFlash>) -> Result<Template, Error> {
+pub fn ethica_index(edition_slug: String, conn: DbConn, flash: Option<Flash<SuccessFlash>>) -> Result<Template, Error> {
     let edition = Edition::by_slug(&edition_slug, &*conn.inner().get()?)?;
     Ok(Template::render(
         "ethica",
@@ -37,7 +37,7 @@ struct EditionNewVars {
 }
 
 #[get("/ethica/new")]
-pub fn ethica_new(flash: Option<ErrorFlash>) -> Result<Template, Error> {
+pub fn ethica_new(flash: Option<Flash<ErrorFlash>>) -> Result<Template, Error> {
     Ok(Template::render("editions/new", EditionNewVars {
         error: flash.map(|f| f.0),
         language_codes: LANGUAGE_CODES,
@@ -59,14 +59,14 @@ fn error_list(errors: ::validator::ValidationErrors) -> Vec<String> {
 }
 
 #[post("/ethica/create", data = "<edition>")]
-pub fn ethica_create(edition: Form<EditionNew>, conn: DbConn) -> Result<Flash<Redirect>, Error> {
+pub fn ethica_create(edition: Form<EditionNew>, conn: DbConn) -> Result<RocketFlash<Redirect>, Error> {
     Ok(match edition.get().validate() {
         Ok(_) => {
             edition.get().save(&*conn.inner().get()?)?;
             // TODO: Migrate that to new type-safe urls
             let slug = &edition.get().slug;
-            Flash::success(Redirect::to(&format!("/ethica/{}", slug)), format!("Congrats on your edition!"))
+            RocketFlash::success(Redirect::to(&format!("/ethica/{}", slug)), format!("Congrats on your edition!"))
         },
-        Err(err) => Flash::error(Redirect::to("/ethica/new"), ::json::to_string(&error_list(err))?)
+        Err(err) => RocketFlash::error(Redirect::to("/ethica/new"), ::json::to_string(&error_list(err))?)
     })
 }

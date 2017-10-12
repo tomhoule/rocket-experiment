@@ -1,35 +1,53 @@
-use rocket::FromRequest;
+use api::error::*;
+use rocket::Outcome;
+use rocket::request::{FlashMessage, FromRequest, Request, Outcome as ROutcome};
 
 trait FlashMessageClass {
     const KEY: &'static str;
 
-    fn extract_flash(flash: &FlashMessage) -> Option<&str>
+    fn extract_flash<MessageClass>(flash: &FlashMessage) -> Option<&str>
     where MessageClass: FlashMessageClass
     {
         if flash.name() == Self::KEY {
-            Some(flash.msg().to_string())
+            Some(flash.msg())
         } else {
             None
         }
     }
 }
 
-impl<MessageClass> FromRequest for MessageClass
+impl<'a, 'b, MessageClass> FromRequest<'a, 'b> for Flash<MessageClass>
 where MessageClass: FlashMessageClass
 {
-    fn from_request(request: Request) -> Outcome<MessageClass> {
-        let flash = FlashMessage::from_request(request);
-        MessageClass::extract_flash(flash);
+
+    type Error = Error;
+
+    fn from_request(request: &Request) -> ROutcome<Flash<MessageClass>, Error> {
+        let flash = match FlashMessage::from_request(request) {
+            Outcome::Success(flash) => flash,
+            Outcome::Failure(err) => return Outcome::Failure(err.into()),
+            Outcome::Forward(()) => return Outcome::Forward(()),
+        };
+
+        match <MessageClass as FlashMessageClass>::extract_flash(&flash) {
+            Some(msg) => Outcome::Success(Flash(msg)),
+            None => Outcome::Forward(())
+        }
+    }
 }
 
-pub struct ErrorFlash(pub ::json::Value);
+struct Flash<T>(pub T);
 
-impl FromRequest for ErrorFlash {
-    const KEY: "error";
+struct InnerSuccessFlash<T>(pub T);
+pub type SuccessFlash<T> = Flash<InnerSuccessFlash<T>>
+
+impl FlashMessageClass for SuccessFlash {
+    const KEY: &'static str = "success";
 }
 
-pub struct SuccessFlash(pub ::json::Value);
+struct InnerErrorFlash<T>(pub T);
+pub type ErrorFlash<T> = Flash<InnerErrorFlash<T>>
 
-impl FromRequest for SuccessFlash {
-    const KEY: "error";
+impl FlashMessageClass for ErrorFlash {
+    const KEY: &'static str = "error";
 }
