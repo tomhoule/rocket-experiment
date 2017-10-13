@@ -29,7 +29,7 @@ pub struct Edition {
     slug: String,
 }
 
-#[derive(Debug, FromForm, Deserialize, Serialize, Insertable, AsPursType, Validate)]
+#[derive(Debug, Deserialize, Serialize, Insertable, AsPursType, Validate)]
 #[table_name = "editions"]
 pub struct EditionNew {
     #[validate(length(message = "Please specify a title", min = "1"))]

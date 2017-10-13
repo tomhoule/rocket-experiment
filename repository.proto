@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+service EthicsRepository {
+    rpc GetSchema (GetSchemaParams) returns (EthicsSchema) {}
+}
+
+message GetSchemaParams {}
+
+message EthicsSchema {
+    enum NodeType {
+        UNSPECIFIED = 0;
+        ANONYMOUS_FRAGMENT = 1;
+        ALITER = 2;
+        APPENDINX = 3;
+        AXIOMA = 4;
+        CAPUT = 5;
+        COROLLARIUM = 6;
+        DEFINITIO = 7;
+        DEMONSTRATIO = 8;
+        EXPLICATIO = 9;
+        LEMMA = 11;
+        PARS = 12;
+        POSTULATUM = 13;
+        PRAEFATIO = 14;
+        PROPOSITIO = 15;
+        SCHOLIUM = 16;
+    }
+
+    message Node {
+        NodeType node_type = 1;
+        oneof identifier {
+            int32 num = 2; // for numbered fragments
+            string title = 3; // for scopes
+        }
+        repeated Node children = 4;
+
+    }
+
+    repeated Node parts = 1;
+}

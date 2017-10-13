@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "allowJs": true,
         "baseUrl": "./js/src",
         "jsx": "react",
         "module": "commonjs",

@@ -1,7 +1,7 @@
 import { ActionsObservable, combineEpics, Epic } from 'redux-observable'
 import 'typescript-fsa-redux-observable'
 import * as actions from './actions'
-import * as Rx from 'rxjs'
+import * as Rx from 'rxjs/Rx'
 import * as api from './api'
 import { AsyncActionCreators } from 'typescript-fsa'
 import { InjectedDependencies } from './types'
