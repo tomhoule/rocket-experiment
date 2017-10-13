@@ -1,8 +1,18 @@
 {
     "compilerOptions": {
+        "baseUrl": "./js/src",
+        "jsx": "react",
+        "module": "commonjs",
+        "moduleResolution": "node",
         "noImplicitAny": true,
         "noImplicitReturns": true,
+        "sourceMap": true,
         "strictNullChecks": true,
-        "strict": true
+        "strict": true,
+        "target": "es2017"
+    },
+    "awesomeTypescriptLoaderOptions": {
+        "useCache": false,
+        "useTranspileModule": true
     }
 }

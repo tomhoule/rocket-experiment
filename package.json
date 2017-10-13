@@ -6,11 +6,34 @@
   "author": "Tom Houlé <tom@tomhoule.com>",
   "license": "MIT",
   "scripts": {
-    "watch": "webpack --watch --config js/webpack.config.js"
+    "watch": "webpack --watch --config js/webpack.config.js",
+    "wds": "webpack-dev-server --config js/webpack.config.js"
   },
   "devDependencies": {
+    "@types/react": "^16.0.10",
+    "@types/react-dom": "^16.0.1",
+    "@types/redux": "^3.6.0",
+    "@types/redux-thunk": "^2.1.0",
     "awesome-typescript-loader": "^3.2.3",
     "typescript": "^2.5.2",
-    "webpack": "^3.6.0"
+    "webpack": "^3.7.1",
+    "webpack-dev-server": "^2.9.1"
+  },
+  "dependencies": {
+    "@types/react-redux": "^5.0.10",
+    "prop-types": "^15.6.0",
+    "ramda": "^0.25.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-redux": "4",
+    "react-router": "^4.2.0",
+    "redux": "^3.7.2",
+    "redux-observable": "^0.16.0",
+    "redux-thunk": "^2.2.0",
+    "rxjs": "^5.4.3",
+    "sanctuary": "^0.13.2",
+    "typescript-fsa": "^2.5.0",
+    "typescript-fsa-reducers": "^0.4.4",
+    "typescript-fsa-redux-observable": "^0.16.2"
   }
 }

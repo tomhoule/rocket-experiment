@@ -2,3 +2,4 @@
 **/*.rs.bk
 js/dist
 node_modules
+.awcache
