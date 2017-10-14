@@ -51,6 +51,40 @@ impl Repository {
     fn handle(&self, err: api::Error) {
         panic!("{}", err);
     }
+
+    fn with_connection<Req, Res>(
+        &self,
+        ctx: ::grpcio::RpcContext,
+        req: Req,
+        sink: ::grpcio::UnarySink<Res>,
+        inner: &Fn(&Self, Req, &PgConnection) -> Result<Res, api::Error>
+    ) {
+        self.pool.get()
+            .map_err(api::Error::from)
+            .and_then(|conn| inner(self, req, &conn))
+            .and_then(|res| {
+                ctx.spawn(sink.success(res).map_err(bail));
+                Ok(())
+            })
+            .map_err(|err| self.handle(err))
+            .ok();
+    }
+}
+
+
+fn get_editions(
+    _ctx: &Repository,
+    _req: rpc::repository::GetEditionsParams,
+    conn: &PgConnection
+) -> Result<rpc::repository::Editions, api::Error> {
+    use protobuf::RepeatedField;
+    use ::std::iter::*;
+
+    let mut response = rpc::repository::Editions::new();
+    let editions = models::Edition::all(&conn).map_err(api::Error::from)?;
+    let transformed = editions.into_iter().map(|ed| ed.to_proto());
+    response.set_data(RepeatedField::from_iter(transformed));
+    Ok(response)
 }
 
 impl rpc::repository_grpc::EthicsRepository for Repository {
@@ -61,34 +95,37 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
         sink: ::grpcio::UnarySink<rpc::repository::EthicsSchema>
     ) {
         use protobuf::RepeatedField;
+        use ::std::iter::*;
 
         let mut schema = rpc::repository::EthicsSchema::new();
-        let parts = ETHICA.0.iter().map(|node| node.to_protobuf()).collect();
-        schema.set_parts(RepeatedField::from_vec(parts));
+        let parts = ETHICA.0.iter().map(|node| node.to_protobuf());
+        schema.set_parts(RepeatedField::from_iter(parts));
         ctx.spawn(sink.success(schema).map_err(bail));
     }
 
     fn get_editions(
         &self,
         ctx: ::grpcio::RpcContext,
-        _req: rpc::repository::GetEditionsParams,
+        req: rpc::repository::GetEditionsParams,
         sink: ::grpcio::UnarySink<rpc::repository::Editions>
     ) {
-        use protobuf::RepeatedField;
-        use ::std::iter::*;
+        self.with_connection(ctx, req, sink, &get_editions);
 
-        let mut response = rpc::repository::Editions::new();
-        self.pool.get()
-            .map_err(api::Error::from)
-            .and_then(|conn| models::Edition::all(&conn).map_err(api::Error::from))
-            .and_then(|editions| {
-                let transformed = editions.into_iter().map(|ed| ed.to_proto());
-                response.set_data(RepeatedField::from_iter(transformed));
-                ctx.spawn(sink.success(response).map_err(bail));
-                Ok(())
-            })
-            .map_err(|err| self.handle(err))
-            .ok();
+        // use protobuf::RepeatedField;
+        // use ::std::iter::*;
+
+        // let mut response = rpc::repository::Editions::new();
+        // self.pool.get()
+        //     .map_err(api::Error::from)
+        //     .and_then(|conn| models::Edition::all(&conn).map_err(api::Error::from))
+        //     .and_then(|editions| {
+        //         let transformed = editions.into_iter().map(|ed| ed.to_proto());
+        //         response.set_data(RepeatedField::from_iter(transformed));
+        //         ctx.spawn(sink.success(response).map_err(bail));
+        //         Ok(())
+        //     })
+        //     .map_err(|err| self.handle(err))
+        //     .ok();
     }
 
     fn create_edition(
@@ -123,7 +160,9 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
             .and_then(|edition| {
                 ctx.spawn(sink.success(edition.to_proto()).map_err(bail));
                 Ok(())
-            }).ok();
+            })
+            .map_err(|err| self.handle(err))
+            .ok();
     }
 }
 
@@ -131,20 +170,16 @@ fn main() {
     dotenv::dotenv().ok();
     let pool_config = r2d2::Config::default();
     let database_url = ::std::env::var("DATABASE_URL").unwrap();
-    let pool_manager =
-        ConnectionManager::<PgConnection>::new(database_url);
-    println!("Connecting to database");
-    let pool: r2d2::Pool<ConnectionManager<PgConnection>> =
-        r2d2::Pool::new(pool_config, pool_manager)
+    let pool_manager = ConnectionManager::<PgConnection>::new(database_url);
+    let pool = r2d2::Pool::new(pool_config, pool_manager)
             .expect("Failed to create a database connection pool");
 
     let repo = Repository { pool };
-    let env = grpcio::Environment::new(1);
-    let service = rpc::repository_grpc::create_ethics_repository(repo);
+    let env = grpcio::Environment::new(4);
     let port = 9090;
     let mut server = grpcio::ServerBuilder::new(::std::sync::Arc::new(env))
         .bind("localhost", port)
-        .register_service(service)
+        .register_service(rpc::repository_grpc::create_ethics_repository(repo))
         .build()
         .expect("Server misconfiguration");
 

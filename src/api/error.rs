@@ -1,5 +1,6 @@
 use diesel::result::Error as DieselError;
 use r2d2::GetTimeout;
+use grpcio::Error as GrpcError;
 use uuid;
 // use rocket::{Request, Response};
 // use rocket::http::Status;
@@ -13,6 +14,7 @@ error_chain! {
     foreign_links {
         Db(DieselError);
         DbTimeout(GetTimeout);
+        Grpc(GrpcError);
         Json(::json::Error);
         UuidParseError(uuid::ParseError);
     }

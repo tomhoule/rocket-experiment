@@ -9,3 +9,9 @@ export const getSchema = actionCreator.async<
     api.EthicsSchema.AsObject,
     never
 >('GET_SCHEMA')
+
+export const patchEdition = actionCreator.async<
+    api.EditionPatch.AsObject,
+    api.Edition.AsObject,
+    never
+>('PATCH_EDITION')
