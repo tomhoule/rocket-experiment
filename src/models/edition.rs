@@ -109,15 +109,26 @@ impl Edition {
         delete(editions.find(uuid)).execute(conn)
     }
 
+    #[deny(unused_variables)]
     pub fn to_proto(self) -> ::rpc::repository::Edition {
         let mut pb = ::rpc::repository::Edition::new();
-        pb.set_title(self.title);
-        pb.set_slug(self.slug);
-        pb.set_editor(self.editor);
-        pb.set_year(self.year);
-        pb.set_language_code(self.language_code);
-        pb.set_created_at(self.created_at.to_rfc3339());
-        pb.set_updated_at(self.updated_at.to_rfc3339());
+        let Edition {
+            created_at,
+            editor,
+            id: _unused_id,
+            language_code,
+            slug,
+            title,
+            updated_at,
+            year,
+        } = self;
+        pb.set_title(title);
+        pb.set_slug(slug);
+        pb.set_editor(editor);
+        pb.set_year(year);
+        pb.set_language_code(language_code);
+        pb.set_created_at(created_at.to_rfc3339());
+        pb.set_updated_at(updated_at.to_rfc3339());
         pb
     }
 }
