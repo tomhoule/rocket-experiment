@@ -30,8 +30,8 @@ interface MethodDefinition<Req, Res> {
 }
 
 export function rpc<
-    Req extends jspb.Message,
-    Res extends jspb.Message
+    Req extends jspb.Message = never,
+    Res extends jspb.Message = never
 >(
     method: any,
     request: Req,
