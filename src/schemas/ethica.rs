@@ -41,7 +41,6 @@ impl Node {
     pub fn to_protobuf(&self) -> ::rpc::repository::EthicsSchema_Node {
         use ::rpc::repository::*;
         use self::Node::*;
-        use ::std::default::Default;
         use protobuf::RepeatedField;
 
         let mut node = EthicsSchema_Node::new();

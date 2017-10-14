@@ -2,7 +2,6 @@ use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use diesel;
 use diesel::pg::PgConnection;
-use protobuf::RepeatedField;
 use validator::Validate;
 
 use db::schema::*;
@@ -76,12 +75,12 @@ impl EditionPatch {
 
     pub fn save(
         &self,
-        slug: String,
+        slug_: String,
         conn: &PgConnection,
     ) -> Result<Edition, diesel::result::Error> {
         use db::schema::editions::dsl::*;
         use diesel::*;
-        update(editions.filter(slug.eq(slug))).set(self).get_result(conn)
+        update(editions.filter(slug.eq(slug_))).set(self).get_result(conn)
     }
 }
 
@@ -110,7 +109,7 @@ impl Edition {
         delete(editions.find(uuid)).execute(conn)
     }
 
-    pub fn to_protobuf(self) -> ::rpc::repository::Edition {
+    pub fn to_proto(self) -> ::rpc::repository::Edition {
         let mut pb = ::rpc::repository::Edition::new();
         pb.set_title(self.title);
         pb.set_slug(self.slug);

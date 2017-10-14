@@ -26,7 +26,6 @@ extern crate validator_derive;
 extern crate validator;
 
 // use rocket::response::NamedFile;
-use std::path::{Path, PathBuf};
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 
@@ -38,6 +37,10 @@ mod schemas;
 
 use futures::Future;
 use schemas::ethica::ETHICA;
+
+fn bail(err: grpcio::Error) {
+    panic!("{}", err)
+}
 
 #[derive(Clone)]
 struct Repository {
@@ -54,7 +57,7 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
     fn get_schema(
         &self,
         ctx: ::grpcio::RpcContext,
-        req: rpc::repository::GetSchemaParams,
+        _req: rpc::repository::GetSchemaParams,
         sink: ::grpcio::UnarySink<rpc::repository::EthicsSchema>
     ) {
         use protobuf::RepeatedField;
@@ -62,34 +65,30 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
         let mut schema = rpc::repository::EthicsSchema::new();
         let parts = ETHICA.0.iter().map(|node| node.to_protobuf()).collect();
         schema.set_parts(RepeatedField::from_vec(parts));
-        let f = sink.success(schema)
-            .map_err(|err| panic!("Errored with {}", err));
-        ctx.spawn(f)
+        ctx.spawn(sink.success(schema).map_err(bail));
     }
 
     fn get_editions(
         &self,
         ctx: ::grpcio::RpcContext,
-        req: rpc::repository::GetEditionsParams,
+        _req: rpc::repository::GetEditionsParams,
         sink: ::grpcio::UnarySink<rpc::repository::Editions>
     ) {
         use protobuf::RepeatedField;
         use ::std::iter::*;
 
         let mut response = rpc::repository::Editions::new();
-        let editions = self.pool.get()
+        self.pool.get()
             .map_err(api::Error::from)
-            .and_then(|conn| models::Edition::all(&conn).map_err(api::Error::from));
-        match editions {
-            Ok(editions) => {
-                let transformed = editions.iter().map(|ed| rpc::repository::Edition::new());
+            .and_then(|conn| models::Edition::all(&conn).map_err(api::Error::from))
+            .and_then(|editions| {
+                let transformed = editions.into_iter().map(|ed| ed.to_proto());
                 response.set_data(RepeatedField::from_iter(transformed));
-                let f = sink.success(response)
-                    .map_err(|err| panic!("Errored with {}", err));
-                ctx.spawn(f);
-            },
-            Err(err) => self.handle(err)
-        }
+                ctx.spawn(sink.success(response).map_err(bail));
+                Ok(())
+            })
+            .map_err(|err| self.handle(err))
+            .ok();
     }
 
     fn create_edition(
@@ -99,14 +98,15 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
         sink: ::grpcio::UnarySink<rpc::repository::Edition>
     ) {
         let edition = models::EditionNew::from_protobuf(req);
-        let saved = self.pool.get()
+        self.pool.get()
             .map_err(api::Error::from)
-            .and_then(|conn| edition.save(&conn).map_err(api::Error::from));
-        match saved {
-            Ok(edition) =>
-                ctx.spawn(sink.success(edition.to_protobuf()).map_err(|err| panic!("err {}", err))),
-            Err(err) => self.handle(err),
-        }
+            .and_then(|conn| edition.save(&conn).map_err(api::Error::from))
+            .and_then(|edition| {
+                ctx.spawn(sink.success(edition.to_proto()).map_err(bail));
+                Ok(())
+            })
+            .map_err(|err| self.handle(err))
+            .ok();
     }
 
     fn patch_edition(
@@ -117,14 +117,13 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
     ) {
         let uuid = req.take_id();
         let patch = models::EditionPatch::from_proto(req);
-        let saved = self.pool.get()
+        self.pool.get()
             .map_err(api::Error::from)
-            .and_then(|conn| patch.save(uuid, &conn).map_err(api::Error::from));
-        match saved {
-            Ok(edition) =>
-                ctx.spawn(sink.success(edition.to_protobuf()).map_err(|err| panic!("GRPC error"))),
-            Err(err) => self.handle(err),
-        }
+            .and_then(|conn| patch.save(uuid, &conn).map_err(api::Error::from))
+            .and_then(|edition| {
+                ctx.spawn(sink.success(edition.to_proto()).map_err(bail));
+                Ok(())
+            }).ok();
     }
 }
 
