@@ -1,0 +1,14 @@
+{
+    "extends": "tslint-config-airbnb"
+    "align": [true, "statements", "members", "parameters"],
+    "import-name": false,
+    "quotemark": [true, "single", "jsx-single"],
+    "semicolon": [true, "never"],
+    "trailing-comma": [true, {
+        "multiline": {
+            "arrays": "always",
+            "objects": "always"
+        }
+    }],
+    "variable-name": [true, "allow-pascal-case"]
+}

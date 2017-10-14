@@ -12,12 +12,16 @@ import * as epicUtils from 'epic-utils'
 import 'rxjs'
 import { reducers } from './reducers'
 
-const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || redux.compose
+const composeEnhancers =
+    (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    : redux.compose
 
 function main() {
     const epicMiddleware = createEpicMiddleware(rootEpic, {
         dependencies: {
             get: epicUtils.get,
+            rpc: epicUtils.rpc,
         },
     })
     const store = redux.createStore(reducers, composeEnhancers(redux.applyMiddleware(epicMiddleware)))
@@ -30,21 +34,3 @@ main()
 import { grpc, Code, Metadata } from 'grpc-web-client'
 import { GetSchemaParams, EthicsSchema } from './rpc/repository_pb'
 import { EthicsRepository } from './rpc/repository_pb_service'
-
-// console.log("trying grpc")
-
-// const schemaRequest = new GetSchemaParams()
-// grpc.invoke(EthicsRepository.GetSchema, {
-//     request: schemaRequest,
-//     host: 'https://localhost:8443',
-//     onMessage: (message: EthicsSchema) => {
-//         console.log("got schema: ", message.toObject());
-//     },
-//     onEnd: (code: Code, msg: string | undefined, trailers: Metadata) => {
-//         if (code == Code.OK) {
-//             console.log("all ok");
-//         } else {
-//             console.log("hit an error", code, msg, trailers);
-//         }
-//     },
-// })
