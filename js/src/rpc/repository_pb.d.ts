@@ -2,6 +2,89 @@
 // file: repository.proto
 
 import * as jspb from "google-protobuf";
+import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
+
+export class GetEditionsParams extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetEditionsParams.AsObject;
+  static toObject(includeInstance: boolean, msg: GetEditionsParams): GetEditionsParams.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetEditionsParams, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetEditionsParams;
+  static deserializeBinaryFromReader(message: GetEditionsParams, reader: jspb.BinaryReader): GetEditionsParams;
+}
+
+export namespace GetEditionsParams {
+  export type AsObject = {
+  }
+}
+
+export class Edition extends jspb.Message {
+  getTitle(): string;
+  setTitle(value: string): void;
+
+  getSlug(): string;
+  setSlug(value: string): void;
+
+  getEditor(): string;
+  setEditor(value: string): void;
+
+  getYear(): number;
+  setYear(value: number): void;
+
+  getLanguageCode(): string;
+  setLanguageCode(value: string): void;
+
+  getCreatedAt(): string;
+  setCreatedAt(value: string): void;
+
+  getUpdatedAt(): string;
+  setUpdatedAt(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Edition.AsObject;
+  static toObject(includeInstance: boolean, msg: Edition): Edition.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Edition, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Edition;
+  static deserializeBinaryFromReader(message: Edition, reader: jspb.BinaryReader): Edition;
+}
+
+export namespace Edition {
+  export type AsObject = {
+    title: string,
+    slug: string,
+    editor: string,
+    year: number,
+    languageCode: string,
+    createdAt: string,
+    updatedAt: string,
+  }
+}
+
+export class Editions extends jspb.Message {
+  clearDataList(): void;
+  getDataList(): Array<Edition>;
+  setDataList(value: Array<Edition>): void;
+  addData(value?: Edition, index?: number): Edition;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Editions.AsObject;
+  static toObject(includeInstance: boolean, msg: Editions): Editions.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Editions, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Editions;
+  static deserializeBinaryFromReader(message: Editions, reader: jspb.BinaryReader): Editions;
+}
+
+export namespace Editions {
+  export type AsObject = {
+    dataList: Array<Edition.AsObject>,
+  }
+}
 
 export class GetSchemaParams extends jspb.Message {
   serializeBinary(): Uint8Array;

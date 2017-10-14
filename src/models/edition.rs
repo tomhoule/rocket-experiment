@@ -78,6 +78,18 @@ impl Edition {
         delete(editions.find(uuid)).execute(conn)
     }
 
+    pub fn to_protobuf(self) -> ::rpc::repository::Edition {
+        let mut pb = ::rpc::repository::Edition::new();
+        pb.set_title(self.title);
+        pb.set_slug(self.slug);
+        pb.set_editor(self.editor);
+        pb.set_year(self.year);
+        pb.set_language_code(self.language_code);
+        pb.set_created_at(self.created_at.to_rfc3339());
+        pb.set_updated_at(self.updated_at.to_rfc3339());
+        pb
+    }
+
     pub fn update(
         uuid: Uuid,
         patch: EditionPatch,
@@ -90,6 +102,16 @@ impl Edition {
 }
 
 impl EditionNew {
+    pub fn from_protobuf(pb: ::rpc::repository::Edition) -> EditionNew {
+        EditionNew {
+            title: pb.title,
+            language_code: pb.language_code,
+            editor: pb.editor,
+            slug: pb.slug,
+            year: pb.year,
+        }
+    }
+
     pub fn save(&self, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
         use db::schema::editions::dsl::*;
         use diesel::*;

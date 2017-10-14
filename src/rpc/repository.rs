@@ -22,6 +22,783 @@ use protobuf::Message as Message_imported_for_functions;
 use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 
 #[derive(PartialEq,Clone,Default)]
+pub struct GetEditionsParams {
+    // special fields
+    unknown_fields: ::protobuf::UnknownFields,
+    cached_size: ::protobuf::CachedSize,
+}
+
+// see codegen.rs for the explanation why impl Sync explicitly
+unsafe impl ::std::marker::Sync for GetEditionsParams {}
+
+impl GetEditionsParams {
+    pub fn new() -> GetEditionsParams {
+        ::std::default::Default::default()
+    }
+
+    pub fn default_instance() -> &'static GetEditionsParams {
+        static mut instance: ::protobuf::lazy::Lazy<GetEditionsParams> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const GetEditionsParams,
+        };
+        unsafe {
+            instance.get(GetEditionsParams::new)
+        }
+    }
+}
+
+impl ::protobuf::Message for GetEditionsParams {
+    fn is_initialized(&self) -> bool {
+        true
+    }
+
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+        while !is.eof()? {
+            let (field_number, wire_type) = is.read_tag_unpack()?;
+            match field_number {
+                _ => {
+                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
+                },
+            };
+        }
+        ::std::result::Result::Ok(())
+    }
+
+    // Compute sizes of nested messages
+    #[allow(unused_variables)]
+    fn compute_size(&self) -> u32 {
+        let mut my_size = 0;
+        my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
+        self.cached_size.set(my_size);
+        my_size
+    }
+
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+        os.write_unknown_fields(self.get_unknown_fields())?;
+        ::std::result::Result::Ok(())
+    }
+
+    fn get_cached_size(&self) -> u32 {
+        self.cached_size.get()
+    }
+
+    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+        &self.unknown_fields
+    }
+
+    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+        &mut self.unknown_fields
+    }
+
+    fn as_any(&self) -> &::std::any::Any {
+        self as &::std::any::Any
+    }
+    fn as_any_mut(&mut self) -> &mut ::std::any::Any {
+        self as &mut ::std::any::Any
+    }
+    fn into_any(self: Box<Self>) -> ::std::boxed::Box<::std::any::Any> {
+        self
+    }
+
+    fn descriptor(&self) -> &'static ::protobuf::reflect::MessageDescriptor {
+        ::protobuf::MessageStatic::descriptor_static(None::<Self>)
+    }
+}
+
+impl ::protobuf::MessageStatic for GetEditionsParams {
+    fn new() -> GetEditionsParams {
+        GetEditionsParams::new()
+    }
+
+    fn descriptor_static(_: ::std::option::Option<GetEditionsParams>) -> &'static ::protobuf::reflect::MessageDescriptor {
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+        };
+        unsafe {
+            descriptor.get(|| {
+                let fields = ::std::vec::Vec::new();
+                ::protobuf::reflect::MessageDescriptor::new::<GetEditionsParams>(
+                    "GetEditionsParams",
+                    fields,
+                    file_descriptor_proto()
+                )
+            })
+        }
+    }
+}
+
+impl ::protobuf::Clear for GetEditionsParams {
+    fn clear(&mut self) {
+        self.unknown_fields.clear();
+    }
+}
+
+impl ::std::fmt::Debug for GetEditionsParams {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::protobuf::text_format::fmt(self, f)
+    }
+}
+
+impl ::protobuf::reflect::ProtobufValue for GetEditionsParams {
+    fn as_ref(&self) -> ::protobuf::reflect::ProtobufValueRef {
+        ::protobuf::reflect::ProtobufValueRef::Message(self)
+    }
+}
+
+#[derive(PartialEq,Clone,Default)]
+pub struct Edition {
+    // message fields
+    pub title: ::std::string::String,
+    pub slug: ::std::string::String,
+    pub editor: ::std::string::String,
+    pub year: i32,
+    pub language_code: ::std::string::String,
+    pub created_at: ::std::string::String,
+    pub updated_at: ::std::string::String,
+    // special fields
+    unknown_fields: ::protobuf::UnknownFields,
+    cached_size: ::protobuf::CachedSize,
+}
+
+// see codegen.rs for the explanation why impl Sync explicitly
+unsafe impl ::std::marker::Sync for Edition {}
+
+impl Edition {
+    pub fn new() -> Edition {
+        ::std::default::Default::default()
+    }
+
+    pub fn default_instance() -> &'static Edition {
+        static mut instance: ::protobuf::lazy::Lazy<Edition> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const Edition,
+        };
+        unsafe {
+            instance.get(Edition::new)
+        }
+    }
+
+    // string title = 1;
+
+    pub fn clear_title(&mut self) {
+        self.title.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_title(&mut self, v: ::std::string::String) {
+        self.title = v;
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_title(&mut self) -> &mut ::std::string::String {
+        &mut self.title
+    }
+
+    // Take field
+    pub fn take_title(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.title, ::std::string::String::new())
+    }
+
+    pub fn get_title(&self) -> &str {
+        &self.title
+    }
+
+    fn get_title_for_reflect(&self) -> &::std::string::String {
+        &self.title
+    }
+
+    fn mut_title_for_reflect(&mut self) -> &mut ::std::string::String {
+        &mut self.title
+    }
+
+    // string slug = 2;
+
+    pub fn clear_slug(&mut self) {
+        self.slug.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_slug(&mut self, v: ::std::string::String) {
+        self.slug = v;
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_slug(&mut self) -> &mut ::std::string::String {
+        &mut self.slug
+    }
+
+    // Take field
+    pub fn take_slug(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.slug, ::std::string::String::new())
+    }
+
+    pub fn get_slug(&self) -> &str {
+        &self.slug
+    }
+
+    fn get_slug_for_reflect(&self) -> &::std::string::String {
+        &self.slug
+    }
+
+    fn mut_slug_for_reflect(&mut self) -> &mut ::std::string::String {
+        &mut self.slug
+    }
+
+    // string editor = 3;
+
+    pub fn clear_editor(&mut self) {
+        self.editor.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_editor(&mut self, v: ::std::string::String) {
+        self.editor = v;
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_editor(&mut self) -> &mut ::std::string::String {
+        &mut self.editor
+    }
+
+    // Take field
+    pub fn take_editor(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.editor, ::std::string::String::new())
+    }
+
+    pub fn get_editor(&self) -> &str {
+        &self.editor
+    }
+
+    fn get_editor_for_reflect(&self) -> &::std::string::String {
+        &self.editor
+    }
+
+    fn mut_editor_for_reflect(&mut self) -> &mut ::std::string::String {
+        &mut self.editor
+    }
+
+    // int32 year = 4;
+
+    pub fn clear_year(&mut self) {
+        self.year = 0;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_year(&mut self, v: i32) {
+        self.year = v;
+    }
+
+    pub fn get_year(&self) -> i32 {
+        self.year
+    }
+
+    fn get_year_for_reflect(&self) -> &i32 {
+        &self.year
+    }
+
+    fn mut_year_for_reflect(&mut self) -> &mut i32 {
+        &mut self.year
+    }
+
+    // string language_code = 5;
+
+    pub fn clear_language_code(&mut self) {
+        self.language_code.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_language_code(&mut self, v: ::std::string::String) {
+        self.language_code = v;
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_language_code(&mut self) -> &mut ::std::string::String {
+        &mut self.language_code
+    }
+
+    // Take field
+    pub fn take_language_code(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.language_code, ::std::string::String::new())
+    }
+
+    pub fn get_language_code(&self) -> &str {
+        &self.language_code
+    }
+
+    fn get_language_code_for_reflect(&self) -> &::std::string::String {
+        &self.language_code
+    }
+
+    fn mut_language_code_for_reflect(&mut self) -> &mut ::std::string::String {
+        &mut self.language_code
+    }
+
+    // string created_at = 6;
+
+    pub fn clear_created_at(&mut self) {
+        self.created_at.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_created_at(&mut self, v: ::std::string::String) {
+        self.created_at = v;
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_created_at(&mut self) -> &mut ::std::string::String {
+        &mut self.created_at
+    }
+
+    // Take field
+    pub fn take_created_at(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.created_at, ::std::string::String::new())
+    }
+
+    pub fn get_created_at(&self) -> &str {
+        &self.created_at
+    }
+
+    fn get_created_at_for_reflect(&self) -> &::std::string::String {
+        &self.created_at
+    }
+
+    fn mut_created_at_for_reflect(&mut self) -> &mut ::std::string::String {
+        &mut self.created_at
+    }
+
+    // string updated_at = 7;
+
+    pub fn clear_updated_at(&mut self) {
+        self.updated_at.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_updated_at(&mut self, v: ::std::string::String) {
+        self.updated_at = v;
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_updated_at(&mut self) -> &mut ::std::string::String {
+        &mut self.updated_at
+    }
+
+    // Take field
+    pub fn take_updated_at(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.updated_at, ::std::string::String::new())
+    }
+
+    pub fn get_updated_at(&self) -> &str {
+        &self.updated_at
+    }
+
+    fn get_updated_at_for_reflect(&self) -> &::std::string::String {
+        &self.updated_at
+    }
+
+    fn mut_updated_at_for_reflect(&mut self) -> &mut ::std::string::String {
+        &mut self.updated_at
+    }
+}
+
+impl ::protobuf::Message for Edition {
+    fn is_initialized(&self) -> bool {
+        true
+    }
+
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+        while !is.eof()? {
+            let (field_number, wire_type) = is.read_tag_unpack()?;
+            match field_number {
+                1 => {
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.title)?;
+                },
+                2 => {
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.slug)?;
+                },
+                3 => {
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.editor)?;
+                },
+                4 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_int32()?;
+                    self.year = tmp;
+                },
+                5 => {
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.language_code)?;
+                },
+                6 => {
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.created_at)?;
+                },
+                7 => {
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.updated_at)?;
+                },
+                _ => {
+                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
+                },
+            };
+        }
+        ::std::result::Result::Ok(())
+    }
+
+    // Compute sizes of nested messages
+    #[allow(unused_variables)]
+    fn compute_size(&self) -> u32 {
+        let mut my_size = 0;
+        if !self.title.is_empty() {
+            my_size += ::protobuf::rt::string_size(1, &self.title);
+        }
+        if !self.slug.is_empty() {
+            my_size += ::protobuf::rt::string_size(2, &self.slug);
+        }
+        if !self.editor.is_empty() {
+            my_size += ::protobuf::rt::string_size(3, &self.editor);
+        }
+        if self.year != 0 {
+            my_size += ::protobuf::rt::value_size(4, self.year, ::protobuf::wire_format::WireTypeVarint);
+        }
+        if !self.language_code.is_empty() {
+            my_size += ::protobuf::rt::string_size(5, &self.language_code);
+        }
+        if !self.created_at.is_empty() {
+            my_size += ::protobuf::rt::string_size(6, &self.created_at);
+        }
+        if !self.updated_at.is_empty() {
+            my_size += ::protobuf::rt::string_size(7, &self.updated_at);
+        }
+        my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
+        self.cached_size.set(my_size);
+        my_size
+    }
+
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+        if !self.title.is_empty() {
+            os.write_string(1, &self.title)?;
+        }
+        if !self.slug.is_empty() {
+            os.write_string(2, &self.slug)?;
+        }
+        if !self.editor.is_empty() {
+            os.write_string(3, &self.editor)?;
+        }
+        if self.year != 0 {
+            os.write_int32(4, self.year)?;
+        }
+        if !self.language_code.is_empty() {
+            os.write_string(5, &self.language_code)?;
+        }
+        if !self.created_at.is_empty() {
+            os.write_string(6, &self.created_at)?;
+        }
+        if !self.updated_at.is_empty() {
+            os.write_string(7, &self.updated_at)?;
+        }
+        os.write_unknown_fields(self.get_unknown_fields())?;
+        ::std::result::Result::Ok(())
+    }
+
+    fn get_cached_size(&self) -> u32 {
+        self.cached_size.get()
+    }
+
+    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+        &self.unknown_fields
+    }
+
+    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+        &mut self.unknown_fields
+    }
+
+    fn as_any(&self) -> &::std::any::Any {
+        self as &::std::any::Any
+    }
+    fn as_any_mut(&mut self) -> &mut ::std::any::Any {
+        self as &mut ::std::any::Any
+    }
+    fn into_any(self: Box<Self>) -> ::std::boxed::Box<::std::any::Any> {
+        self
+    }
+
+    fn descriptor(&self) -> &'static ::protobuf::reflect::MessageDescriptor {
+        ::protobuf::MessageStatic::descriptor_static(None::<Self>)
+    }
+}
+
+impl ::protobuf::MessageStatic for Edition {
+    fn new() -> Edition {
+        Edition::new()
+    }
+
+    fn descriptor_static(_: ::std::option::Option<Edition>) -> &'static ::protobuf::reflect::MessageDescriptor {
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+        };
+        unsafe {
+            descriptor.get(|| {
+                let mut fields = ::std::vec::Vec::new();
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                    "title",
+                    Edition::get_title_for_reflect,
+                    Edition::mut_title_for_reflect,
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                    "slug",
+                    Edition::get_slug_for_reflect,
+                    Edition::mut_slug_for_reflect,
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                    "editor",
+                    Edition::get_editor_for_reflect,
+                    Edition::mut_editor_for_reflect,
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                    "year",
+                    Edition::get_year_for_reflect,
+                    Edition::mut_year_for_reflect,
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                    "language_code",
+                    Edition::get_language_code_for_reflect,
+                    Edition::mut_language_code_for_reflect,
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                    "created_at",
+                    Edition::get_created_at_for_reflect,
+                    Edition::mut_created_at_for_reflect,
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                    "updated_at",
+                    Edition::get_updated_at_for_reflect,
+                    Edition::mut_updated_at_for_reflect,
+                ));
+                ::protobuf::reflect::MessageDescriptor::new::<Edition>(
+                    "Edition",
+                    fields,
+                    file_descriptor_proto()
+                )
+            })
+        }
+    }
+}
+
+impl ::protobuf::Clear for Edition {
+    fn clear(&mut self) {
+        self.clear_title();
+        self.clear_slug();
+        self.clear_editor();
+        self.clear_year();
+        self.clear_language_code();
+        self.clear_created_at();
+        self.clear_updated_at();
+        self.unknown_fields.clear();
+    }
+}
+
+impl ::std::fmt::Debug for Edition {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::protobuf::text_format::fmt(self, f)
+    }
+}
+
+impl ::protobuf::reflect::ProtobufValue for Edition {
+    fn as_ref(&self) -> ::protobuf::reflect::ProtobufValueRef {
+        ::protobuf::reflect::ProtobufValueRef::Message(self)
+    }
+}
+
+#[derive(PartialEq,Clone,Default)]
+pub struct Editions {
+    // message fields
+    pub data: ::protobuf::RepeatedField<Edition>,
+    // special fields
+    unknown_fields: ::protobuf::UnknownFields,
+    cached_size: ::protobuf::CachedSize,
+}
+
+// see codegen.rs for the explanation why impl Sync explicitly
+unsafe impl ::std::marker::Sync for Editions {}
+
+impl Editions {
+    pub fn new() -> Editions {
+        ::std::default::Default::default()
+    }
+
+    pub fn default_instance() -> &'static Editions {
+        static mut instance: ::protobuf::lazy::Lazy<Editions> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const Editions,
+        };
+        unsafe {
+            instance.get(Editions::new)
+        }
+    }
+
+    // repeated .Edition data = 1;
+
+    pub fn clear_data(&mut self) {
+        self.data.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_data(&mut self, v: ::protobuf::RepeatedField<Edition>) {
+        self.data = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_data(&mut self) -> &mut ::protobuf::RepeatedField<Edition> {
+        &mut self.data
+    }
+
+    // Take field
+    pub fn take_data(&mut self) -> ::protobuf::RepeatedField<Edition> {
+        ::std::mem::replace(&mut self.data, ::protobuf::RepeatedField::new())
+    }
+
+    pub fn get_data(&self) -> &[Edition] {
+        &self.data
+    }
+
+    fn get_data_for_reflect(&self) -> &::protobuf::RepeatedField<Edition> {
+        &self.data
+    }
+
+    fn mut_data_for_reflect(&mut self) -> &mut ::protobuf::RepeatedField<Edition> {
+        &mut self.data
+    }
+}
+
+impl ::protobuf::Message for Editions {
+    fn is_initialized(&self) -> bool {
+        for v in &self.data {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
+        true
+    }
+
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+        while !is.eof()? {
+            let (field_number, wire_type) = is.read_tag_unpack()?;
+            match field_number {
+                1 => {
+                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.data)?;
+                },
+                _ => {
+                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
+                },
+            };
+        }
+        ::std::result::Result::Ok(())
+    }
+
+    // Compute sizes of nested messages
+    #[allow(unused_variables)]
+    fn compute_size(&self) -> u32 {
+        let mut my_size = 0;
+        for value in &self.data {
+            let len = value.compute_size();
+            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        };
+        my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
+        self.cached_size.set(my_size);
+        my_size
+    }
+
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+        for v in &self.data {
+            os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
+        };
+        os.write_unknown_fields(self.get_unknown_fields())?;
+        ::std::result::Result::Ok(())
+    }
+
+    fn get_cached_size(&self) -> u32 {
+        self.cached_size.get()
+    }
+
+    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+        &self.unknown_fields
+    }
+
+    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+        &mut self.unknown_fields
+    }
+
+    fn as_any(&self) -> &::std::any::Any {
+        self as &::std::any::Any
+    }
+    fn as_any_mut(&mut self) -> &mut ::std::any::Any {
+        self as &mut ::std::any::Any
+    }
+    fn into_any(self: Box<Self>) -> ::std::boxed::Box<::std::any::Any> {
+        self
+    }
+
+    fn descriptor(&self) -> &'static ::protobuf::reflect::MessageDescriptor {
+        ::protobuf::MessageStatic::descriptor_static(None::<Self>)
+    }
+}
+
+impl ::protobuf::MessageStatic for Editions {
+    fn new() -> Editions {
+        Editions::new()
+    }
+
+    fn descriptor_static(_: ::std::option::Option<Editions>) -> &'static ::protobuf::reflect::MessageDescriptor {
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+        };
+        unsafe {
+            descriptor.get(|| {
+                let mut fields = ::std::vec::Vec::new();
+                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<Edition>>(
+                    "data",
+                    Editions::get_data_for_reflect,
+                    Editions::mut_data_for_reflect,
+                ));
+                ::protobuf::reflect::MessageDescriptor::new::<Editions>(
+                    "Editions",
+                    fields,
+                    file_descriptor_proto()
+                )
+            })
+        }
+    }
+}
+
+impl ::protobuf::Clear for Editions {
+    fn clear(&mut self) {
+        self.clear_data();
+        self.unknown_fields.clear();
+    }
+}
+
+impl ::std::fmt::Debug for Editions {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::protobuf::text_format::fmt(self, f)
+    }
+}
+
+impl ::protobuf::reflect::ProtobufValue for Editions {
+    fn as_ref(&self) -> ::protobuf::reflect::ProtobufValueRef {
+        ::protobuf::reflect::ProtobufValueRef::Message(self)
+    }
+}
+
+#[derive(PartialEq,Clone,Default)]
 pub struct GetSchemaParams {
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
@@ -779,87 +1556,132 @@ impl ::protobuf::reflect::ProtobufValue for EthicsSchema_NodeType {
 }
 
 static file_descriptor_proto_data: &'static [u8] = b"\
-    \n\x10repository.proto\"\x11\n\x0fGetSchemaParams\"\xdc\x03\n\x0cEthicsS\
-    chema\x12(\n\x05parts\x18\x01\x20\x03(\x0b2\x12.EthicsSchema.NodeR\x05pa\
-    rts\x1a\xa5\x01\n\x04Node\x123\n\tnode_type\x18\x01\x20\x01(\x0e2\x16.Et\
-    hicsSchema.NodeTypeR\x08nodeType\x12\x12\n\x03num\x18\x02\x20\x01(\x05H\
-    \0R\x03num\x12\x16\n\x05title\x18\x03\x20\x01(\tH\0R\x05title\x12.\n\x08\
-    children\x18\x04\x20\x03(\x0b2\x12.EthicsSchema.NodeR\x08childrenB\x0c\n\
-    \nidentifier\"\xf9\x01\n\x08NodeType\x12\x0f\n\x0bUNSPECIFIED\x10\0\x12\
-    \x16\n\x12ANONYMOUS_FRAGMENT\x10\x01\x12\n\n\x06ALITER\x10\x02\x12\r\n\t\
-    APPENDINX\x10\x03\x12\n\n\x06AXIOMA\x10\x04\x12\t\n\x05CAPUT\x10\x05\x12\
-    \x0f\n\x0bCOROLLARIUM\x10\x06\x12\r\n\tDEFINITIO\x10\x07\x12\x10\n\x0cDE\
-    MONSTRATIO\x10\x08\x12\x0e\n\nEXPLICATIO\x10\t\x12\t\n\x05LEMMA\x10\x0b\
-    \x12\x08\n\x04PARS\x10\x0c\x12\x0e\n\nPOSTULATUM\x10\r\x12\r\n\tPRAEFATI\
-    O\x10\x0e\x12\x0e\n\nPROPOSITIO\x10\x0f\x12\x0c\n\x08SCHOLIUM\x10\x102B\
-    \n\x10EthicsRepository\x12.\n\tGetSchema\x12\x10.GetSchemaParams\x1a\r.E\
-    thicsSchema\"\0J\xe2\n\n\x06\x12\x04\0\0'\x01\n\x08\n\x01\x0c\x12\x03\0\
-    \0\x12\n\n\n\x02\x06\0\x12\x04\x02\0\x04\x01\n\n\n\x03\x06\0\x01\x12\x03\
-    \x02\x08\x18\n\x0b\n\x04\x06\0\x02\0\x12\x03\x03\x04=\n\x0c\n\x05\x06\0\
-    \x02\0\x01\x12\x03\x03\x08\x11\n\x0c\n\x05\x06\0\x02\0\x02\x12\x03\x03\
-    \x13\"\n\x0c\n\x05\x06\0\x02\0\x03\x12\x03\x03-9\n\t\n\x02\x04\0\x12\x03\
-    \x06\0\x1a\n\n\n\x03\x04\0\x01\x12\x03\x06\x08\x17\n\n\n\x02\x04\x01\x12\
-    \x04\x08\0'\x01\n\n\n\x03\x04\x01\x01\x12\x03\x08\x08\x14\n\x0c\n\x04\
-    \x04\x01\x04\0\x12\x04\t\x04\x1a\x05\n\x0c\n\x05\x04\x01\x04\0\x01\x12\
-    \x03\t\t\x11\n\r\n\x06\x04\x01\x04\0\x02\0\x12\x03\n\x08\x18\n\x0e\n\x07\
-    \x04\x01\x04\0\x02\0\x01\x12\x03\n\x08\x13\n\x0e\n\x07\x04\x01\x04\0\x02\
-    \0\x02\x12\x03\n\x16\x17\n\r\n\x06\x04\x01\x04\0\x02\x01\x12\x03\x0b\x08\
-    \x1f\n\x0e\n\x07\x04\x01\x04\0\x02\x01\x01\x12\x03\x0b\x08\x1a\n\x0e\n\
-    \x07\x04\x01\x04\0\x02\x01\x02\x12\x03\x0b\x1d\x1e\n\r\n\x06\x04\x01\x04\
-    \0\x02\x02\x12\x03\x0c\x08\x13\n\x0e\n\x07\x04\x01\x04\0\x02\x02\x01\x12\
-    \x03\x0c\x08\x0e\n\x0e\n\x07\x04\x01\x04\0\x02\x02\x02\x12\x03\x0c\x11\
-    \x12\n\r\n\x06\x04\x01\x04\0\x02\x03\x12\x03\r\x08\x16\n\x0e\n\x07\x04\
-    \x01\x04\0\x02\x03\x01\x12\x03\r\x08\x11\n\x0e\n\x07\x04\x01\x04\0\x02\
-    \x03\x02\x12\x03\r\x14\x15\n\r\n\x06\x04\x01\x04\0\x02\x04\x12\x03\x0e\
-    \x08\x13\n\x0e\n\x07\x04\x01\x04\0\x02\x04\x01\x12\x03\x0e\x08\x0e\n\x0e\
-    \n\x07\x04\x01\x04\0\x02\x04\x02\x12\x03\x0e\x11\x12\n\r\n\x06\x04\x01\
-    \x04\0\x02\x05\x12\x03\x0f\x08\x12\n\x0e\n\x07\x04\x01\x04\0\x02\x05\x01\
-    \x12\x03\x0f\x08\r\n\x0e\n\x07\x04\x01\x04\0\x02\x05\x02\x12\x03\x0f\x10\
-    \x11\n\r\n\x06\x04\x01\x04\0\x02\x06\x12\x03\x10\x08\x18\n\x0e\n\x07\x04\
-    \x01\x04\0\x02\x06\x01\x12\x03\x10\x08\x13\n\x0e\n\x07\x04\x01\x04\0\x02\
-    \x06\x02\x12\x03\x10\x16\x17\n\r\n\x06\x04\x01\x04\0\x02\x07\x12\x03\x11\
-    \x08\x16\n\x0e\n\x07\x04\x01\x04\0\x02\x07\x01\x12\x03\x11\x08\x11\n\x0e\
-    \n\x07\x04\x01\x04\0\x02\x07\x02\x12\x03\x11\x14\x15\n\r\n\x06\x04\x01\
-    \x04\0\x02\x08\x12\x03\x12\x08\x19\n\x0e\n\x07\x04\x01\x04\0\x02\x08\x01\
-    \x12\x03\x12\x08\x14\n\x0e\n\x07\x04\x01\x04\0\x02\x08\x02\x12\x03\x12\
-    \x17\x18\n\r\n\x06\x04\x01\x04\0\x02\t\x12\x03\x13\x08\x17\n\x0e\n\x07\
-    \x04\x01\x04\0\x02\t\x01\x12\x03\x13\x08\x12\n\x0e\n\x07\x04\x01\x04\0\
-    \x02\t\x02\x12\x03\x13\x15\x16\n\r\n\x06\x04\x01\x04\0\x02\n\x12\x03\x14\
-    \x08\x13\n\x0e\n\x07\x04\x01\x04\0\x02\n\x01\x12\x03\x14\x08\r\n\x0e\n\
-    \x07\x04\x01\x04\0\x02\n\x02\x12\x03\x14\x10\x12\n\r\n\x06\x04\x01\x04\0\
-    \x02\x0b\x12\x03\x15\x08\x12\n\x0e\n\x07\x04\x01\x04\0\x02\x0b\x01\x12\
-    \x03\x15\x08\x0c\n\x0e\n\x07\x04\x01\x04\0\x02\x0b\x02\x12\x03\x15\x0f\
-    \x11\n\r\n\x06\x04\x01\x04\0\x02\x0c\x12\x03\x16\x08\x18\n\x0e\n\x07\x04\
-    \x01\x04\0\x02\x0c\x01\x12\x03\x16\x08\x12\n\x0e\n\x07\x04\x01\x04\0\x02\
-    \x0c\x02\x12\x03\x16\x15\x17\n\r\n\x06\x04\x01\x04\0\x02\r\x12\x03\x17\
-    \x08\x17\n\x0e\n\x07\x04\x01\x04\0\x02\r\x01\x12\x03\x17\x08\x11\n\x0e\n\
-    \x07\x04\x01\x04\0\x02\r\x02\x12\x03\x17\x14\x16\n\r\n\x06\x04\x01\x04\0\
-    \x02\x0e\x12\x03\x18\x08\x18\n\x0e\n\x07\x04\x01\x04\0\x02\x0e\x01\x12\
-    \x03\x18\x08\x12\n\x0e\n\x07\x04\x01\x04\0\x02\x0e\x02\x12\x03\x18\x15\
-    \x17\n\r\n\x06\x04\x01\x04\0\x02\x0f\x12\x03\x19\x08\x16\n\x0e\n\x07\x04\
-    \x01\x04\0\x02\x0f\x01\x12\x03\x19\x08\x10\n\x0e\n\x07\x04\x01\x04\0\x02\
-    \x0f\x02\x12\x03\x19\x13\x15\n\x0c\n\x04\x04\x01\x03\0\x12\x04\x1c\x04$\
-    \x05\n\x0c\n\x05\x04\x01\x03\0\x01\x12\x03\x1c\x0c\x10\n\r\n\x06\x04\x01\
-    \x03\0\x02\0\x12\x03\x1d\x08\x1f\n\x0f\n\x07\x04\x01\x03\0\x02\0\x04\x12\
-    \x04\x1d\x08\x1c\x12\n\x0e\n\x07\x04\x01\x03\0\x02\0\x06\x12\x03\x1d\x08\
-    \x10\n\x0e\n\x07\x04\x01\x03\0\x02\0\x01\x12\x03\x1d\x11\x1a\n\x0e\n\x07\
-    \x04\x01\x03\0\x02\0\x03\x12\x03\x1d\x1d\x1e\n\x0e\n\x06\x04\x01\x03\0\
-    \x08\0\x12\x04\x1e\x08!\t\n\x0e\n\x07\x04\x01\x03\0\x08\0\x01\x12\x03\
-    \x1e\x0e\x18\n'\n\x06\x04\x01\x03\0\x02\x01\x12\x03\x1f\x0c\x1a\"\x18\
-    \x20for\x20numbered\x20fragments\n\n\x0e\n\x07\x04\x01\x03\0\x02\x01\x05\
-    \x12\x03\x1f\x0c\x11\n\x0e\n\x07\x04\x01\x03\0\x02\x01\x01\x12\x03\x1f\
-    \x12\x15\n\x0e\n\x07\x04\x01\x03\0\x02\x01\x03\x12\x03\x1f\x18\x19\n\x1b\
-    \n\x06\x04\x01\x03\0\x02\x02\x12\x03\x20\x0c\x1d\"\x0c\x20for\x20scopes\
-    \n\n\x0e\n\x07\x04\x01\x03\0\x02\x02\x05\x12\x03\x20\x0c\x12\n\x0e\n\x07\
-    \x04\x01\x03\0\x02\x02\x01\x12\x03\x20\x13\x18\n\x0e\n\x07\x04\x01\x03\0\
-    \x02\x02\x03\x12\x03\x20\x1b\x1c\n\r\n\x06\x04\x01\x03\0\x02\x03\x12\x03\
-    \"\x08#\n\x0e\n\x07\x04\x01\x03\0\x02\x03\x04\x12\x03\"\x08\x10\n\x0e\n\
-    \x07\x04\x01\x03\0\x02\x03\x06\x12\x03\"\x11\x15\n\x0e\n\x07\x04\x01\x03\
-    \0\x02\x03\x01\x12\x03\"\x16\x1e\n\x0e\n\x07\x04\x01\x03\0\x02\x03\x03\
-    \x12\x03\"!\"\n\x0b\n\x04\x04\x01\x02\0\x12\x03&\x04\x1c\n\x0c\n\x05\x04\
-    \x01\x02\0\x04\x12\x03&\x04\x0c\n\x0c\n\x05\x04\x01\x02\0\x06\x12\x03&\r\
-    \x11\n\x0c\n\x05\x04\x01\x02\0\x01\x12\x03&\x12\x17\n\x0c\n\x05\x04\x01\
-    \x02\0\x03\x12\x03&\x1a\x1bb\x06proto3\
+    \n\x10repository.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x13\n\
+    \x11GetEditionsParams\"\xc2\x01\n\x07Edition\x12\x14\n\x05title\x18\x01\
+    \x20\x01(\tR\x05title\x12\x12\n\x04slug\x18\x02\x20\x01(\tR\x04slug\x12\
+    \x16\n\x06editor\x18\x03\x20\x01(\tR\x06editor\x12\x12\n\x04year\x18\x04\
+    \x20\x01(\x05R\x04year\x12#\n\rlanguage_code\x18\x05\x20\x01(\tR\x0clang\
+    uageCode\x12\x1d\n\ncreated_at\x18\x06\x20\x01(\tR\tcreatedAt\x12\x1d\n\
+    \nupdated_at\x18\x07\x20\x01(\tR\tupdatedAt\"(\n\x08Editions\x12\x1c\n\
+    \x04data\x18\x01\x20\x03(\x0b2\x08.EditionR\x04data\"\x11\n\x0fGetSchema\
+    Params\"\xdc\x03\n\x0cEthicsSchema\x12(\n\x05parts\x18\x01\x20\x03(\x0b2\
+    \x12.EthicsSchema.NodeR\x05parts\x1a\xa5\x01\n\x04Node\x123\n\tnode_type\
+    \x18\x01\x20\x01(\x0e2\x16.EthicsSchema.NodeTypeR\x08nodeType\x12\x12\n\
+    \x03num\x18\x02\x20\x01(\x05H\0R\x03num\x12\x16\n\x05title\x18\x03\x20\
+    \x01(\tH\0R\x05title\x12.\n\x08children\x18\x04\x20\x03(\x0b2\x12.Ethics\
+    Schema.NodeR\x08childrenB\x0c\n\nidentifier\"\xf9\x01\n\x08NodeType\x12\
+    \x0f\n\x0bUNSPECIFIED\x10\0\x12\x16\n\x12ANONYMOUS_FRAGMENT\x10\x01\x12\
+    \n\n\x06ALITER\x10\x02\x12\r\n\tAPPENDINX\x10\x03\x12\n\n\x06AXIOMA\x10\
+    \x04\x12\t\n\x05CAPUT\x10\x05\x12\x0f\n\x0bCOROLLARIUM\x10\x06\x12\r\n\t\
+    DEFINITIO\x10\x07\x12\x10\n\x0cDEMONSTRATIO\x10\x08\x12\x0e\n\nEXPLICATI\
+    O\x10\t\x12\t\n\x05LEMMA\x10\x0b\x12\x08\n\x04PARS\x10\x0c\x12\x0e\n\nPO\
+    STULATUM\x10\r\x12\r\n\tPRAEFATIO\x10\x0e\x12\x0e\n\nPROPOSITIO\x10\x0f\
+    \x12\x0c\n\x08SCHOLIUM\x10\x102\x93\x01\n\x10EthicsRepository\x12,\n\tGe\
+    tSchema\x12\x10.GetSchemaParams\x1a\r.EthicsSchema\x12,\n\x0bGetEditions\
+    \x12\x12.GetEditionsParams\x1a\t.Editions\x12#\n\rCreateEdition\x12\x08.\
+    Edition\x1a\x08.EditionJ\xd1\x10\n\x06\x12\x04\0\0;\x01\n\x08\n\x01\x0c\
+    \x12\x03\0\0\x12\n\t\n\x02\x03\0\x12\x03\x02\x07(\n\n\n\x02\x06\0\x12\
+    \x04\x04\0\x08\x01\n\n\n\x03\x06\0\x01\x12\x03\x04\x08\x18\n\x0b\n\x04\
+    \x06\0\x02\0\x12\x03\x05\x04;\n\x0c\n\x05\x06\0\x02\0\x01\x12\x03\x05\
+    \x08\x11\n\x0c\n\x05\x06\0\x02\0\x02\x12\x03\x05\x13\"\n\x0c\n\x05\x06\0\
+    \x02\0\x03\x12\x03\x05-9\n\x0b\n\x04\x06\0\x02\x01\x12\x03\x06\x04;\n\
+    \x0c\n\x05\x06\0\x02\x01\x01\x12\x03\x06\x08\x13\n\x0c\n\x05\x06\0\x02\
+    \x01\x02\x12\x03\x06\x15&\n\x0c\n\x05\x06\0\x02\x01\x03\x12\x03\x0619\n\
+    \x0b\n\x04\x06\0\x02\x02\x12\x03\x07\x042\n\x0c\n\x05\x06\0\x02\x02\x01\
+    \x12\x03\x07\x08\x15\n\x0c\n\x05\x06\0\x02\x02\x02\x12\x03\x07\x17\x1e\n\
+    \x0c\n\x05\x06\0\x02\x02\x03\x12\x03\x07)0\n\t\n\x02\x04\0\x12\x03\n\0\
+    \x1c\n\n\n\x03\x04\0\x01\x12\x03\n\x08\x19\n\n\n\x02\x04\x01\x12\x04\x0c\
+    \0\x14\x01\n\n\n\x03\x04\x01\x01\x12\x03\x0c\x08\x0f\n\x0b\n\x04\x04\x01\
+    \x02\0\x12\x03\r\x04\x15\n\r\n\x05\x04\x01\x02\0\x04\x12\x04\r\x04\x0c\
+    \x11\n\x0c\n\x05\x04\x01\x02\0\x05\x12\x03\r\x04\n\n\x0c\n\x05\x04\x01\
+    \x02\0\x01\x12\x03\r\x0b\x10\n\x0c\n\x05\x04\x01\x02\0\x03\x12\x03\r\x13\
+    \x14\n\x0b\n\x04\x04\x01\x02\x01\x12\x03\x0e\x04\x14\n\r\n\x05\x04\x01\
+    \x02\x01\x04\x12\x04\x0e\x04\r\x15\n\x0c\n\x05\x04\x01\x02\x01\x05\x12\
+    \x03\x0e\x04\n\n\x0c\n\x05\x04\x01\x02\x01\x01\x12\x03\x0e\x0b\x0f\n\x0c\
+    \n\x05\x04\x01\x02\x01\x03\x12\x03\x0e\x12\x13\n\x0b\n\x04\x04\x01\x02\
+    \x02\x12\x03\x0f\x04\x16\n\r\n\x05\x04\x01\x02\x02\x04\x12\x04\x0f\x04\
+    \x0e\x14\n\x0c\n\x05\x04\x01\x02\x02\x05\x12\x03\x0f\x04\n\n\x0c\n\x05\
+    \x04\x01\x02\x02\x01\x12\x03\x0f\x0b\x11\n\x0c\n\x05\x04\x01\x02\x02\x03\
+    \x12\x03\x0f\x14\x15\n\x0b\n\x04\x04\x01\x02\x03\x12\x03\x10\x04\x13\n\r\
+    \n\x05\x04\x01\x02\x03\x04\x12\x04\x10\x04\x0f\x16\n\x0c\n\x05\x04\x01\
+    \x02\x03\x05\x12\x03\x10\x04\t\n\x0c\n\x05\x04\x01\x02\x03\x01\x12\x03\
+    \x10\n\x0e\n\x0c\n\x05\x04\x01\x02\x03\x03\x12\x03\x10\x11\x12\n\x0b\n\
+    \x04\x04\x01\x02\x04\x12\x03\x11\x04\x1d\n\r\n\x05\x04\x01\x02\x04\x04\
+    \x12\x04\x11\x04\x10\x13\n\x0c\n\x05\x04\x01\x02\x04\x05\x12\x03\x11\x04\
+    \n\n\x0c\n\x05\x04\x01\x02\x04\x01\x12\x03\x11\x0b\x18\n\x0c\n\x05\x04\
+    \x01\x02\x04\x03\x12\x03\x11\x1b\x1c\n\x0b\n\x04\x04\x01\x02\x05\x12\x03\
+    \x12\x04\x1a\n\r\n\x05\x04\x01\x02\x05\x04\x12\x04\x12\x04\x11\x1d\n\x0c\
+    \n\x05\x04\x01\x02\x05\x05\x12\x03\x12\x04\n\n\x0c\n\x05\x04\x01\x02\x05\
+    \x01\x12\x03\x12\x0b\x15\n\x0c\n\x05\x04\x01\x02\x05\x03\x12\x03\x12\x18\
+    \x19\n\x0b\n\x04\x04\x01\x02\x06\x12\x03\x13\x04\x1a\n\r\n\x05\x04\x01\
+    \x02\x06\x04\x12\x04\x13\x04\x12\x1a\n\x0c\n\x05\x04\x01\x02\x06\x05\x12\
+    \x03\x13\x04\n\n\x0c\n\x05\x04\x01\x02\x06\x01\x12\x03\x13\x0b\x15\n\x0c\
+    \n\x05\x04\x01\x02\x06\x03\x12\x03\x13\x18\x19\n\n\n\x02\x04\x02\x12\x04\
+    \x16\0\x18\x01\n\n\n\x03\x04\x02\x01\x12\x03\x16\x08\x10\n\x0b\n\x04\x04\
+    \x02\x02\0\x12\x03\x17\x04\x1e\n\x0c\n\x05\x04\x02\x02\0\x04\x12\x03\x17\
+    \x04\x0c\n\x0c\n\x05\x04\x02\x02\0\x06\x12\x03\x17\r\x14\n\x0c\n\x05\x04\
+    \x02\x02\0\x01\x12\x03\x17\x15\x19\n\x0c\n\x05\x04\x02\x02\0\x03\x12\x03\
+    \x17\x1c\x1d\n\t\n\x02\x04\x03\x12\x03\x1a\0\x1a\n\n\n\x03\x04\x03\x01\
+    \x12\x03\x1a\x08\x17\n\n\n\x02\x04\x04\x12\x04\x1c\0;\x01\n\n\n\x03\x04\
+    \x04\x01\x12\x03\x1c\x08\x14\n\x0c\n\x04\x04\x04\x04\0\x12\x04\x1d\x04.\
+    \x05\n\x0c\n\x05\x04\x04\x04\0\x01\x12\x03\x1d\t\x11\n\r\n\x06\x04\x04\
+    \x04\0\x02\0\x12\x03\x1e\x08\x18\n\x0e\n\x07\x04\x04\x04\0\x02\0\x01\x12\
+    \x03\x1e\x08\x13\n\x0e\n\x07\x04\x04\x04\0\x02\0\x02\x12\x03\x1e\x16\x17\
+    \n\r\n\x06\x04\x04\x04\0\x02\x01\x12\x03\x1f\x08\x1f\n\x0e\n\x07\x04\x04\
+    \x04\0\x02\x01\x01\x12\x03\x1f\x08\x1a\n\x0e\n\x07\x04\x04\x04\0\x02\x01\
+    \x02\x12\x03\x1f\x1d\x1e\n\r\n\x06\x04\x04\x04\0\x02\x02\x12\x03\x20\x08\
+    \x13\n\x0e\n\x07\x04\x04\x04\0\x02\x02\x01\x12\x03\x20\x08\x0e\n\x0e\n\
+    \x07\x04\x04\x04\0\x02\x02\x02\x12\x03\x20\x11\x12\n\r\n\x06\x04\x04\x04\
+    \0\x02\x03\x12\x03!\x08\x16\n\x0e\n\x07\x04\x04\x04\0\x02\x03\x01\x12\
+    \x03!\x08\x11\n\x0e\n\x07\x04\x04\x04\0\x02\x03\x02\x12\x03!\x14\x15\n\r\
+    \n\x06\x04\x04\x04\0\x02\x04\x12\x03\"\x08\x13\n\x0e\n\x07\x04\x04\x04\0\
+    \x02\x04\x01\x12\x03\"\x08\x0e\n\x0e\n\x07\x04\x04\x04\0\x02\x04\x02\x12\
+    \x03\"\x11\x12\n\r\n\x06\x04\x04\x04\0\x02\x05\x12\x03#\x08\x12\n\x0e\n\
+    \x07\x04\x04\x04\0\x02\x05\x01\x12\x03#\x08\r\n\x0e\n\x07\x04\x04\x04\0\
+    \x02\x05\x02\x12\x03#\x10\x11\n\r\n\x06\x04\x04\x04\0\x02\x06\x12\x03$\
+    \x08\x18\n\x0e\n\x07\x04\x04\x04\0\x02\x06\x01\x12\x03$\x08\x13\n\x0e\n\
+    \x07\x04\x04\x04\0\x02\x06\x02\x12\x03$\x16\x17\n\r\n\x06\x04\x04\x04\0\
+    \x02\x07\x12\x03%\x08\x16\n\x0e\n\x07\x04\x04\x04\0\x02\x07\x01\x12\x03%\
+    \x08\x11\n\x0e\n\x07\x04\x04\x04\0\x02\x07\x02\x12\x03%\x14\x15\n\r\n\
+    \x06\x04\x04\x04\0\x02\x08\x12\x03&\x08\x19\n\x0e\n\x07\x04\x04\x04\0\
+    \x02\x08\x01\x12\x03&\x08\x14\n\x0e\n\x07\x04\x04\x04\0\x02\x08\x02\x12\
+    \x03&\x17\x18\n\r\n\x06\x04\x04\x04\0\x02\t\x12\x03'\x08\x17\n\x0e\n\x07\
+    \x04\x04\x04\0\x02\t\x01\x12\x03'\x08\x12\n\x0e\n\x07\x04\x04\x04\0\x02\
+    \t\x02\x12\x03'\x15\x16\n\r\n\x06\x04\x04\x04\0\x02\n\x12\x03(\x08\x13\n\
+    \x0e\n\x07\x04\x04\x04\0\x02\n\x01\x12\x03(\x08\r\n\x0e\n\x07\x04\x04\
+    \x04\0\x02\n\x02\x12\x03(\x10\x12\n\r\n\x06\x04\x04\x04\0\x02\x0b\x12\
+    \x03)\x08\x12\n\x0e\n\x07\x04\x04\x04\0\x02\x0b\x01\x12\x03)\x08\x0c\n\
+    \x0e\n\x07\x04\x04\x04\0\x02\x0b\x02\x12\x03)\x0f\x11\n\r\n\x06\x04\x04\
+    \x04\0\x02\x0c\x12\x03*\x08\x18\n\x0e\n\x07\x04\x04\x04\0\x02\x0c\x01\
+    \x12\x03*\x08\x12\n\x0e\n\x07\x04\x04\x04\0\x02\x0c\x02\x12\x03*\x15\x17\
+    \n\r\n\x06\x04\x04\x04\0\x02\r\x12\x03+\x08\x17\n\x0e\n\x07\x04\x04\x04\
+    \0\x02\r\x01\x12\x03+\x08\x11\n\x0e\n\x07\x04\x04\x04\0\x02\r\x02\x12\
+    \x03+\x14\x16\n\r\n\x06\x04\x04\x04\0\x02\x0e\x12\x03,\x08\x18\n\x0e\n\
+    \x07\x04\x04\x04\0\x02\x0e\x01\x12\x03,\x08\x12\n\x0e\n\x07\x04\x04\x04\
+    \0\x02\x0e\x02\x12\x03,\x15\x17\n\r\n\x06\x04\x04\x04\0\x02\x0f\x12\x03-\
+    \x08\x16\n\x0e\n\x07\x04\x04\x04\0\x02\x0f\x01\x12\x03-\x08\x10\n\x0e\n\
+    \x07\x04\x04\x04\0\x02\x0f\x02\x12\x03-\x13\x15\n\x0c\n\x04\x04\x04\x03\
+    \0\x12\x040\x048\x05\n\x0c\n\x05\x04\x04\x03\0\x01\x12\x030\x0c\x10\n\r\
+    \n\x06\x04\x04\x03\0\x02\0\x12\x031\x08\x1f\n\x0f\n\x07\x04\x04\x03\0\
+    \x02\0\x04\x12\x041\x080\x12\n\x0e\n\x07\x04\x04\x03\0\x02\0\x06\x12\x03\
+    1\x08\x10\n\x0e\n\x07\x04\x04\x03\0\x02\0\x01\x12\x031\x11\x1a\n\x0e\n\
+    \x07\x04\x04\x03\0\x02\0\x03\x12\x031\x1d\x1e\n\x0e\n\x06\x04\x04\x03\0\
+    \x08\0\x12\x042\x085\t\n\x0e\n\x07\x04\x04\x03\0\x08\0\x01\x12\x032\x0e\
+    \x18\n'\n\x06\x04\x04\x03\0\x02\x01\x12\x033\x0c\x1a\"\x18\x20for\x20num\
+    bered\x20fragments\n\n\x0e\n\x07\x04\x04\x03\0\x02\x01\x05\x12\x033\x0c\
+    \x11\n\x0e\n\x07\x04\x04\x03\0\x02\x01\x01\x12\x033\x12\x15\n\x0e\n\x07\
+    \x04\x04\x03\0\x02\x01\x03\x12\x033\x18\x19\n\x1b\n\x06\x04\x04\x03\0\
+    \x02\x02\x12\x034\x0c\x1d\"\x0c\x20for\x20scopes\n\n\x0e\n\x07\x04\x04\
+    \x03\0\x02\x02\x05\x12\x034\x0c\x12\n\x0e\n\x07\x04\x04\x03\0\x02\x02\
+    \x01\x12\x034\x13\x18\n\x0e\n\x07\x04\x04\x03\0\x02\x02\x03\x12\x034\x1b\
+    \x1c\n\r\n\x06\x04\x04\x03\0\x02\x03\x12\x036\x08#\n\x0e\n\x07\x04\x04\
+    \x03\0\x02\x03\x04\x12\x036\x08\x10\n\x0e\n\x07\x04\x04\x03\0\x02\x03\
+    \x06\x12\x036\x11\x15\n\x0e\n\x07\x04\x04\x03\0\x02\x03\x01\x12\x036\x16\
+    \x1e\n\x0e\n\x07\x04\x04\x03\0\x02\x03\x03\x12\x036!\"\n\x0b\n\x04\x04\
+    \x04\x02\0\x12\x03:\x04\x1c\n\x0c\n\x05\x04\x04\x02\0\x04\x12\x03:\x04\
+    \x0c\n\x0c\n\x05\x04\x04\x02\0\x06\x12\x03:\r\x11\n\x0c\n\x05\x04\x04\
+    \x02\0\x01\x12\x03:\x12\x17\n\x0c\n\x05\x04\x04\x02\0\x03\x12\x03:\x1a\
+    \x1bb\x06proto3\
 ";
 
 static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {

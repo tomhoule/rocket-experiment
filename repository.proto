@@ -1,7 +1,27 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 service EthicsRepository {
-    rpc GetSchema (GetSchemaParams) returns (EthicsSchema) {}
+    rpc GetSchema (GetSchemaParams) returns (EthicsSchema);
+    rpc GetEditions (GetEditionsParams) returns (Editions);
+    rpc CreateEdition (Edition) returns (Edition);
+}
+
+message GetEditionsParams {}
+
+message Edition {
+    string title = 1;
+    string slug = 2;
+    string editor = 3;
+    int32 year = 4;
+    string language_code = 5;
+    string created_at = 6;
+    string updated_at = 7;
+}
+
+message Editions {
+    repeated Edition data = 1;
 }
 
 message GetSchemaParams {}

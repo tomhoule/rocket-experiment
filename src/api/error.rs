@@ -1,9 +1,9 @@
 use diesel::result::Error as DieselError;
 use r2d2::GetTimeout;
 use uuid;
-use rocket::{Request, Response};
-use rocket::http::Status;
-use rocket::response::Responder;
+// use rocket::{Request, Response};
+// use rocket::http::Status;
+// use rocket::response::Responder;
 
 error_chain! {
     types {
@@ -18,12 +18,12 @@ error_chain! {
     }
 }
 
-impl<'r> Responder<'r> for Error {
-    fn respond_to(self, _req: &Request) -> Result<Response<'r>, Status> {
-        match *self.kind() {
-            ErrorKind::Db(DieselError::NotFound) => Err(Status::NotFound),
-            ErrorKind::UuidParseError(_) => Err(Status::BadRequest),
-            _ => Err(Status::InternalServerError),
-        }
-    }
-}
+// impl<'r> Responder<'r> for Error {
+//     fn respond_to(self, _req: &Request) -> Result<Response<'r>, Status> {
+//         match *self.kind() {
+//             ErrorKind::Db(DieselError::NotFound) => Err(Status::NotFound),
+//             ErrorKind::UuidParseError(_) => Err(Status::BadRequest),
+//             _ => Err(Status::InternalServerError),
+//         }
+//     }
+// }
