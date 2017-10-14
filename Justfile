@@ -7,13 +7,14 @@ compile-proto: clean-proto
         --rust_out=src/rpc \
         --grpc_out=src/rpc \
         --plugin=protoc-gen-grpc=`which grpc_rust_plugin` \
-        *.proto
+        -I ./proto \
+        ./proto/*.proto
     protoc \
         --plugin=protoc-gen-ts=`which protoc-gen-ts` \
         --js_out=import_style=commonjs,binary:js/src/rpc \
         --ts_out=service=true:js/src/rpc \
-        -I . \
-        *.proto
+        -I ./proto \
+        ./proto/*.proto
 
 start-postgres:
     sudo systemctl start postgresql
