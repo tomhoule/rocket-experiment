@@ -1,6 +1,6 @@
 clean-proto:
-    rm -rf js/src/rpc
-    mkdir -p js/src/rpc
+    rm -rf ts/src/rpc
+    mkdir -p ts/src/rpc
 
 compile-proto: clean-proto
     protoc \
@@ -11,8 +11,8 @@ compile-proto: clean-proto
         ./proto/*.proto
     protoc \
         --plugin=protoc-gen-ts=`which protoc-gen-ts` \
-        --js_out=import_style=commonjs,binary:js/src/rpc \
-        --ts_out=service=true:js/src/rpc \
+        --js_out=import_style=commonjs,binary:ts/src/rpc \
+        --ts_out=service=true:ts/src/rpc \
         -I ./proto \
         ./proto/*.proto
 

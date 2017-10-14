@@ -6,8 +6,8 @@
   "author": "Tom Houlé <tom@tomhoule.com>",
   "license": "MIT",
   "scripts": {
-    "watch": "webpack --watch --config js/webpack.config.js",
-    "wds": "webpack-dev-server --config js/webpack.config.js"
+    "watch": "webpack --watch --config ts/webpack.config.js",
+    "wds": "webpack-dev-server --config ts/webpack.config.js"
   },
   "devDependencies": {
     "@types/react": "^16.0.10",

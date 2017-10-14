@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    entry: './js/src/main.tsx',
+    entry: './ts/src/main.tsx',
         // 'edition-new': './js/src/edition-new.ts',
     // },
     output: {
@@ -10,7 +10,7 @@ module.exports = {
     },
     resolve: {
         extensions: ['.js', '.ts', '.tsx'],
-        modules: ['./node_modules', './js/src'],
+        modules: ['./node_modules', './ts/src'],
     },
     devtool: 'source-map',
     module: {

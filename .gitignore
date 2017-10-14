@@ -1,5 +1,5 @@
 /target/
 **/*.rs.bk
-js/dist
+ts/dist
 node_modules
 .awcache
