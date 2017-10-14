@@ -2,10 +2,11 @@ import { ActionsObservable, combineEpics, Epic } from 'redux-observable'
 import 'typescript-fsa-redux-observable'
 import * as actions from './actions'
 import * as Rx from 'rxjs'
-import * as api from './api'
+// import * as api from './api'
 import { AsyncActionCreators } from 'typescript-fsa'
 import * as jspb from 'google-protobuf'
-import { grpc, Code, Metadata } from 'grpc-web-client'
+import { grpc, Code, Metadata, BrowserHeaders } from 'grpc-web-client'
+import { EthicsRepository } from './rpc/repository_pb_service'
 
 export function get<I, S, F>(
     obs$: ActionsObservable<Action>,
@@ -19,23 +20,27 @@ export function get<I, S, F>(
         .mergeMap(([params, result]) => [ty.done({ params, result })])
 }
 
-// interface RPCAction<MSG, MTD> {
-//     message: MSG,
-//     method: MTD,
-// }
+interface MethodDefinition<Req, Res> {
+    methodName: string
+    service: any
+    requestStream: boolean
+    responseStream: boolean
+    requestType: Req
+    responseType: Res
+}
 
-// export function rpc<MSG extends jspb.Message, MTD, S, F, M>(
-//     obs$: ActionsObservable<Action>,
-//     ty: AsyncActionCreators<RPCAction<MSG, MTD>, S, F>,
-// ): Rx.Observable<Action> {
-//     return obs$
-//         .ofAction(ty.started)
-//         .mergeMap(async (action) => {
-//             const req = new Promise(resolve =>
-//                 grpc.invoke(action.payload.message, {
-//                     request: action.payload.method
-//                     host:
-//                 })
-//         })
-//     const req = new Promise(resolve => grpc.invoke(method
-// }
+export function rpc<
+    Req extends jspb.Message,
+    Res extends jspb.Message
+>(
+    method: any,
+    request: Req,
+): Promise<Res> {
+    return new Promise(resolve =>
+        grpc.invoke(method, {
+            request,
+            host: 'https://localhost:8443',
+            onMessage: (message: Res) => resolve(message),
+            onEnd: (code: Code, message: string, trailers: BrowserHeaders) => console.log(code, message, trailers),
+        }))
+}
