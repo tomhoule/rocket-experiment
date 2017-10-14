@@ -30,7 +30,3 @@ function main() {
 }
 
 main()
-
-import { grpc, Code, Metadata } from 'grpc-web-client'
-import { GetSchemaParams, EthicsSchema } from './rpc/repository_pb'
-import { EthicsRepository } from './rpc/repository_pb_service'

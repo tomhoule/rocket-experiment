@@ -3,9 +3,24 @@ import * as a from './actions'
 import * as api from 'rpc/repository_pb'
 import * as redux from 'redux'
 
+interface CrudState<T> {
+    index: T[]
+    single: T | null
+    changes: Partial<T>
+}
+
+function crudState<T>(): CrudState<T> {
+    return {
+        index: [],
+        single: null,
+        changes: {},
+    }
+}
+
 export interface AppState {
     status: string
     schema: SchemaReducerState
+    editions: CrudState<api.Edition>
 }
 
 export type SchemaReducerState = api.EthicsSchema.AsObject | null
@@ -16,7 +31,16 @@ const statusReducer = reducerWithInitialState('还可以')
 const schemaReducer = reducerWithInitialState(null as SchemaReducerState)
     .case(a.getSchema.done, (state, { result }) => result)
 
+const editionsReducer = reducerWithInitialState(crudState<api.Edition.AsObject>())
+    .case(a.editionSetChanges, (state, changes) => ({ ...state, changes }))
+    .case(a.editionMergeChanges, (state, changes) => ({
+        ...state,
+        changes: { ...state.changes, ...changes },
+    }))
+    .case(a.createEdition.done, (state, edition) => ({ ...state, single: edition.result }))
+
 export const reducers = redux.combineReducers<AppState>({
     status: statusReducer,
     schema: schemaReducer,
+    editions: editionsReducer,
 })
