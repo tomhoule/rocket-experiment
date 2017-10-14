@@ -108,6 +108,24 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
             Err(err) => self.handle(err),
         }
     }
+
+    fn patch_edition(
+        &self,
+        ctx: ::grpcio::RpcContext,
+        mut req: rpc::repository::EditionPatch,
+        sink: ::grpcio::UnarySink<rpc::repository::Edition>
+    ) {
+        let uuid = req.take_id();
+        let patch = models::EditionPatch::from_proto(req);
+        let saved = self.pool.get()
+            .map_err(api::Error::from)
+            .and_then(|conn| patch.save(uuid, &conn).map_err(api::Error::from));
+        match saved {
+            Ok(edition) =>
+                ctx.spawn(sink.success(edition.to_protobuf()).map_err(|err| panic!("GRPC error"))),
+            Err(err) => self.handle(err),
+        }
+    }
 }
 
 fn main() {

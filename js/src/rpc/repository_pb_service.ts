@@ -2,7 +2,7 @@
 // file: repository.proto
 
 import * as repository_pb from "./repository_pb";
-import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
+import * as google_protobuf_field_mask_pb from "google-protobuf/google/protobuf/field_mask_pb";
 export class EthicsRepository {
   static serviceName = "EthicsRepository";
 }
@@ -29,6 +29,14 @@ export namespace EthicsRepository {
     static readonly requestStream = false;
     static readonly responseStream = false;
     static readonly requestType = repository_pb.Edition;
+    static readonly responseType = repository_pb.Edition;
+  }
+  export class PatchEdition {
+    static readonly methodName = "PatchEdition";
+    static readonly service = EthicsRepository;
+    static readonly requestStream = false;
+    static readonly responseStream = false;
+    static readonly requestType = repository_pb.EditionPatch;
     static readonly responseType = repository_pb.Edition;
   }
 }

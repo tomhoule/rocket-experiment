@@ -1,11 +1,18 @@
 syntax = "proto3";
 
-import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
 
 service EthicsRepository {
     rpc GetSchema (GetSchemaParams) returns (EthicsSchema);
     rpc GetEditions (GetEditionsParams) returns (Editions);
     rpc CreateEdition (Edition) returns (Edition);
+    rpc PatchEdition (EditionPatch) returns (Edition);
+}
+
+message EditionPatch {
+    Edition edition = 1;
+    string id = 2;
+    google.protobuf.FieldMask fields = 3;
 }
 
 message GetEditionsParams {}

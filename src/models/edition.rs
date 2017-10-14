@@ -2,6 +2,7 @@ use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use diesel;
 use diesel::pg::PgConnection;
+use protobuf::RepeatedField;
 use validator::Validate;
 
 use db::schema::*;
@@ -53,6 +54,37 @@ pub struct EditionPatch {
     pub language_code: Option<String>,
 }
 
+fn updoot<T>(mask: &[String], name: &'static str, value: T) -> Option<T> {
+    mask.iter()
+        .find(|elem| elem == &name)
+        .map(|_| value)
+}
+
+impl EditionPatch {
+    pub fn from_proto(mut pb: ::rpc::repository::EditionPatch) -> Self {
+        let mask = pb.take_fields();
+        let m = mask.get_paths();
+        let mut ed = pb.take_edition();
+
+        EditionPatch {
+            title: updoot(m, "title", ed.take_title()),
+            editor: updoot(m, "editor", ed.take_editor()),
+            year: updoot(m, "year", ed.get_year()),
+            language_code: updoot(m, "language_code", ed.take_language_code()),
+        }
+    }
+
+    pub fn save(
+        &self,
+        slug: String,
+        conn: &PgConnection,
+    ) -> Result<Edition, diesel::result::Error> {
+        use db::schema::editions::dsl::*;
+        use diesel::*;
+        update(editions.filter(slug.eq(slug))).set(self).get_result(conn)
+    }
+}
+
 impl Edition {
     pub fn all(conn: &PgConnection) -> Result<Vec<Edition>, diesel::result::Error> {
         use db::schema::editions::dsl::*;
@@ -88,16 +120,6 @@ impl Edition {
         pb.set_created_at(self.created_at.to_rfc3339());
         pb.set_updated_at(self.updated_at.to_rfc3339());
         pb
-    }
-
-    pub fn update(
-        uuid: Uuid,
-        patch: EditionPatch,
-        conn: &PgConnection,
-    ) -> Result<Edition, diesel::result::Error> {
-        use db::schema::editions::dsl::*;
-        use diesel::*;
-        update(editions.find(uuid)).set(&patch).get_result(conn)
     }
 }
 

@@ -2,7 +2,39 @@
 // file: repository.proto
 
 import * as jspb from "google-protobuf";
-import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
+import * as google_protobuf_field_mask_pb from "google-protobuf/google/protobuf/field_mask_pb";
+
+export class EditionPatch extends jspb.Message {
+  hasEdition(): boolean;
+  clearEdition(): void;
+  getEdition(): Edition | undefined;
+  setEdition(value?: Edition): void;
+
+  getId(): string;
+  setId(value: string): void;
+
+  hasFields(): boolean;
+  clearFields(): void;
+  getFields(): google_protobuf_field_mask_pb.FieldMask | undefined;
+  setFields(value?: google_protobuf_field_mask_pb.FieldMask): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): EditionPatch.AsObject;
+  static toObject(includeInstance: boolean, msg: EditionPatch): EditionPatch.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: EditionPatch, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): EditionPatch;
+  static deserializeBinaryFromReader(message: EditionPatch, reader: jspb.BinaryReader): EditionPatch;
+}
+
+export namespace EditionPatch {
+  export type AsObject = {
+    edition?: Edition.AsObject,
+    id: string,
+    fields?: google_protobuf_field_mask_pb.FieldMask.AsObject,
+  }
+}
 
 export class GetEditionsParams extends jspb.Message {
   serializeBinary(): Uint8Array;

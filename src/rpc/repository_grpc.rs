@@ -39,6 +39,13 @@ const METHOD_ETHICS_REPOSITORY_CREATE_EDITION: ::grpcio::Method<super::repositor
     resp_mar: ::grpcio::Marshaller { ser: ::grpcio::pb_ser, de: ::grpcio::pb_de },
 };
 
+const METHOD_ETHICS_REPOSITORY_PATCH_EDITION: ::grpcio::Method<super::repository::EditionPatch, super::repository::Edition> = ::grpcio::Method {
+    ty: ::grpcio::MethodType::Unary,
+    name: "/EthicsRepository/PatchEdition",
+    req_mar: ::grpcio::Marshaller { ser: ::grpcio::pb_ser, de: ::grpcio::pb_de },
+    resp_mar: ::grpcio::Marshaller { ser: ::grpcio::pb_ser, de: ::grpcio::pb_de },
+};
+
 pub struct EthicsRepositoryClient {
     client: ::grpcio::Client,
 }
@@ -97,6 +104,22 @@ impl EthicsRepositoryClient {
     pub fn create_edition_async(&self, req: super::repository::Edition) -> ::grpcio::ClientUnaryReceiver<super::repository::Edition> {
         self.create_edition_async_opt(req, ::grpcio::CallOption::default())
     }
+
+    pub fn patch_edition_opt(&self, req: super::repository::EditionPatch, opt: ::grpcio::CallOption) -> ::grpcio::Result<super::repository::Edition> {
+        self.client.unary_call(&METHOD_ETHICS_REPOSITORY_PATCH_EDITION, req, opt)
+    }
+
+    pub fn patch_edition(&self, req: super::repository::EditionPatch) -> ::grpcio::Result<super::repository::Edition> {
+        self.patch_edition_opt(req, ::grpcio::CallOption::default())
+    }
+
+    pub fn patch_edition_async_opt(&self, req: super::repository::EditionPatch, opt: ::grpcio::CallOption) -> ::grpcio::ClientUnaryReceiver<super::repository::Edition> {
+        self.client.unary_call_async(&METHOD_ETHICS_REPOSITORY_PATCH_EDITION, req, opt)
+    }
+
+    pub fn patch_edition_async(&self, req: super::repository::EditionPatch) -> ::grpcio::ClientUnaryReceiver<super::repository::Edition> {
+        self.patch_edition_async_opt(req, ::grpcio::CallOption::default())
+    }
     pub fn spawn<F>(&self, f: F) where F: ::futures::Future<Item = (), Error = ()> + Send + 'static {
         self.client.spawn(f)
     }
@@ -106,6 +129,7 @@ pub trait EthicsRepository {
     fn get_schema(&self, ctx: ::grpcio::RpcContext, req: super::repository::GetSchemaParams, sink: ::grpcio::UnarySink<super::repository::EthicsSchema>);
     fn get_editions(&self, ctx: ::grpcio::RpcContext, req: super::repository::GetEditionsParams, sink: ::grpcio::UnarySink<super::repository::Editions>);
     fn create_edition(&self, ctx: ::grpcio::RpcContext, req: super::repository::Edition, sink: ::grpcio::UnarySink<super::repository::Edition>);
+    fn patch_edition(&self, ctx: ::grpcio::RpcContext, req: super::repository::EditionPatch, sink: ::grpcio::UnarySink<super::repository::Edition>);
 }
 
 pub fn create_ethics_repository<S: EthicsRepository + Send + Clone + 'static>(s: S) -> ::grpcio::Service {
@@ -121,6 +145,10 @@ pub fn create_ethics_repository<S: EthicsRepository + Send + Clone + 'static>(s:
     let instance = s.clone();
     builder = builder.add_unary_handler(&METHOD_ETHICS_REPOSITORY_CREATE_EDITION, move |ctx, req, resp| {
         instance.create_edition(ctx, req, resp)
+    });
+    let instance = s.clone();
+    builder = builder.add_unary_handler(&METHOD_ETHICS_REPOSITORY_PATCH_EDITION, move |ctx, req, resp| {
+        instance.patch_edition(ctx, req, resp)
     });
     builder.build()
 }
