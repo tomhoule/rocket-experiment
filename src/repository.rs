@@ -87,6 +87,16 @@ fn get_editions(
     Ok(response)
 }
 
+fn create_edition(
+    _ctx: &Repository,
+    req: rpc::repository::Edition,
+    conn: &PgConnection
+) -> Result<rpc::repository::Edition, api::Error> {
+    let edition = models::EditionNew::from_protobuf(req);
+    let saved = edition.save(&conn)?;
+    Ok(saved.to_proto())
+}
+
 impl rpc::repository_grpc::EthicsRepository for Repository {
     fn get_schema(
         &self,
@@ -134,16 +144,7 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
         req: rpc::repository::Edition,
         sink: ::grpcio::UnarySink<rpc::repository::Edition>
     ) {
-        let edition = models::EditionNew::from_protobuf(req);
-        self.pool.get()
-            .map_err(api::Error::from)
-            .and_then(|conn| edition.save(&conn).map_err(api::Error::from))
-            .and_then(|edition| {
-                ctx.spawn(sink.success(edition.to_proto()).map_err(bail));
-                Ok(())
-            })
-            .map_err(|err| self.handle(err))
-            .ok();
+        self.with_connection(ctx, req, sink, &create_edition);
     }
 
     fn patch_edition(

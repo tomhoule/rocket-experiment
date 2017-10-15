@@ -24,12 +24,13 @@ const schemaEpic: Epic<Action, AppState, InjectedDependencies> = (action$, store
 const patchEditionEpic: Epic<Action, AppState, InjectedDependencies> = (action$, store, d) =>
     action$
         .ofAction(actions.patchEdition.started)
-        .mergeMap(async ({ payload }) =>
-            await d.rpc<
+        .mergeMap(async ({ payload }) => {
+            return await d.rpc<
                 typeof EthicsRepository.PatchEdition.requestType.prototype,
                 typeof EthicsRepository.PatchEdition.responseType.prototype
             >(EthicsRepository.PatchEdition, new msgs.EditionPatch())
-                .then(rejoice(actions.patchEdition.done, payload)))
+                .then(rejoice(actions.patchEdition.done, payload))
+        })
 
 const createEdition: AppEpic = (action$, store, d) =>
     action$

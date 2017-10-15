@@ -1,5 +1,6 @@
 /// <reference path='./global.d.ts' />
 import { render } from 'react-dom'
+import { BrowserRouter, Route } from 'react-router-dom'
 import * as React from 'react'
 import { reducerWithInitialState } from 'typescript-fsa-reducers'
 import * as redux from 'redux'
@@ -26,7 +27,13 @@ function main() {
     })
     const store = redux.createStore(reducers, composeEnhancers(redux.applyMiddleware(epicMiddleware)))
     const root = document.getElementById('react-root')
-    render(<Provider store={store}><App /></Provider>, root)
+    render(
+        <BrowserRouter>
+            <Provider store={store}>
+                <Route path='/' component={App} />
+            </Provider>
+        </BrowserRouter>,
+        root)
 }
 
 main()

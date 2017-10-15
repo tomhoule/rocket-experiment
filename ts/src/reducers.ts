@@ -20,7 +20,7 @@ function crudState<T>(): CrudState<T> {
 export interface AppState {
     status: string
     schema: SchemaReducerState
-    editions: CrudState<api.Edition>
+    editions: CrudState<api.Edition.AsObject>
 }
 
 export type SchemaReducerState = api.EthicsSchema.AsObject | null
@@ -38,6 +38,7 @@ const editionsReducer = reducerWithInitialState(crudState<api.Edition.AsObject>(
         changes: { ...state.changes, ...changes },
     }))
     .case(a.createEdition.done, (state, edition) => ({ ...state, single: edition.result }))
+    .case(a.getEditions.done, (state, changes) => ({ ...state, index: changes.result.dataList }))
 
 export const reducers = redux.combineReducers<AppState>({
     status: statusReducer,
