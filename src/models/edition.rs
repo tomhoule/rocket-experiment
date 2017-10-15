@@ -60,16 +60,13 @@ fn updoot<T>(mask: &[String], name: &'static str, value: T) -> Option<T> {
 }
 
 impl EditionPatch {
-    pub fn from_proto(mut pb: ::rpc::repository::EditionPatch) -> Self {
-        let mask = pb.take_fields();
-        let m = mask.get_paths();
-        let mut ed = pb.take_edition();
-
+    pub fn from_proto(pb: ::rpc::repository::EditionPatch) -> Self {
+        macro_rules! inner { ($id:expr) => ($id.into_option().map(|v| v.value)) }
         EditionPatch {
-            title: updoot(m, "title", ed.take_title()),
-            editor: updoot(m, "editor", ed.take_editor()),
-            year: updoot(m, "year", ed.get_year()),
-            language_code: updoot(m, "language_code", ed.take_language_code()),
+            title: inner!(pb.title),
+            editor: inner!(pb.editor),
+            year: inner!(pb.year),
+            language_code: inner!(pb.language_code),
         }
     }
 

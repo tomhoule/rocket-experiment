@@ -3,6 +3,7 @@
 
 import * as repository_pb from "./repository_pb";
 import * as google_protobuf_field_mask_pb from "google-protobuf/google/protobuf/field_mask_pb";
+import * as google_protobuf_wrappers_pb from "google-protobuf/google/protobuf/wrappers_pb";
 export class EthicsRepository {
   static serviceName = "EthicsRepository";
 }

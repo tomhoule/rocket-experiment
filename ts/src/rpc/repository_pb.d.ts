@@ -1,22 +1,33 @@
-// package: 
+// package:
 // file: repository.proto
 
 import * as jspb from "google-protobuf";
 import * as google_protobuf_field_mask_pb from "google-protobuf/google/protobuf/field_mask_pb";
+import * as google_protobuf_wrappers_pb from "google-protobuf/google/protobuf/wrappers_pb";
 
 export class EditionPatch extends jspb.Message {
-  hasEdition(): boolean;
-  clearEdition(): void;
-  getEdition(): Edition | undefined;
-  setEdition(value?: Edition): void;
-
   getId(): string;
   setId(value: string): void;
 
-  hasFields(): boolean;
-  clearFields(): void;
-  getFields(): google_protobuf_field_mask_pb.FieldMask | undefined;
-  setFields(value?: google_protobuf_field_mask_pb.FieldMask): void;
+  hasTitle(): boolean;
+  clearTitle(): void;
+  getTitle(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setTitle(value?: google_protobuf_wrappers_pb.StringValue): void;
+
+  hasEditor(): boolean;
+  clearEditor(): void;
+  getEditor(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setEditor(value?: google_protobuf_wrappers_pb.StringValue): void;
+
+  hasYear(): boolean;
+  clearYear(): void;
+  getYear(): google_protobuf_wrappers_pb.Int32Value | undefined;
+  setYear(value?: google_protobuf_wrappers_pb.Int32Value): void;
+
+  hasLanguageCode(): boolean;
+  clearLanguageCode(): void;
+  getLanguageCode(): google_protobuf_wrappers_pb.StringValue | undefined;
+  setLanguageCode(value?: google_protobuf_wrappers_pb.StringValue): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): EditionPatch.AsObject;
@@ -30,9 +41,11 @@ export class EditionPatch extends jspb.Message {
 
 export namespace EditionPatch {
   export type AsObject = {
-    edition?: Edition.AsObject,
     id: string,
-    fields?: google_protobuf_field_mask_pb.FieldMask.AsObject,
+    title?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    editor?: google_protobuf_wrappers_pb.StringValue.AsObject,
+    year?: google_protobuf_wrappers_pb.Int32Value.AsObject,
+    languageCode?: google_protobuf_wrappers_pb.StringValue.AsObject,
   }
 }
 
@@ -204,7 +217,7 @@ export namespace EthicsSchema {
     UNSPECIFIED = 0,
     ANONYMOUS_FRAGMENT = 1,
     ALITER = 2,
-    APPENDINX = 3,
+    APPENDIX = 3,
     AXIOMA = 4,
     CAPUT = 5,
     COROLLARIUM = 6,

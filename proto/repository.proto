@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/field_mask.proto";
+import "google/protobuf/wrappers.proto";
 
 service EthicsRepository {
     rpc GetSchema (GetSchemaParams) returns (EthicsSchema);
@@ -10,9 +11,11 @@ service EthicsRepository {
 }
 
 message EditionPatch {
-    Edition edition = 1;
-    string id = 2;
-    google.protobuf.FieldMask fields = 3;
+    string id = 1;
+    google.protobuf.StringValue title = 2;
+    google.protobuf.StringValue editor = 3;
+    google.protobuf.Int32Value year = 4;
+    google.protobuf.StringValue language_code = 5;
 }
 
 message GetEditionsParams {}
@@ -38,7 +41,7 @@ message EthicsSchema {
         UNSPECIFIED = 0;
         ANONYMOUS_FRAGMENT = 1;
         ALITER = 2;
-        APPENDINX = 3;
+        APPENDIX = 3;
         AXIOMA = 4;
         CAPUT = 5;
         COROLLARIUM = 6;

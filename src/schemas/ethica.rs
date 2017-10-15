@@ -55,7 +55,7 @@ impl Node {
                 node.set_node_type(EthicsSchema_NodeType::ALITER);
             },
             Appendix => {
-                node.set_node_type(EthicsSchema_NodeType::APPENDINX);
+                node.set_node_type(EthicsSchema_NodeType::APPENDIX);
             },
             Axioma(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();

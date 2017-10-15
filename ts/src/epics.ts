@@ -8,10 +8,11 @@ import { EthicsRepository } from 'rpc/repository_pb_service'
 import { InjectedDependencies } from './types'
 import { AppState } from './reducers'
 import { rejoice } from 'epic-utils'
+import * as pb from 'pbutils'
 
 type AppEpic = Epic<Action, AppState, InjectedDependencies>
 
-const schemaEpic: Epic<Action, AppState, InjectedDependencies> = (action$, store, d) =>
+const schemaEpic: AppEpic= (action$, store, d) =>
     action$
         .ofAction(actions.getSchema.started)
         .mergeMap(async ({ payload: params }) =>
@@ -21,10 +22,15 @@ const schemaEpic: Epic<Action, AppState, InjectedDependencies> = (action$, store
             >(EthicsRepository.GetSchema, new msgs.GetSchemaParams()).
                 then(rejoice(actions.getSchema.done, params)))
 
-const patchEditionEpic: Epic<Action, AppState, InjectedDependencies> = (action$, store, d) =>
+const patchEditionEpic: AppEpic = (action$, store, d) =>
     action$
         .ofAction(actions.patchEdition.started)
         .mergeMap(async ({ payload }) => {
+            const msg = new msgs.EditionPatch()
+            pb.optionalStr(msg.setTitle, payload.title)
+            pb.optionalStr(msg.setEditor, payload.editor)
+            pb.optionalStr(msg.setLanguageCode, payload.languageCode)
+            pb.optionalI32(msg.setYear, payload.year)
             return await d.rpc<
                 typeof EthicsRepository.PatchEdition.requestType.prototype,
                 typeof EthicsRepository.PatchEdition.responseType.prototype
@@ -36,10 +42,16 @@ const createEdition: AppEpic = (action$, store, d) =>
     action$
         .ofAction(actions.createEdition.started)
         .mergeMap(async ({ payload: params }) => {
+            const req = new msgs.Edition();
+            req.setTitle(params.title)
+            req.setSlug(params.slug)
+            req.setEditor(params.editor)
+            req.setLanguageCode(params.languageCode)
+            req.setYear(params.year)
             const result = await d.rpc<
                     typeof EthicsRepository.CreateEdition.requestType.prototype,
                     typeof EthicsRepository.CreateEdition.responseType.prototype
-                >(EthicsRepository.CreateEdition, new msgs.Edition())
+                >(EthicsRepository.CreateEdition, req)
             return actions.createEdition.done({ params, result: result.toObject() })
         })
 

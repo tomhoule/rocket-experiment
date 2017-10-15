@@ -10,6 +10,7 @@ var goog = jspb;
 var global = Function('return this')();
 
 var google_protobuf_field_mask_pb = require('google-protobuf/google/protobuf/field_mask_pb.js');
+var google_protobuf_wrappers_pb = require('google-protobuf/google/protobuf/wrappers_pb.js');
 goog.exportSymbol('proto.Edition', null, global);
 goog.exportSymbol('proto.EditionPatch', null, global);
 goog.exportSymbol('proto.Editions', null, global);
@@ -64,9 +65,11 @@ proto.EditionPatch.prototype.toObject = function(opt_includeInstance) {
  */
 proto.EditionPatch.toObject = function(includeInstance, msg) {
   var f, obj = {
-    edition: (f = msg.getEdition()) && proto.Edition.toObject(includeInstance, f),
-    id: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    fields: (f = msg.getFields()) && google_protobuf_field_mask_pb.FieldMask.toObject(includeInstance, f)
+    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    title: (f = msg.getTitle()) && google_protobuf_wrappers_pb.StringValue.toObject(includeInstance, f),
+    editor: (f = msg.getEditor()) && google_protobuf_wrappers_pb.StringValue.toObject(includeInstance, f),
+    year: (f = msg.getYear()) && google_protobuf_wrappers_pb.Int32Value.toObject(includeInstance, f),
+    languageCode: (f = msg.getLanguageCode()) && google_protobuf_wrappers_pb.StringValue.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -104,18 +107,28 @@ proto.EditionPatch.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.Edition;
-      reader.readMessage(value,proto.Edition.deserializeBinaryFromReader);
-      msg.setEdition(value);
-      break;
-    case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setId(value);
       break;
+    case 2:
+      var value = new google_protobuf_wrappers_pb.StringValue;
+      reader.readMessage(value,google_protobuf_wrappers_pb.StringValue.deserializeBinaryFromReader);
+      msg.setTitle(value);
+      break;
     case 3:
-      var value = new google_protobuf_field_mask_pb.FieldMask;
-      reader.readMessage(value,google_protobuf_field_mask_pb.FieldMask.deserializeBinaryFromReader);
-      msg.setFields(value);
+      var value = new google_protobuf_wrappers_pb.StringValue;
+      reader.readMessage(value,google_protobuf_wrappers_pb.StringValue.deserializeBinaryFromReader);
+      msg.setEditor(value);
+      break;
+    case 4:
+      var value = new google_protobuf_wrappers_pb.Int32Value;
+      reader.readMessage(value,google_protobuf_wrappers_pb.Int32Value.deserializeBinaryFromReader);
+      msg.setYear(value);
+      break;
+    case 5:
+      var value = new google_protobuf_wrappers_pb.StringValue;
+      reader.readMessage(value,google_protobuf_wrappers_pb.StringValue.deserializeBinaryFromReader);
+      msg.setLanguageCode(value);
       break;
     default:
       reader.skipField();
@@ -145,95 +158,81 @@ proto.EditionPatch.prototype.serializeBinary = function() {
  */
 proto.EditionPatch.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getEdition();
-  if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.Edition.serializeBinaryToWriter
-    );
-  }
   f = message.getId();
   if (f.length > 0) {
     writer.writeString(
-      2,
+      1,
       f
     );
   }
-  f = message.getFields();
+  f = message.getTitle();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      google_protobuf_wrappers_pb.StringValue.serializeBinaryToWriter
+    );
+  }
+  f = message.getEditor();
   if (f != null) {
     writer.writeMessage(
       3,
       f,
-      google_protobuf_field_mask_pb.FieldMask.serializeBinaryToWriter
+      google_protobuf_wrappers_pb.StringValue.serializeBinaryToWriter
+    );
+  }
+  f = message.getYear();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      google_protobuf_wrappers_pb.Int32Value.serializeBinaryToWriter
+    );
+  }
+  f = message.getLanguageCode();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      google_protobuf_wrappers_pb.StringValue.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional Edition edition = 1;
- * @return {?proto.Edition}
- */
-proto.EditionPatch.prototype.getEdition = function() {
-  return /** @type{?proto.Edition} */ (
-    jspb.Message.getWrapperField(this, proto.Edition, 1));
-};
-
-
-/** @param {?proto.Edition|undefined} value */
-proto.EditionPatch.prototype.setEdition = function(value) {
-  jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-proto.EditionPatch.prototype.clearEdition = function() {
-  this.setEdition(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.EditionPatch.prototype.hasEdition = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * optional string id = 2;
+ * optional string id = 1;
  * @return {string}
  */
 proto.EditionPatch.prototype.getId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
 proto.EditionPatch.prototype.setId = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setField(this, 1, value);
 };
 
 
 /**
- * optional google.protobuf.FieldMask fields = 3;
- * @return {?proto.google.protobuf.FieldMask}
+ * optional google.protobuf.StringValue title = 2;
+ * @return {?proto.google.protobuf.StringValue}
  */
-proto.EditionPatch.prototype.getFields = function() {
-  return /** @type{?proto.google.protobuf.FieldMask} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_field_mask_pb.FieldMask, 3));
+proto.EditionPatch.prototype.getTitle = function() {
+  return /** @type{?proto.google.protobuf.StringValue} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_wrappers_pb.StringValue, 2));
 };
 
 
-/** @param {?proto.google.protobuf.FieldMask|undefined} value */
-proto.EditionPatch.prototype.setFields = function(value) {
-  jspb.Message.setWrapperField(this, 3, value);
+/** @param {?proto.google.protobuf.StringValue|undefined} value */
+proto.EditionPatch.prototype.setTitle = function(value) {
+  jspb.Message.setWrapperField(this, 2, value);
 };
 
 
-proto.EditionPatch.prototype.clearFields = function() {
-  this.setFields(undefined);
+proto.EditionPatch.prototype.clearTitle = function() {
+  this.setTitle(undefined);
 };
 
 
@@ -241,8 +240,98 @@ proto.EditionPatch.prototype.clearFields = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.EditionPatch.prototype.hasFields = function() {
+proto.EditionPatch.prototype.hasTitle = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional google.protobuf.StringValue editor = 3;
+ * @return {?proto.google.protobuf.StringValue}
+ */
+proto.EditionPatch.prototype.getEditor = function() {
+  return /** @type{?proto.google.protobuf.StringValue} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_wrappers_pb.StringValue, 3));
+};
+
+
+/** @param {?proto.google.protobuf.StringValue|undefined} value */
+proto.EditionPatch.prototype.setEditor = function(value) {
+  jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+proto.EditionPatch.prototype.clearEditor = function() {
+  this.setEditor(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.EditionPatch.prototype.hasEditor = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional google.protobuf.Int32Value year = 4;
+ * @return {?proto.google.protobuf.Int32Value}
+ */
+proto.EditionPatch.prototype.getYear = function() {
+  return /** @type{?proto.google.protobuf.Int32Value} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_wrappers_pb.Int32Value, 4));
+};
+
+
+/** @param {?proto.google.protobuf.Int32Value|undefined} value */
+proto.EditionPatch.prototype.setYear = function(value) {
+  jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+proto.EditionPatch.prototype.clearYear = function() {
+  this.setYear(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.EditionPatch.prototype.hasYear = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional google.protobuf.StringValue language_code = 5;
+ * @return {?proto.google.protobuf.StringValue}
+ */
+proto.EditionPatch.prototype.getLanguageCode = function() {
+  return /** @type{?proto.google.protobuf.StringValue} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_wrappers_pb.StringValue, 5));
+};
+
+
+/** @param {?proto.google.protobuf.StringValue|undefined} value */
+proto.EditionPatch.prototype.setLanguageCode = function(value) {
+  jspb.Message.setWrapperField(this, 5, value);
+};
+
+
+proto.EditionPatch.prototype.clearLanguageCode = function() {
+  this.setLanguageCode(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.EditionPatch.prototype.hasLanguageCode = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
@@ -1086,7 +1175,7 @@ proto.EthicsSchema.NodeType = {
   UNSPECIFIED: 0,
   ANONYMOUS_FRAGMENT: 1,
   ALITER: 2,
-  APPENDINX: 3,
+  APPENDIX: 3,
   AXIOMA: 4,
   CAPUT: 5,
   COROLLARIUM: 6,
