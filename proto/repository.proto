@@ -1,21 +1,8 @@
 syntax = "proto3";
 
-import "google/protobuf/field_mask.proto";
-import "google/protobuf/wrappers.proto";
-
 service EthicsRepository {
     rpc GetSchema (GetSchemaParams) returns (EthicsSchema);
     rpc GetEditions (GetEditionsParams) returns (Editions);
-    rpc CreateEdition (Edition) returns (Edition);
-    rpc PatchEdition (EditionPatch) returns (Edition);
-}
-
-message EditionPatch {
-    string id = 1;
-    google.protobuf.StringValue title = 2;
-    google.protobuf.StringValue editor = 3;
-    google.protobuf.Int32Value year = 4;
-    google.protobuf.StringValue language_code = 5;
 }
 
 message GetEditionsParams {}

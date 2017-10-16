@@ -2,6 +2,8 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { AppState } from 'reducers'
 import { bindActionCreators } from 'redux'
+import { Link } from 'react-router'
+
 import * as msgs from 'rpc/repository_pb'
 import * as a from 'actions'
 
@@ -26,7 +28,10 @@ export class Editions extends React.Component<Props, never> {
         return (
             <div>
                 <h2>Editions</h2>
-                {this.props.editions.map(ed => <div>{ed.title}</div>)}
+                {this.props.editions.map(ed =>
+                    <Link key={ed.slug} to={`/ethica/editions/${ed.slug}`}>
+                        {ed.title}
+                    </Link>)}
             </div>)
     }
 }

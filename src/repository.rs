@@ -87,16 +87,6 @@ fn get_editions(
     Ok(response)
 }
 
-fn create_edition(
-    _ctx: &Repository,
-    req: rpc::repository::Edition,
-    conn: &PgConnection
-) -> Result<rpc::repository::Edition, api::Error> {
-    let edition = models::EditionNew::from_protobuf(req);
-    let saved = edition.save(&conn)?;
-    Ok(saved.to_proto())
-}
-
 impl rpc::repository_grpc::EthicsRepository for Repository {
     fn get_schema(
         &self,
@@ -120,50 +110,6 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
         sink: ::grpcio::UnarySink<rpc::repository::Editions>
     ) {
         self.with_connection(ctx, req, sink, &get_editions);
-
-        // use protobuf::RepeatedField;
-        // use ::std::iter::*;
-
-        // let mut response = rpc::repository::Editions::new();
-        // self.pool.get()
-        //     .map_err(api::Error::from)
-        //     .and_then(|conn| models::Edition::all(&conn).map_err(api::Error::from))
-        //     .and_then(|editions| {
-        //         let transformed = editions.into_iter().map(|ed| ed.to_proto());
-        //         response.set_data(RepeatedField::from_iter(transformed));
-        //         ctx.spawn(sink.success(response).map_err(bail));
-        //         Ok(())
-        //     })
-        //     .map_err(|err| self.handle(err))
-        //     .ok();
-    }
-
-    fn create_edition(
-        &self,
-        ctx: ::grpcio::RpcContext,
-        req: rpc::repository::Edition,
-        sink: ::grpcio::UnarySink<rpc::repository::Edition>
-    ) {
-        self.with_connection(ctx, req, sink, &create_edition);
-    }
-
-    fn patch_edition(
-        &self,
-        ctx: ::grpcio::RpcContext,
-        mut req: rpc::repository::EditionPatch,
-        sink: ::grpcio::UnarySink<rpc::repository::Edition>
-    ) {
-        let uuid = req.take_id();
-        let patch = models::EditionPatch::from_proto(req);
-        self.pool.get()
-            .map_err(api::Error::from)
-            .and_then(|conn| patch.save(uuid, &conn).map_err(api::Error::from))
-            .and_then(|edition| {
-                ctx.spawn(sink.success(edition.to_proto()).map_err(bail));
-                Ok(())
-            })
-            .map_err(|err| self.handle(err))
-            .ok();
     }
 }
 
