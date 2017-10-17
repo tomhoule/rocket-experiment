@@ -33,4 +33,4 @@ const editions: AppEpic = (action$, store, d) =>
             return actions.getEditions.done({ params, result: result.toObject() })
         })
 
-export const rootEpic = combineEpics(schemaEpic, patchEditionEpic, createEdition, editions)
+export const rootEpic = combineEpics(schemaEpic, editions)

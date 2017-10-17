@@ -22,15 +22,3 @@ export const getEditions = actionCreator.async<
     api.Editions.AsObject,
     never
 >('EDITIONS')
-
-export const createEdition = actionCreator.async<
-    api.Edition.AsObject,
-    api.Edition.AsObject,
-    never
->('CREATE_EDITION')
-
-export const patchEdition = actionCreator.async<
-    api.EditionPatch.AsObject,
-    api.Edition.AsObject,
-    never
->('PATCH_EDITION')

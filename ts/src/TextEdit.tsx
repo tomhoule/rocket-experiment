@@ -14,7 +14,7 @@ export class TextEdit extends React.Component<Props, never> {
         return (
             <div className='field is-horizontal'>
                 <div className='field-label'>
-                    <label class='label'>{this.props.label}</label>
+                    <label className='label'>{this.props.label}</label>
                 </div>
                 <div className='field-body'>
                     <div className='field'>

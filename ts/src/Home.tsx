@@ -1,6 +1,10 @@
 import * as React from 'react'
+import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, match } from 'react-router-dom'
+import * as a from './actions'
+import { AppState } from './reducers'
+import * as api from './rpc/repository_pb'
 
 interface StateProps {
     schema: api.EthicsSchema.AsObject | null
@@ -38,4 +42,4 @@ export default connect<StateProps, DispatchProps, OwnProps>(
     dispatch => bindActionCreators({
         getSchema: a.getSchema.started,
     }, dispatch)
-)
+)(Home)
