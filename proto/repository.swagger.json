@@ -1,0 +1,153 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "proto/repository.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/ethics/editions": {
+      "get": {
+        "operationId": "GetEditions",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/repositoryEditions"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "languages",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EthicsRepository"
+        ]
+      }
+    },
+    "/v1/ethics/schema": {
+      "get": {
+        "operationId": "GetSchema",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/repositoryEthicsSchema"
+            }
+          }
+        },
+        "tags": [
+          "EthicsRepository"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "EthicsSchemaNode": {
+      "type": "object",
+      "properties": {
+        "node_type": {
+          "$ref": "#/definitions/EthicsSchemaNodeType"
+        },
+        "num": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "title": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EthicsSchemaNode"
+          }
+        }
+      }
+    },
+    "EthicsSchemaNodeType": {
+      "type": "string",
+      "enum": [
+        "UNSPECIFIED",
+        "ANONYMOUS_FRAGMENT",
+        "ALITER",
+        "APPENDIX",
+        "AXIOMA",
+        "CAPUT",
+        "COROLLARIUM",
+        "DEFINITIO",
+        "DEMONSTRATIO",
+        "EXPLICATIO",
+        "LEMMA",
+        "PARS",
+        "POSTULATUM",
+        "PRAEFATIO",
+        "PROPOSITIO",
+        "SCHOLIUM"
+      ],
+      "default": "UNSPECIFIED"
+    },
+    "repositoryEdition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "editor": {
+          "type": "string"
+        },
+        "year": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "language_code": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      }
+    },
+    "repositoryEditions": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/repositoryEdition"
+          }
+        }
+      }
+    },
+    "repositoryEthicsSchema": {
+      "type": "object",
+      "properties": {
+        "parts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EthicsSchemaNode"
+          }
+        }
+      }
+    }
+  }
+}

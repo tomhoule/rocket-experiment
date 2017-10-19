@@ -1,57 +1,70 @@
 syntax = "proto3";
+package repository;
+
+import "google/api/annotations.proto";
 
 service EthicsRepository {
-    rpc GetSchema (GetSchemaParams) returns (EthicsSchema);
-    rpc GetEditions (GetEditionsParams) returns (Editions);
+  rpc GetSchema (GetSchemaParams) returns (EthicsSchema) {
+    option (google.api.http) = {
+      get: "/v1/ethics/schema"
+    };
+  }
+  rpc GetEditions (GetEditionsParams) returns (Editions) {
+    option (google.api.http) = {
+      get: "/v1/ethics/editions"
+    };
+  }
 }
 
-message GetEditionsParams {}
+message GetEditionsParams {
+  string languages = 1;
+}
 
 message Edition {
-    string title = 1;
-    string slug = 2;
-    string editor = 3;
-    int32 year = 4;
-    string language_code = 5;
-    string created_at = 6;
-    string updated_at = 7;
+  string title = 1;
+  string slug = 2;
+  string editor = 3;
+  int32 year = 4;
+  string language_code = 5;
+  string created_at = 6;
+  string updated_at = 7;
 }
 
 message Editions {
-    repeated Edition data = 1;
+  repeated Edition data = 1;
 }
 
 message GetSchemaParams {}
 
 message EthicsSchema {
-    enum NodeType {
-        UNSPECIFIED = 0;
-        ANONYMOUS_FRAGMENT = 1;
-        ALITER = 2;
-        APPENDIX = 3;
-        AXIOMA = 4;
-        CAPUT = 5;
-        COROLLARIUM = 6;
-        DEFINITIO = 7;
-        DEMONSTRATIO = 8;
-        EXPLICATIO = 9;
-        LEMMA = 11;
-        PARS = 12;
-        POSTULATUM = 13;
-        PRAEFATIO = 14;
-        PROPOSITIO = 15;
-        SCHOLIUM = 16;
+  enum NodeType {
+    UNSPECIFIED = 0;
+    ANONYMOUS_FRAGMENT = 1;
+    ALITER = 2;
+    APPENDIX = 3;
+    AXIOMA = 4;
+    CAPUT = 5;
+    COROLLARIUM = 6;
+    DEFINITIO = 7;
+    DEMONSTRATIO = 8;
+    EXPLICATIO = 9;
+    LEMMA = 11;
+    PARS = 12;
+    POSTULATUM = 13;
+    PRAEFATIO = 14;
+    PROPOSITIO = 15;
+    SCHOLIUM = 16;
+  }
+
+  message Node {
+    NodeType node_type = 1;
+    oneof identifier {
+      int32 num = 2; // for numbered fragments
+      string title = 3; // for scopes
     }
+    repeated Node children = 4;
 
-    message Node {
-        NodeType node_type = 1;
-        oneof identifier {
-            int32 num = 2; // for numbered fragments
-            string title = 3; // for scopes
-        }
-        repeated Node children = 4;
+  }
 
-    }
-
-    repeated Node parts = 1;
+  repeated Node parts = 1;
 }
