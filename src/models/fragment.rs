@@ -4,7 +4,7 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::*;
 
-#[derive(Queryable, AsPursType, Serialize)]
+#[derive(Queryable, Serialize)]
 pub struct Fragment {
     id: Uuid,
     fragment_path: String,

@@ -42,7 +42,7 @@ pub fn edition_patch(
     id: String,
     conn: DbConn,
 ) -> Result<Json<models::Edition>, Error> {
-    let edition = models::Edition::update(id.parse()?, patch.into_inner(), &*conn.inner().get()?)?;
+    let edition = patch.into_inner().save(id.parse()?, &*conn.inner().get()?)?;
     Ok(Json(edition))
 }
 
@@ -84,6 +84,7 @@ mod tests {
         let payload = EditionNew {
             title: "Collector edition".to_string(),
             editor: "Freddy Mercury".to_string(),
+            slug: "collector".to_string(),
             year: 1977,
             language_code: "en".to_string(),
         };

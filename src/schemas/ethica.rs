@@ -1,6 +1,6 @@
 pub use self::schema::ETHICA;
 
-#[derive(Serialize, Debug, AsPursType)]
+#[derive(Serialize, Debug)]
 pub struct Schema(pub &'static [Node]);
 
 type Path = String;
@@ -16,7 +16,7 @@ type Path = String;
 // }
 
 
-#[derive(Serialize, Debug, AsPursType)]
+#[derive(Serialize, Debug)]
 #[serde(tag = "tag", content = "contents")]
 pub enum Node {
     AnonymousFragment(NumberedFragment),
@@ -37,100 +37,7 @@ pub enum Node {
     Scholium(NumberedFragment),
 }
 
-impl Node {
-    pub fn to_protobuf(&self) -> ::rpc::repository::EthicsSchema_Node {
-        use ::rpc::repository::*;
-        use self::Node::*;
-        use protobuf::RepeatedField;
-
-        let mut node = EthicsSchema_Node::new();
-        match *self {
-            AnonymousFragment(ref nf) => {
-                let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_node_type(EthicsSchema_NodeType::ANONYMOUS_FRAGMENT);
-                node.set_num(nf.num.unwrap_or(0) as i32);
-                node.set_children(RepeatedField::from_vec(children));
-            },
-            Aliter => {
-                node.set_node_type(EthicsSchema_NodeType::ALITER);
-            },
-            Appendix => {
-                node.set_node_type(EthicsSchema_NodeType::APPENDIX);
-            },
-            Axioma(ref nf) => {
-                let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_node_type(EthicsSchema_NodeType::AXIOMA);
-                node.set_num(nf.num.unwrap_or(0) as i32);
-                node.set_children(RepeatedField::from_vec(children));
-            },
-            Caput(ref nf) => {
-                let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_node_type(EthicsSchema_NodeType::CAPUT);
-                node.set_num(nf.num.unwrap_or(0) as i32);
-                node.set_children(RepeatedField::from_vec(children));
-            },
-            Corollarium(ref nf) => {
-                let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_node_type(EthicsSchema_NodeType::COROLLARIUM);
-                node.set_num(nf.num.unwrap_or(0) as i32);
-                node.set_children(RepeatedField::from_vec(children));
-            },
-            Definitio(ref nf) => {
-                let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_node_type(EthicsSchema_NodeType::DEFINITIO);
-                node.set_num(nf.num.unwrap_or(0) as i32);
-                node.set_children(RepeatedField::from_vec(children));
-            },
-            Demonstratio => {
-                node.set_node_type(EthicsSchema_NodeType::DEMONSTRATIO);
-            },
-            Explicatio => {
-                node.set_node_type(EthicsSchema_NodeType::EXPLICATIO);
-            },
-            Lemma(ref nf) => {
-                let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_node_type(EthicsSchema_NodeType::LEMMA);
-                node.set_num(nf.num.unwrap_or(0) as i32);
-                node.set_children(RepeatedField::from_vec(children));
-            },
-            Pars(ref nf) => {
-                let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_node_type(EthicsSchema_NodeType::PARS);
-                node.set_num(nf.num.unwrap_or(0) as i32);
-                node.set_children(RepeatedField::from_vec(children));
-            },
-            Postulatum(ref nf) => {
-                let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_node_type(EthicsSchema_NodeType::POSTULATUM);
-                node.set_num(nf.num.unwrap_or(0) as i32);
-                node.set_children(RepeatedField::from_vec(children));
-            },
-            Praefatio => {
-                node.set_node_type(EthicsSchema_NodeType::PRAEFATIO);
-            },
-            Propositio(ref nf) => {
-                let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_node_type(EthicsSchema_NodeType::PROPOSITIO);
-                node.set_num(nf.num.unwrap_or(0) as i32);
-                node.set_children(RepeatedField::from_vec(children));
-            },
-            Scholium(ref nf) => {
-                let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_node_type(EthicsSchema_NodeType::SCHOLIUM);
-                node.set_num(nf.num.unwrap_or(0) as i32);
-                node.set_children(RepeatedField::from_vec(children));
-            },
-            Scope(ref nf) => {
-                let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_title(nf.title.to_string());
-                node.set_children(RepeatedField::from_vec(children));
-            },
-        }
-        node
-    }
-}
-
-#[derive(Serialize, Debug, AsPursType)]
+#[derive(Serialize, Debug)]
 pub struct NumberedFragment {
     // #[serde(default = "none")]
     num: Option<u8>,
@@ -139,7 +46,7 @@ pub struct NumberedFragment {
 }
 
 /// A nested fragment with a title
-#[derive(Serialize, Debug, AsPursType)]
+#[derive(Serialize, Debug)]
 pub struct ScopeDescriptor {
     title: &'static str,
     children: &'static [Node],

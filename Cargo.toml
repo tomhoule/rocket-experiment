@@ -10,32 +10,15 @@ diesel_codegen = { version = "*", default-features = false, features = ["postgre
 dotenv = "*"
 error-chain = "*"
 futures = "*"
-grpcio = "0.1"
-handlebars = "*"
 r2d2 = "*"
 r2d2-diesel = "*"
-protobuf = "*"
-purescript_waterslide = { version = "0.3.1", features = ["chrono_support", "uuid_support"] }
-purescript_waterslide_derive = "0.3.1"
-# rocket = "*"
-# rocket_codegen = "*"
-# rocket_contrib = { version = "*", features = ["handlebars_templates"] }
-# rocket_cors = "*"
+rocket = "*"
+rocket_codegen = "*"
+rocket_contrib = { version = "*" }
+rocket_cors = "*"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
 uuid = { version = "*", features = ["v4", "serde"] }
 validator = "0.6"
 validator_derive = "0.6"
-
-# [[bin]]
-# name = "locutions-server"
-# path = "src/main.rs"
-
-# [[bin]]
-# name = "locutions-pscodegen"
-# path = "src/pscodegen.rs"
-
-[[bin]]
-name = "repository"
-path = "src/repository.rs"

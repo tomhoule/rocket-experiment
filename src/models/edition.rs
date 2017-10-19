@@ -6,7 +6,18 @@ use validator::Validate;
 
 use db::schema::*;
 
-#[derive(Queryable, AsPursType, Serialize)]
+pub static LANGUAGE_CODES: &'static [&'static str] = &[
+    "de",
+    "en",
+    "es",
+    "fr",
+    "ja",
+    "la",
+    "ru",
+    "zh",
+];
+
+#[derive(Queryable, Serialize)]
 pub struct Edition {
     id: Uuid,
     title: String,
@@ -16,6 +27,42 @@ pub struct Edition {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     slug: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Insertable, Validate)]
+#[table_name = "editions"]
+pub struct EditionNew {
+    #[validate(length(message = "Please specify a title", min = "1"))]
+    pub title: String,
+    #[validate(length(message = "The editor is missing", min = "1"))]
+    pub editor: String,
+    #[validate(range(message = "Please specify a valid year", min = "1500", max = "3000"))]
+    pub year: i32,
+    #[validate(length(equal = "2"))]
+    pub language_code: String,
+    #[validate(length(message = "The edition needs a valid slug", min = "2"))]
+    pub slug: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, AsChangeset)]
+#[table_name = "editions"]
+pub struct EditionPatch {
+    pub title: Option<String>,
+    pub editor: Option<String>,
+    pub year: Option<i32>,
+    pub language_code: Option<String>,
+}
+
+impl EditionPatch {
+    pub fn save(
+        &self,
+        id_: Uuid,
+        conn: &PgConnection,
+    ) -> Result<Edition, diesel::result::Error> {
+        use db::schema::editions::dsl::*;
+        use diesel::*;
+        update(editions.filter(id.eq(id_))).set(self).get_result(conn)
+    }
 }
 
 impl Edition {
@@ -37,26 +84,18 @@ impl Edition {
         editions.filter(slug.eq(req_slug)).first(conn)
     }
 
-    #[deny(unused_variables)]
-    pub fn to_proto(self) -> ::rpc::repository::Edition {
-        let mut pb = ::rpc::repository::Edition::new();
-        let Edition {
-            created_at,
-            editor,
-            id: _unused_id,
-            language_code,
-            slug,
-            title,
-            updated_at,
-            year,
-        } = self;
-        pb.set_title(title);
-        pb.set_slug(slug);
-        pb.set_editor(editor);
-        pb.set_year(year);
-        pb.set_language_code(language_code);
-        pb.set_created_at(created_at.to_rfc3339());
-        pb.set_updated_at(updated_at.to_rfc3339());
-        pb
+    pub fn delete(uuid: Uuid, conn: &PgConnection) -> Result<usize, diesel::result::Error> {
+        use db::schema::editions::dsl::*;
+        use diesel::*;
+        delete(editions.find(uuid)).execute(conn)
+    }
+}
+
+impl EditionNew {
+    pub fn save(&self, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
+        use db::schema::editions::dsl::*;
+        use diesel::*;
+
+        insert(self).into(editions).get_result(conn)
     }
 }
