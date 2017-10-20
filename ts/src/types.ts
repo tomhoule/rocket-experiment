@@ -1,6 +1,6 @@
 import * as epicUtils from 'epic-utils'
+import * as api from 'typescript-fetch-api/api'
 
 export interface InjectedDependencies {
-    get: typeof epicUtils.get
-    rpc: typeof epicUtils.rpc
+  client: api.EthicsRepositoryApi
 }

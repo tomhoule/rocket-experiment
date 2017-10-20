@@ -3,11 +3,11 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Link, match } from 'react-router-dom'
 import * as a from './actions'
+import * as api from 'typescript-fetch-api/api'
 import { AppState } from './reducers'
-import * as api from './rpc/repository_pb'
 
 interface StateProps {
-    schema: api.EthicsSchema.AsObject | null
+    schema: api.RepositoryEthicsSchema | null
 }
 
 interface DispatchProps {

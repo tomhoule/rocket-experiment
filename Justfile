@@ -1,8 +1,4 @@
-clean-proto:
-  rm -rf ts/src/rpc
-  mkdir -p ts/src/rpc
-
-compile-proto: clean-proto
+compile-proto:
   # Proxy grpc stub
   protoc -I/usr/local/include -I. \
     -I$GOPATH/src \
@@ -27,6 +23,8 @@ compile-proto: clean-proto
     --swagger_out=logtostderr=true:. \
     ./proto/repository.proto
 
+  just compile-swagger
+
   # Rust
   protoc \
     -I$GOPATH/src \
@@ -36,6 +34,13 @@ compile-proto: clean-proto
     --grpc_out=src/rpc \
     --plugin=protoc-gen-grpc=`which grpc_rust_plugin` \
     ./proto/repository.proto
+
+compile-swagger:
+  swagger-codegen-cli generate \
+    -l typescript-fetch \
+    -i proto/*.swagger.json \
+    -o ./ts/typescript-fetch-api
+  yarn add ./ts/typescript-fetch-api
 
 start-postgres:
   sudo systemctl start postgresql
@@ -51,8 +56,11 @@ start-proxy:
 watch:
   watchexec -c --exts rs --restart "cargo run --bin repository"
 
-watch-web:
-  watchexec -c --exts rs,hbs --restart "cargo run --bin locutions-server"
+compile-go:
+  go build
+
+watch-proto:
+  watchexec -c --exts proto --restart "just compile-proto && just compile-go"
 
 write-schema:
   diesel print-schema > src/db/schema.rs

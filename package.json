@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@types/google-protobuf": "^3.2.7",
+    "@types/isomorphic-fetch": "^0.0.34",
     "@types/react": "^16.0.10",
     "@types/react-dom": "^16.0.1",
     "@types/react-redux": "^5.0.10",
@@ -31,8 +32,6 @@
     "webpack-dev-server": "^2.9.1"
   },
   "dependencies": {
-    "google-protobuf": "^3.4.0",
-    "grpc-web-client": "^0.3.1",
     "prop-types": "^15.6.0",
     "ramda": "^0.25.0",
     "react": "^16.0.0",
@@ -45,6 +44,7 @@
     "redux-thunk": "^2.2.0",
     "rxjs": "^5.4.3",
     "sanctuary": "^0.13.2",
+    "typescript-fetch-api": "./ts/typescript-fetch-api",
     "typescript-fsa": "^2.5.0",
     "typescript-fsa-reducers": "^0.4.4",
     "typescript-fsa-redux-observable": "^0.16.2"

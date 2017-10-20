@@ -10,6 +10,10 @@
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.6.0.tgz#093d67ed780d889c9543f6dca24ebee0b6b9fc45"
 
+"@types/isomorphic-fetch@^0.0.34":
+  version "0.0.34"
+  resolved "https://registry.yarnpkg.com/@types/isomorphic-fetch/-/isomorphic-fetch-0.0.34.tgz#3c3483e606c041378438e951464f00e4e60706d6"
+
 "@types/node@*":
   version "8.0.34"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.34.tgz#55f801fa2ddb2a40dd6dfc15ecfe1dde9c129fe9"
@@ -56,10 +60,6 @@
 "@types/redux@^3.6.0":
   version "3.6.31"
   resolved "https://registry.yarnpkg.com/@types/redux/-/redux-3.6.31.tgz#40eafa7575db36b912ce0059b85de98c205b0708"
-
-"@types/text-encoding@0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@types/text-encoding/-/text-encoding-0.0.30.tgz#2ad7bc19287094c9d2754d238e0994dd2995781f"
 
 abbrev@1:
   version "1.1.0"
@@ -856,10 +856,6 @@ braces@^2.2.2:
 brorand@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
-
-browser-headers@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/browser-headers/-/browser-headers-0.2.1.tgz#35cb1caa56e758946fb4ddd80344b9dba48d0924"
 
 browserify-aes@^1.0.0, browserify-aes@^1.0.4:
   version "1.0.8"
@@ -1935,21 +1931,9 @@ globby@^6.1.0:
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
 
-google-protobuf@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.4.0.tgz#58fbe51555a0a56b2dd3fc6f6d869fa21d57ab0a"
-
 graceful-fs@^4.1.2:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
-
-grpc-web-client@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/grpc-web-client/-/grpc-web-client-0.3.1.tgz#ab1abe15856306e47deb97b0fd2dbd3f56e5878e"
-  dependencies:
-    "@types/text-encoding" "0.0.30"
-    browser-headers "^0.2.1"
-    text-encoding "^0.6.4"
 
 handle-thing@^1.2.5:
   version "1.2.5"
@@ -2408,7 +2392,7 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
 
-isomorphic-fetch@^2.1.1:
+isomorphic-fetch@^2.1.1, isomorphic-fetch@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz#611ae1acf14f5e81f729507472819fe9733558a9"
   dependencies:
@@ -3981,10 +3965,6 @@ tar@^2.2.1:
     fstream "^1.0.2"
     inherits "2"
 
-text-encoding@^0.6.4:
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/text-encoding/-/text-encoding-0.6.4.tgz#e399a982257a276dae428bb92845cb71bdc26d19"
-
 thunky@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/thunky/-/thunky-0.1.0.tgz#bf30146824e2b6e67b0f2d7a4ac8beb26908684e"
@@ -4139,6 +4119,12 @@ type-is@~1.6.15:
   dependencies:
     media-typer "0.3.0"
     mime-types "~2.1.15"
+
+typescript-fetch-api@./ts/typescript-fetch-api:
+  version "0.0.0"
+  dependencies:
+    core-js "^2.4.0"
+    isomorphic-fetch "^2.2.1"
 
 typescript-fsa-reducers@^0.4.4:
   version "0.4.4"

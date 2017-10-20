@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { AppState } from './reducers'
-import * as api from 'rpc/repository_pb'
 import { Link, Route, Switch, match } from 'react-router-dom'
 import Editions from './Editions'
 import Home from './Home'
