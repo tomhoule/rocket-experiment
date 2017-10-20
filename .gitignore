@@ -4,4 +4,6 @@ ts/dist
 ts/typescript-fetch-api
 node_modules
 .awcache
+
 rocket-experiment
+locutions-rs

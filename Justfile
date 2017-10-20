@@ -1,3 +1,10 @@
+codegen: compile-proto compile-swagger
+
+compile-go:
+  go get
+  go build
+  go install
+
 compile-proto:
   # Proxy grpc stub
   protoc -I/usr/local/include -I. \
@@ -22,8 +29,6 @@ compile-proto:
     -Iproto \
     --swagger_out=logtostderr=true:. \
     ./proto/repository.proto
-
-  just compile-swagger
 
   # Rust
   protoc \
@@ -55,9 +60,6 @@ start-proxy:
 
 watch:
   watchexec -c --exts rs --restart "cargo run --bin repository"
-
-compile-go:
-  go build
 
 watch-proto:
   watchexec -c --exts proto --restart "just compile-proto && just compile-go"
