@@ -9,11 +9,11 @@ import (
   "github.com/grpc-ecosystem/grpc-gateway/runtime"
   "google.golang.org/grpc"
 
-  gw "proto/repository.pb"
+  gw "./proto"
 )
 
 var (
-  repoEndpoint = flag.String("repo_endpoint", "localhost:9090", "Locutions endpoint")
+  repoEndpoint = flag.String("repo_endpoint", "localhost:9090", "endpoint of YourService")
 )
 
 func run() error {
@@ -23,7 +23,7 @@ func run() error {
 
   mux := runtime.NewServeMux()
   opts := []grpc.DialOption{grpc.WithInsecure()}
-  err := gw.RegisterYourServiceHandlerFromEndpoint(ctx, mux, *repoEndpoint, opts)
+  err := gw.RegisterEthicsRepositoryHandlerFromEndpoint(ctx, mux, *repoEndpoint, opts)
   if err != nil {
     return err
   }
