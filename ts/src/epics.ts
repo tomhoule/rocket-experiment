@@ -16,4 +16,4 @@ const schemaEpic: AppEpic= (action$, store, d) =>
 const editions: AppEpic = (action$, store, d) =>
   get(action$, actions.getEditions, '/v1/ethics/editions')
 
-export const rootEpic = combineEpics() // schemaEpic, editions)
+export const rootEpic = combineEpics(schemaEpic, editions)

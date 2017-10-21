@@ -1,4 +1,5 @@
 /// <reference path='./global.d.ts' />
+import 'babel-polyfill'
 import { render } from 'react-dom'
 import { BrowserRouter, Route } from 'react-router-dom'
 import * as React from 'react'

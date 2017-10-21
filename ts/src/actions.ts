@@ -7,7 +7,7 @@ export const changeStatus = actionCreator<{ newStatus: string }>('CHANGE_STATUS'
 export const getSchema = actionCreator.async<
     {},
     api.RepositoryEthicsSchema,
-    never
+    any
 >('GET_SCHEMA')
 
 export const editionMergeChanges = actionCreator<Partial<api.RepositoryEdition>>(
