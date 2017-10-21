@@ -6,13 +6,17 @@ import { AsyncActionCreators, Success, ActionCreator, Action } from 'typescript-
 import * as jspb from 'google-protobuf'
 
 export function get<I, S, F>(
-    obs$: ActionsObservable<{ type: string }>,
-    ty: AsyncActionCreators<I, S, F>,
-    url: string,
-    params?: { [key: string]: string }
+  obs$: ActionsObservable<{ type: string }>,
+  ty: AsyncActionCreators<I, S, F>,
+  url: string,
+  params?: { [key: string]: string }
 ): Rx.Observable<Action<any>> {
-    return obs$
-        .ofAction(ty.started)
-        .mergeMap(async action => [action.payload, await fetch(url).then(r => r.json())])
-        .mergeMap(([params, result]) => [ty.done({ params, result })])
+  return obs$
+    .ofAction(ty.started)
+    .mergeMap(async action =>
+      await fetch(`http://localhost:8008${url}`)
+        .then(r => [action.payload, r.json()])
+        .catch(err => [action.payload, err]))
+    .mergeMap(([params, result]) => [ty.done({ params, result })])
+    .catch(([params, error]) => [ty.failed({ params , error })])
 }
