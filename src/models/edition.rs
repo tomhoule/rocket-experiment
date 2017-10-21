@@ -3,6 +3,7 @@ use uuid::Uuid;
 use diesel;
 use diesel::pg::PgConnection;
 use validator::Validate;
+use rpc::repository as rpc;
 
 use db::schema::*;
 
@@ -66,6 +67,29 @@ impl EditionPatch {
 }
 
 impl Edition {
+    #[deny(unused_variables)]
+    pub fn to_proto(self) -> rpc::Edition {
+        let mut edition = rpc::Edition::new();
+        let Edition {
+            id: _unused_id,
+            year,
+            editor,
+            title,
+            slug,
+            updated_at,
+            created_at,
+            language_code,
+        } = self;
+        edition.set_year(year);
+        edition.set_editor(editor);
+        edition.set_title(title);
+        edition.set_slug(slug);
+        edition.set_updated_at(updated_at.to_rfc3339());
+        edition.set_created_at(created_at.to_rfc3339());
+        edition.set_language_code(language_code);
+        edition
+    }
+
     pub fn all(conn: &PgConnection) -> Result<Vec<Edition>, diesel::result::Error> {
         use db::schema::editions::dsl::*;
         use diesel::*;

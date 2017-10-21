@@ -130,7 +130,7 @@ impl Node {
     }
 }
 
-#[derive(Serialize, Debug, AsPursType)]
+#[derive(Serialize, Debug)]
 pub struct NumberedFragment {
     // #[serde(default = "none")]
     num: Option<u8>,

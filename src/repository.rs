@@ -9,8 +9,13 @@ extern crate error_chain;
 extern crate futures;
 extern crate grpcio;
 extern crate protobuf;
+extern crate purescript_waterslide;
+#[macro_use]
+extern crate purescript_waterslide_derive;
 extern crate r2d2;
 extern crate r2d2_diesel;
+// extern crate rocket;
+// extern crate rocket_contrib;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -20,16 +25,16 @@ extern crate uuid;
 extern crate validator_derive;
 extern crate validator;
 
+// use rocket::response::NamedFile;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 
+mod api;
 mod db;
-mod error;
 mod models;
 mod rpc;
 mod schemas;
 
-use error::Error;
 use futures::Future;
 use schemas::ethica::ETHICA;
 
@@ -43,7 +48,7 @@ struct Repository {
 }
 
 impl Repository {
-    fn handle(&self, err: Error) {
+    fn handle(&self, err: api::Error) {
         panic!("{}", err);
     }
 
@@ -52,10 +57,10 @@ impl Repository {
         ctx: ::grpcio::RpcContext,
         req: Req,
         sink: ::grpcio::UnarySink<Res>,
-        inner: &Fn(&Self, Req, &PgConnection) -> Result<Res, Error>
+        inner: &Fn(&Self, Req, &PgConnection) -> Result<Res, api::Error>
     ) {
         self.pool.get()
-            .map_err(Error::from)
+            .map_err(api::Error::from)
             .and_then(|conn| inner(self, req, &conn))
             .and_then(|res| {
                 ctx.spawn(sink.success(res).map_err(bail));
@@ -71,12 +76,12 @@ fn get_editions(
     _ctx: &Repository,
     _req: rpc::repository::GetEditionsParams,
     conn: &PgConnection
-) -> Result<rpc::repository::Editions, Error> {
+) -> Result<rpc::repository::Editions, api::Error> {
     use protobuf::RepeatedField;
     use ::std::iter::*;
 
     let mut response = rpc::repository::Editions::new();
-    let editions = models::Edition::all(&conn).map_err(Error::from)?;
+    let editions = models::Edition::all(&conn).map_err(api::Error::from)?;
     let transformed = editions.into_iter().map(|ed| ed.to_proto());
     response.set_data(RepeatedField::from_iter(transformed));
     Ok(response)
