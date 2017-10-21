@@ -1,4 +1,4 @@
-codegen: compile-proto compile-swagger
+codegen: compile-proto
 
 compile-go:
   go get
@@ -40,13 +40,6 @@ compile-proto:
     --plugin=protoc-gen-grpc=`which grpc_rust_plugin` \
     ./proto/repository.proto
 
-compile-swagger:
-  swagger-codegen-cli generate \
-    -l typescript-fetch \
-    -i proto/*.swagger.json \
-    -o ./ts/typescript-fetch-api
-  yarn add ./ts/typescript-fetch-api
-
 start-postgres:
   sudo systemctl start postgresql
 
@@ -59,7 +52,7 @@ start-proxy:
     --backend_tls_noverify
 
 watch:
-  watchexec -c --exts rs --restart "cargo run --bin repository"
+  watchexec -c --exts rs --restart "cargo run"
 
 watch-proto:
   watchexec -c --exts proto --restart "just compile-proto && just compile-go"
