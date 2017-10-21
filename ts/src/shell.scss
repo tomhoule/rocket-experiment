@@ -37,10 +37,7 @@ body {
 .content {
   background-color: $bg-color;
   color: $fg-color;
-  display: grid;
-  grid-template-rows: 1.2em 1fr;
-  grid-template-columns: 1.2em 1fr;
-  flex-direction: column;
+  padding: 1em;
 
   nav {
     width: $content-width;

@@ -4,15 +4,15 @@ import { AppState } from 'reducers'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router-dom'
 import * as api from 'api-types'
-
 import * as a from 'actions'
+import styles = require('./home.scss')
 
 interface StateProps {
-    editions: api.RepositoryEdition[]
+  editions: api.RepositoryEdition[]
 }
 
 interface DispatchProps {
-    getEditions: typeof a.getEditions.started
+  getEditions: typeof a.getEditions.started
 }
 
 interface OwnProps {}
@@ -20,27 +20,29 @@ interface OwnProps {}
 type Props = StateProps & DispatchProps
 
 export class Editions extends React.Component<Props, never> {
-    componentWillMount() {
-        this.props.getEditions({})
-    }
+  componentWillMount() {
+    this.props.getEditions({})
+  }
 
-    render() {
-        return (
-            <div>
-                <h2>Editions</h2>
-                {this.props.editions.map(ed =>
-                    <Link key={ed.slug} to={`/ethica/editions/${ed.slug}`}>
-                        {ed.title}
-                    </Link>)}
-            </div>)
-    }
+  render() {
+    return (
+      <div className={styles.home}>
+        <h2>Editions</h2>
+        <div className={styles.books}>
+          {this.props.editions.map(ed =>
+            <Link key={ed.slug} to={`/ethica/editions/${ed.slug}`}>
+              {ed.title}
+            </Link>)}
+        </div>
+      </div>)
+  }
 }
 
 export default connect<StateProps, DispatchProps, OwnProps>(
-    (state: AppState) => ({
-        editions: state.editions.index,
-    }),
-    dispatch => bindActionCreators({
-        getEditions: a.getEditions.started,
-    }, dispatch)
+  (state: AppState) => ({
+    editions: state.editions.index,
+  }),
+  dispatch => bindActionCreators({
+    getEditions: a.getEditions.started,
+  }, dispatch)
 )(Editions)

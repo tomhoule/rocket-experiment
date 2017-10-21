@@ -1,0 +1,18 @@
+@import './shell.scss';
+
+.home {
+  .books {
+    a {
+      display: inline-block;
+      padding: 10px;
+      border: solid 1px $fg-color;
+      border-radius: 2px;
+      text-decoration: none;
+      color: $fg-color;
+    }
+
+    a:visited {
+      color: $fg-color;
+    }
+  }
+}

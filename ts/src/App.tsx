@@ -19,7 +19,7 @@ type Props = StateProps & DispatchProps & OwnProps
 export const App = (props: Props) => (
   <div className={styles['app-container']}>
     <div className={styles.banner}>
-      <Link className={styles.title} to='/'>SORBET PÊCHE</Link>
+      <Link className={styles.title} to='/'>ET ÇA NE FAIT QUE COMMENCER</Link>
     </div>
     <div className={styles.content}>
       <div>

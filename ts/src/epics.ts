@@ -10,10 +10,14 @@ import { get } from './epic-utils'
 
 type AppEpic = Epic<Action, AppState, InjectedDependencies>
 
-const schemaEpic: AppEpic= (action$, store, d) =>
-  get(action$, actions.getSchema, '/v1/ethics/schema')
+const schemaEpic: AppEpic= (action$, store, d) => {
+  const filtered$ = action$.filter(() => !store.getState().schema)
+  return get(filtered$, actions.getSchema, '/v1/ethics/schema')
+}
 
-const editions: AppEpic = (action$, store, d) =>
-  get(action$, actions.getEditions, '/v1/ethics/editions')
+const editions: AppEpic = (action$, store, d) => {
+  const filtered$ = action$.filter(() => !store.getState().editions.index.length)
+  return get(filtered$, actions.getEditions, '/v1/ethics/editions')
+}
 
 export const rootEpic = combineEpics(schemaEpic, editions)
