@@ -141,9 +141,9 @@ fn edit_fragment(
     Ok(models::FragmentPatch::from_proto(req)?.save(conn)?.into_proto())
 }
 
-fn dead_end<T, U>(ctx: &Repository, req: T) -> Result<U, Error> {
-    unimplemented!()
-}
+// fn dead_end<T, U>(ctx: &Repository, req: T) -> Result<U, Error> {
+//     unimplemented!()
+// }
 
 impl rpc::repository_grpc::EthicsRepository for Repository {
     handler! {

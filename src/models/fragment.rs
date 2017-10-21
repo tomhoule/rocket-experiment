@@ -46,8 +46,7 @@ impl FragmentPatch {
             // .on_conflict(())
             // .do_update()
             // .set(value.eq(self.value))
-            .execute(conn);
-        unimplemented!()
+            .get_result(conn)
     }
 }
 
