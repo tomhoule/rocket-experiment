@@ -43,31 +43,36 @@ struct Repository {
 }
 
 impl Repository {
-    fn handle(&self, err: Error) {
-        panic!("{}", err);
-    }
+    // fn with_connection<Req, Res>(
+    //     &self,
+    //     ctx: ::grpcio::RpcContext,
+    //     req: Req,
+    //     sink: ::grpcio::UnarySink<Res>,
+    //     inner: &Fn(&Self, Req, &PgConnection) -> Result<Res, Error>
+    // ) {
+    //     let outcome = self.pool.get()
+    //         .map_err(Error::from)
+    //         .and_then(|conn| inner(self, req, &conn));
+    //     match outcome {
+    //         Ok(res) => ctx.spawn(sink.success(res).map_err(bail)),
+    //         Err(err) => ctx.spawn(sink.fail(err.into_grpc_status()).map_err(bail)),
+    //     }
+    // }
 
     fn with_connection<Req, Res>(
         &self,
-        ctx: ::grpcio::RpcContext,
         req: Req,
-        sink: ::grpcio::UnarySink<Res>,
         inner: &Fn(&Self, Req, &PgConnection) -> Result<Res, Error>
-    ) {
+    ) -> Result<Res, Error> {
         self.pool.get()
             .map_err(Error::from)
             .and_then(|conn| inner(self, req, &conn))
-            .and_then(|res| {
-                ctx.spawn(sink.success(res).map_err(bail));
-                Ok(())
-            })
-            .map_err(|err| self.handle(err))
-            .ok();
     }
 }
 
+
 macro_rules! handler {
-    ($name:ident, $req:path, $res:path, $inner:path) => {
+    ($name:ident, $req:path, $res:path, $inner:expr) => {
         fn $name(
             &self,
             ctx: ::grpcio::RpcContext,
@@ -98,6 +103,23 @@ fn get_editions(
     Ok(response)
 }
 
+fn get_fragments(
+    _ctx: &Repository,
+    req: rpc::repository::GetFragmentsParams,
+    conn: &PgConnection
+) -> Result<rpc::repository::EthicsFragments, Error> {
+    use rpc::repository::*;
+    let mut response = EthicsFragments::new();
+    let fragments = models::Fragment::for_edition(&req.edition_slug, conn)?;
+    {
+        let mut map = response.mut_fragments();
+        for fragment in fragments.into_iter() {
+            map.insert(fragment.fragment_path.clone(), fragment.into_proto());
+        }
+    }
+    Ok(response)
+}
+
 fn get_schema(
     ctx: &Repository,
     req: rpc::repository::GetSchemaParams
@@ -109,6 +131,14 @@ fn get_schema(
     let parts = ETHICA.0.iter().map(|node| node.to_protobuf());
     schema.set_parts(RepeatedField::from_iter(parts));
     Ok(schema)
+}
+
+fn edit_fragment(
+    ctx: &Repository,
+    req: rpc::repository::EthicsFragment,
+    conn: &PgConnection,
+) -> Result<rpc::repository::EthicsFragment, Error> {
+    Ok(models::FragmentPatch::from_proto(req)?.save(conn)?.into_proto())
 }
 
 fn dead_end<T, U>(ctx: &Repository, req: T) -> Result<U, Error> {
@@ -127,23 +157,21 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
         get_fragments,
         rpc::repository::GetFragmentsParams,
         rpc::repository::EthicsFragments,
-        dead_end
+        |s: &Repository, req| { s.with_connection(req, &get_fragments) }
     }
 
     handler! {
         edit_fragment,
         rpc::repository::EthicsFragment,
         rpc::repository::EthicsFragment,
-        dead_end
+        |s: &Repository, req| { s.with_connection(req, &edit_fragment) }
     }
 
-    fn get_editions(
-        &self,
-        ctx: ::grpcio::RpcContext,
-        req: rpc::repository::GetEditionsParams,
-        sink: ::grpcio::UnarySink<rpc::repository::Editions>
-    ) {
-        self.with_connection(ctx, req, sink, &get_editions);
+    handler! {
+        get_editions,
+        rpc::repository::GetEditionsParams,
+        rpc::repository::Editions,
+        |itself: &Repository, req| { itself.with_connection(req, &get_editions) }
     }
 }
 

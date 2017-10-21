@@ -12,10 +12,9 @@ table! {
 }
 
 table! {
-    fragments (id) {
-        id -> Uuid,
+    fragments (edition_slug, fragment_path) {
+        edition_slug -> Varchar,
         fragment_path -> Text,
-        edition_id -> Uuid,
         value -> Text,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,

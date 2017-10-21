@@ -1,5 +1,6 @@
 use diesel::result::Error as DieselError;
 use r2d2::GetTimeout;
+use validator;
 use grpcio::{
     RpcStatus,
     RpcStatusCode
@@ -16,6 +17,14 @@ error_chain! {
         DbTimeout(GetTimeout);
         Json(::json::Error);
         UuidParseError(uuid::ParseError);
+        ValidationError(validator::ValidationError);
+    }
+
+    errors {
+        Validation(errs: validator::ValidationErrors) {
+            description("Invalid input from client")
+            display("Invalid message: {:?}", errs)
+        }
     }
 }
 
@@ -25,5 +34,11 @@ impl Error {
             status: RpcStatusCode::Unimplemented,
             details: None,
         }
+    }
+}
+
+impl ::std::convert::From<validator::ValidationErrors> for Error {
+    fn from(errs: validator::ValidationErrors) -> Error {
+        ErrorKind::Validation(errs).into()
     }
 }
