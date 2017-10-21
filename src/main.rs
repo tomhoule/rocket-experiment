@@ -66,6 +66,22 @@ impl Repository {
     }
 }
 
+macro_rules! handler {
+    ($name:ident, $req:path, $res:path, $inner:path) => {
+        fn $name(
+            &self,
+            ctx: ::grpcio::RpcContext,
+            req: $req,
+            sink: ::grpcio::UnarySink<$res>
+        ) {
+            match $inner(&self, req) {
+                Ok(res) => ctx.spawn(sink.success(res).map_err(bail)),
+                Err(err) => ctx.spawn(sink.fail(err.into_grpc_status()).map_err(bail)),
+            }
+        }
+    }
+}
+
 
 fn get_editions(
     _ctx: &Repository,
@@ -82,20 +98,43 @@ fn get_editions(
     Ok(response)
 }
 
-impl rpc::repository_grpc::EthicsRepository for Repository {
-    fn get_schema(
-        &self,
-        ctx: ::grpcio::RpcContext,
-        _req: rpc::repository::GetSchemaParams,
-        sink: ::grpcio::UnarySink<rpc::repository::EthicsSchema>
-    ) {
-        use protobuf::RepeatedField;
-        use ::std::iter::*;
+fn get_schema(
+    ctx: &Repository,
+    req: rpc::repository::GetSchemaParams
+) -> Result<rpc::repository::EthicsSchema, Error> {
+    use protobuf::RepeatedField;
+    use ::std::iter::*;
 
-        let mut schema = rpc::repository::EthicsSchema::new();
-        let parts = ETHICA.0.iter().map(|node| node.to_protobuf());
-        schema.set_parts(RepeatedField::from_iter(parts));
-        ctx.spawn(sink.success(schema).map_err(bail));
+    let mut schema = rpc::repository::EthicsSchema::new();
+    let parts = ETHICA.0.iter().map(|node| node.to_protobuf());
+    schema.set_parts(RepeatedField::from_iter(parts));
+    Ok(schema)
+}
+
+fn dead_end<T, U>(ctx: &Repository, req: T) -> Result<U, Error> {
+    unimplemented!()
+}
+
+impl rpc::repository_grpc::EthicsRepository for Repository {
+    handler! {
+        get_schema,
+        rpc::repository::GetSchemaParams,
+        rpc::repository::EthicsSchema,
+        get_schema
+    }
+
+    handler! {
+        get_fragments,
+        rpc::repository::GetFragmentsParams,
+        rpc::repository::EthicsFragments,
+        dead_end
+    }
+
+    handler! {
+        edit_fragment,
+        rpc::repository::EthicsFragment,
+        rpc::repository::EthicsFragment,
+        dead_end
     }
 
     fn get_editions(

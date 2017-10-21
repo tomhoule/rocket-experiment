@@ -14,6 +14,20 @@ service EthicsRepository {
       get: "/v1/ethics/editions"
     };
   }
+  rpc GetFragments (GetFragmentsParams) returns (EthicsFragments) {
+    option (google.api.http) = {
+      get: "/v1/ethics/fragments"
+    };
+  }
+  rpc EditFragment (EthicsFragment) returns (EthicsFragment) {
+    option (google.api.http) = {
+      post: "/v1/ethics/fragments"
+    };
+  }
+}
+
+message GetFragmentsParams {
+  string edition_slug = 1;
 }
 
 message GetEditionsParams {
@@ -35,6 +49,16 @@ message Editions {
 }
 
 message GetSchemaParams {}
+
+message EthicsFragments {
+  map<string, EthicsFragment> fragments = 1;
+}
+
+message EthicsFragment {
+  string path = 1;
+  string edition_slug = 2;
+  string value = 3;
+}
 
 message EthicsSchema {
   enum NodeType {
