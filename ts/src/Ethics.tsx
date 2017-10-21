@@ -27,13 +27,15 @@ export class Ethics extends React.Component<Props, {}> {
   }
 
   renderNode = (node: api.EthicsSchemaNode, idx: number): React.ReactElement<any> => {
+    const num = node.num ? node.num : ''
     return (
       <div
         className={styles.node}
         key={`${node.node_type}${node.num}${idx}`}
       >
         <div>
-          {node.node_type} {node.num === 0 ? '' : node.num}
+          {node.node_type && `${node.node_type} ${num}`}
+          {node.title && `--- Title: ${node.title}`}
         </div>
         <div>
           {(node.children || []).map(this.renderNode)}

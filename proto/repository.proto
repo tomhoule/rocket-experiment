@@ -39,7 +39,7 @@ message GetSchemaParams {}
 message EthicsSchema {
   enum NodeType {
     UNSPECIFIED = 0;
-    ANONYMOUS_FRAGMENT = 1;
+    UNTITLED = 1;
     ALITER = 2;
     APPENDIX = 3;
     AXIOMA = 4;

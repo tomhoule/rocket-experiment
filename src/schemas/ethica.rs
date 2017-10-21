@@ -47,7 +47,7 @@ impl Node {
         match *self {
             AnonymousFragment(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
-                node.set_node_type(EthicsSchema_NodeType::ANONYMOUS_FRAGMENT);
+                node.set_node_type(EthicsSchema_NodeType::UNTITLED);
                 node.set_num(nf.num.unwrap_or(0) as i32);
                 node.set_children(RepeatedField::from_vec(children));
             },
