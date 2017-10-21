@@ -6,6 +6,7 @@ import { AppState } from './reducers'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import styles = require('./ethics.scss')
+import Fragment from './Fragment'
 
 interface StateProps {
   schema: api.RepositoryEthicsSchema | null
@@ -28,6 +29,7 @@ export class Ethics extends React.Component<Props, {}> {
 
   renderNode = (node: api.EthicsSchemaNode, idx: number): React.ReactElement<any> => {
     const num = node.num ? node.num : ''
+    const { editionSlug } = this.props.match.params
     return (
       <div
         className={styles.node}
@@ -37,6 +39,7 @@ export class Ethics extends React.Component<Props, {}> {
           {node.node_type && `${node.node_type} ${num}`}
           {node.title && `--- Title: ${node.title}`}
         </div>
+        <Fragment editionSlug={editionSlug} path='meh' />
         <div>
           {(node.children || []).map(this.renderNode)}
         </div>
