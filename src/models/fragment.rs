@@ -6,11 +6,13 @@ use diesel::*;
 use rpc::repository::EthicsFragment;
 use validator::Validate;
 use db::schema::*;
+use uuid::Uuid;
 
 #[derive(Queryable)]
 pub struct Fragment {
+    pub id: Uuid,
+    pub edition_id: Uuid,
     pub fragment_path: String,
-    pub edition_slug: String,
     pub value: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
@@ -21,8 +23,7 @@ pub struct Fragment {
 pub struct FragmentPatch {
     #[validate(length(min = "1"))]
     pub fragment_path: String,
-    #[validate(length(min = "1"))]
-    pub edition_slug: String,
+    pub edition_id: Uuid,
     #[validate(length(min = "1"))]
     pub value: String,
 }
@@ -31,7 +32,7 @@ impl FragmentPatch {
     pub fn from_proto(proto: EthicsFragment) -> Result<Self, Error> {
         let patch = FragmentPatch {
             fragment_path: proto.path,
-            edition_slug: proto.edition_slug,
+            edition_id: proto.edition_id.parse()?,
             value: proto.value,
         };
         patch.validate()?;
@@ -51,10 +52,10 @@ impl FragmentPatch {
 }
 
 impl Fragment {
-    pub fn for_edition(slug: &str, conn: &PgConnection) -> Result<Vec<Fragment>, diesel::result::Error> {
+    pub fn for_edition(id: &str, conn: &PgConnection) -> Result<Vec<Fragment>, diesel::result::Error> {
         use db::schema::fragments::dsl::*;
         fragments
-            .filter(edition_slug.eq(slug))
+            .filter(edition_id.eq(id))
             .load(conn)
     }
 
@@ -62,13 +63,13 @@ impl Fragment {
     pub fn into_proto(self) -> EthicsFragment {
         let Fragment {
             fragment_path,
-            edition_slug,
+            edition_id,
             value,
             ..
         } = self;
         let mut proto = EthicsFragment::new();
         proto.set_path(fragment_path);
-        proto.set_edition_slug(edition_slug);
+        proto.set_edition_id(format!("{}", edition_id));
         proto.set_value(value);
         proto
     }

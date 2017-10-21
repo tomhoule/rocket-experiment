@@ -43,22 +43,6 @@ struct Repository {
 }
 
 impl Repository {
-    // fn with_connection<Req, Res>(
-    //     &self,
-    //     ctx: ::grpcio::RpcContext,
-    //     req: Req,
-    //     sink: ::grpcio::UnarySink<Res>,
-    //     inner: &Fn(&Self, Req, &PgConnection) -> Result<Res, Error>
-    // ) {
-    //     let outcome = self.pool.get()
-    //         .map_err(Error::from)
-    //         .and_then(|conn| inner(self, req, &conn));
-    //     match outcome {
-    //         Ok(res) => ctx.spawn(sink.success(res).map_err(bail)),
-    //         Err(err) => ctx.spawn(sink.fail(err.into_grpc_status()).map_err(bail)),
-    //     }
-    // }
-
     fn with_connection<Req, Res>(
         &self,
         req: Req,
@@ -110,7 +94,7 @@ fn get_fragments(
 ) -> Result<rpc::repository::EthicsFragments, Error> {
     use rpc::repository::*;
     let mut response = EthicsFragments::new();
-    let fragments = models::Fragment::for_edition(&req.edition_slug, conn)?;
+    let fragments = models::Fragment::for_edition(&req.edition_id, conn)?;
     {
         let mut map = response.mut_fragments();
         for fragment in fragments.into_iter() {
@@ -141,9 +125,9 @@ fn edit_fragment(
     Ok(models::FragmentPatch::from_proto(req)?.save(conn)?.into_proto())
 }
 
-// fn dead_end<T, U>(ctx: &Repository, req: T) -> Result<U, Error> {
-//     unimplemented!()
-// }
+fn dead_end<T, U>(ctx: &Repository, _req: T) -> Result<U, Error> {
+    unimplemented!()
+}
 
 impl rpc::repository_grpc::EthicsRepository for Repository {
     handler! {
@@ -172,6 +156,13 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
         rpc::repository::GetEditionsParams,
         rpc::repository::Editions,
         |itself: &Repository, req| { itself.with_connection(req, &get_editions) }
+    }
+
+    handler! {
+        create_edition,
+        rpc::repository::Edition,
+        rpc::repository::Edition,
+        dead_end
     }
 }
 

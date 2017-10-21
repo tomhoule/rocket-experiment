@@ -9,6 +9,11 @@ service EthicsRepository {
       get: "/v1/ethics/schema"
     };
   }
+  rpc CreateEdition (Edition) returns (Edition) {
+    option (google.api.http) = {
+      post: "/v1/ethics/editions"
+    };
+  }
   rpc GetEditions (GetEditionsParams) returns (Editions) {
     option (google.api.http) = {
       get: "/v1/ethics/editions"
@@ -27,7 +32,7 @@ service EthicsRepository {
 }
 
 message GetFragmentsParams {
-  string edition_slug = 1;
+  string edition_id = 1;
 }
 
 message GetEditionsParams {
@@ -35,13 +40,14 @@ message GetEditionsParams {
 }
 
 message Edition {
-  string title = 1;
-  string slug = 2;
-  string editor = 3;
-  int32 year = 4;
-  string language_code = 5;
-  string created_at = 6;
-  string updated_at = 7;
+  string id = 1;
+  string title = 2;
+  string slug = 3;
+  string editor = 4;
+  int32 year = 5;
+  string language_code = 6;
+  string created_at = 7;
+  string updated_at = 8;
 }
 
 message Editions {
@@ -56,7 +62,7 @@ message EthicsFragments {
 
 message EthicsFragment {
   string path = 1;
-  string edition_slug = 2;
+  string edition_id = 2;
   string value = 3;
 }
 
