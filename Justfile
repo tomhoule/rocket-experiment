@@ -1,9 +1,7 @@
 codegen: compile-proto
 
 compile-go:
-  go get
   go build
-  go install
 
 compile-proto:
   # Proxy grpc stub
@@ -39,6 +37,12 @@ compile-proto:
     --grpc_out=src/rpc \
     --plugin=protoc-gen-grpc=`which grpc_rust_plugin` \
     ./proto/repository.proto
+
+compile-swagger:
+  swagger-codegen generate \
+    -l html2 \
+    -i proto/*.swagger.json \
+    -o api-docs
 
 start-postgres:
   sudo systemctl start postgresql

@@ -28,6 +28,7 @@ func run() error {
     return err
   }
 
+  glog.Info("grpc gateway listening on 8080")
   return http.ListenAndServe(":8080", mux)
 }
 
