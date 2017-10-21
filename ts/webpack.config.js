@@ -16,7 +16,22 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /.js/,
+        test: /\.scss$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              importLoaders: 1,
+              localIdentName: '[local]___[hash:base64:5]',
+            },
+          },
+          'sass-loader',
+        ],
+      },
+      {
+        test: /\.js$/,
         use: [
           {
             loader: 'babel-loader',
@@ -29,7 +44,7 @@ module.exports = {
         ],
       },
       {
-        test: /.tsx?/,
+        test: /\.tsx?$/,
         use: [
           {
             loader: 'babel-loader',

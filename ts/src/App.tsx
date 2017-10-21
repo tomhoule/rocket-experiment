@@ -4,6 +4,7 @@ import { Link, Route, Switch, match } from 'react-router-dom'
 import Editions from './Editions'
 import Home from './Home'
 import Ethics from './Ethics'
+import styles = require('./shell.scss')
 
 interface StateProps {}
 
@@ -16,17 +17,19 @@ interface OwnProps {
 type Props = StateProps & DispatchProps & OwnProps
 
 export const App = (props: Props) => (
-    <div>
-        <div>
-            <Link to='/'>Home</Link>
-        </div>
-        <div className='container'>
-            <Switch>
-                <Route exact path='/' component={Home} />
-                <Route exact path='/ethica' component={Editions} />
-                <Route path='/ethica/:editionSlug' component={Ethics} />
-            </Switch>
-        </div>
-    </div>)
+  <div className={styles['app-container']}>
+    <div className={styles.banner}>
+      <Link className={styles.title} to='/'>SORBET PÊCHE</Link>
+    </div>
+    <div className={styles.content}>
+      <div>
+        <Switch>
+          <Route exact path='/' component={Home} />
+          <Route exact path='/ethica' component={Editions} />
+          <Route path='/ethica/:editionSlug' component={Ethics} />
+        </Switch>
+      </div>
+    </div>
+  </div>)
 
 export default App

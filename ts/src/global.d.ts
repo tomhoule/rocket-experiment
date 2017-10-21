@@ -3,3 +3,8 @@ interface Action {
 }
 
 declare module 'core-js/library/fn/object/assign';
+
+declare module '*.scss' {
+  const styles: any
+  export = styles
+}
