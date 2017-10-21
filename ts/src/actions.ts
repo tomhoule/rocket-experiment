@@ -1,11 +1,8 @@
 import actionCreatorFactory from 'typescript-fsa'
-import * as api from 'typescript-fetch-api/api'
+import * as api from 'api-types'
 
 const actionCreator = actionCreatorFactory('main')
 export const changeStatus = actionCreator<{ newStatus: string }>('CHANGE_STATUS')
-
-const client = new api.EthicsRepositoryApi()
-client.getSchema()
 
 export const getSchema = actionCreator.async<
     {},

@@ -1,7 +1,7 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers'
 import * as a from './actions'
 import * as redux from 'redux'
-import * as api from 'typescript-fetch-api/api'
+import * as api from 'api-types'
 
 interface CrudState<T> {
     index: T[]

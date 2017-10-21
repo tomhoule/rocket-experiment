@@ -137,6 +137,11 @@ anymatch@^1.3.0:
     micromatch "^2.1.5"
     normalize-path "^2.0.0"
 
+api-types@./ts/api-types:
+  version "1.0.0"
+  dependencies:
+    isomorphic-fetch "^2.2.1"
+
 aproba@^1.0.3:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-1.2.0.tgz#6802e6264efd18c790a1b0d517f0f2627bf2c94a"
@@ -4119,12 +4124,6 @@ type-is@~1.6.15:
   dependencies:
     media-typer "0.3.0"
     mime-types "~2.1.15"
-
-typescript-fetch-api@./ts/typescript-fetch-api:
-  version "0.0.0"
-  dependencies:
-    core-js "^2.4.0"
-    isomorphic-fetch "^2.2.1"
 
 typescript-fsa-reducers@^0.4.4:
   version "0.4.4"

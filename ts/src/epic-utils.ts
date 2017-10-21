@@ -6,7 +6,7 @@ import { AsyncActionCreators, Success, ActionCreator, Action } from 'typescript-
 import * as jspb from 'google-protobuf'
 
 export function get<I, S, F>(
-    obs$: ActionsObservable<Action<any>>,
+    obs$: ActionsObservable<{ type: string }>,
     ty: AsyncActionCreators<I, S, F>,
     url: string,
     params?: { [key: string]: string }

@@ -44,6 +44,15 @@ compile-swagger:
     -i proto/*.swagger.json \
     -o api-docs
 
+  swagger-codegen generate \
+    -t ts/swagger/typescript-fetch \
+    -c ts/swagger-ts.config.json \
+    -l typescript-fetch \
+    -i proto/*.swagger.json \
+    -o ts/api-types
+
+  yarn add ./ts/api-types
+
 start-postgres:
   sudo systemctl start postgresql
 

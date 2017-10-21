@@ -5,23 +5,15 @@ import { AsyncActionCreators } from 'typescript-fsa'
 import 'typescript-fsa-redux-observable'
 import { InjectedDependencies } from './types'
 import { AppState } from './reducers'
-import * as api from 'typescript-fetch-api/api'
+import * as api from 'api-types'
+import { get } from './epic-utils'
 
 type AppEpic = Epic<Action, AppState, InjectedDependencies>
 
-  const schemaEpic: AppEpic= (action$, store, d) =>
-  action$
-    .ofAction(actions.getSchema.started)
-    .mergeMap(async ({ payload: params }) =>
-      await d.client.getSchema(params)
-      .then(result => actions.getSchema.done({ params, result })))
+const schemaEpic: AppEpic= (action$, store, d) =>
+  get(action$, actions.getSchema, '/v1/ethics/schema')
 
 const editions: AppEpic = (action$, store, d) =>
-  action$
-    .ofAction(actions.getEditions.started)
-    .mergeMap(async ({ payload: params }) => {
-      const result = await d.client.getEditions(params)
-      return actions.getEditions.done({ params, result })
-    })
+  get(action$, actions.getEditions, '/v1/ethics/editions')
 
 export const rootEpic = combineEpics() // schemaEpic, editions)

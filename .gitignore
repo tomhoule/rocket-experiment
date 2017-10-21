@@ -1,9 +1,14 @@
+api-docs
+src/rpc
 /target/
 **/*.rs.bk
 ts/dist
 ts/typescript-fetch-api
 node_modules
 .awcache
+ts/api-types
+proto/**/*
+!proto/**/*.proto
 
 rocket-experiment
 locutions-rs

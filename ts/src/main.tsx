@@ -12,7 +12,7 @@ import { rootEpic } from './epics'
 import * as epicUtils from 'epic-utils'
 import 'rxjs'
 import { reducers } from './reducers'
-import * as api from 'typescript-fetch-api/api'
+import * as api from 'api-types'
 import { InjectedDependencies } from './types'
 
 const composeEnhancers =
@@ -21,11 +21,14 @@ const composeEnhancers =
     : redux.compose
 
 function main() {
-  const epicMiddleware = createEpicMiddleware<Action, {}, InjectedDependencies>(rootEpic, {
-    dependencies: {
-      client: new api.EthicsRepositoryApi(),
-    },
-  })
+  const epicMiddleware = createEpicMiddleware<Action, {}, InjectedDependencies>(
+    rootEpic,
+    {
+      dependencies: {
+        get: epicUtils.get,
+      },
+    }
+  )
   const store = redux.createStore(reducers, composeEnhancers(redux.applyMiddleware(epicMiddleware)))
   const root = document.getElementById('react-root')
   render(

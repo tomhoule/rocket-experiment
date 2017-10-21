@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Link, match } from 'react-router-dom'
 import * as a from './actions'
-import * as api from 'typescript-fetch-api/api'
+import * as api from 'api-types'
 import { AppState } from './reducers'
 
 interface StateProps {
