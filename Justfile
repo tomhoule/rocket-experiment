@@ -1,4 +1,4 @@
-codegen: compile-proto
+codegen: compile-proto compile-swagger
 
 compile-go:
   go build
