@@ -67,6 +67,9 @@ start-proxy:
 watch:
   watchexec -c --exts rs --restart "cargo run"
 
+watch-go:
+  watchexec -c --exts go --restart "go build"
+
 watch-proto:
   watchexec -c --exts proto --restart "just compile-proto && just compile-go"
 

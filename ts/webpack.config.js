@@ -37,7 +37,7 @@ module.exports = {
             loader: 'babel-loader',
             options: {
               presets: [
-                ['env', { targets: { browsers: ['IE 9'] } }],
+                ['env', { targets: { browsers: ['IE 11'] } }],
               ],
             },
           },
