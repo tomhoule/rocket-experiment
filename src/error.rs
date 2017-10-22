@@ -1,10 +1,7 @@
 use diesel::result::Error as DieselError;
 use r2d2::GetTimeout;
 use validator;
-use grpcio::{
-    RpcStatus,
-    RpcStatusCode
-};
+use grpcio::{RpcStatus, RpcStatusCode};
 use uuid;
 
 error_chain! {

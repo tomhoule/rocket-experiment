@@ -21,11 +21,9 @@ pub struct Fragment {
 #[derive(Validate, AsChangeset, Insertable)]
 #[table_name = "fragments"]
 pub struct FragmentPatch {
-    #[validate(length(min = "1"))]
-    pub fragment_path: String,
+    #[validate(length(min = "1"))] pub fragment_path: String,
     pub edition_id: Uuid,
-    #[validate(length(min = "1"))]
-    pub value: String,
+    #[validate(length(min = "1"))] pub value: String,
 }
 
 impl FragmentPatch {
@@ -52,11 +50,12 @@ impl FragmentPatch {
 }
 
 impl Fragment {
-    pub fn for_edition(edid: &Uuid, conn: &PgConnection) -> Result<Vec<Fragment>, diesel::result::Error> {
+    pub fn for_edition(
+        edid: &Uuid,
+        conn: &PgConnection,
+    ) -> Result<Vec<Fragment>, diesel::result::Error> {
         use db::schema::fragments::dsl::*;
-        fragments
-            .filter(edition_id.eq(edid))
-            .load(conn)
+        fragments.filter(edition_id.eq(edid)).load(conn)
     }
 
     #[deny(unused_variables)]

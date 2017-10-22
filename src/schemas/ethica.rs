@@ -41,7 +41,7 @@ pub enum Node {
 
 impl Node {
     pub fn to_protobuf(&self) -> ::rpc::repository::EthicsSchema_Node {
-        use ::rpc::repository::*;
+        use rpc::repository::*;
         use self::Node::*;
         use protobuf::RepeatedField;
 
@@ -52,81 +52,81 @@ impl Node {
                 node.set_node_type(EthicsSchema_NodeType::UNTITLED);
                 node.set_num(nf.num.unwrap_or(0) as i32);
                 node.set_children(RepeatedField::from_vec(children));
-            },
+            }
             Aliter => {
                 node.set_node_type(EthicsSchema_NodeType::ALITER);
-            },
+            }
             Appendix => {
                 node.set_node_type(EthicsSchema_NodeType::APPENDIX);
-            },
+            }
             Axioma(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
                 node.set_node_type(EthicsSchema_NodeType::AXIOMA);
                 node.set_num(nf.num.unwrap_or(0) as i32);
                 node.set_children(RepeatedField::from_vec(children));
-            },
+            }
             Caput(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
                 node.set_node_type(EthicsSchema_NodeType::CAPUT);
                 node.set_num(nf.num.unwrap_or(0) as i32);
                 node.set_children(RepeatedField::from_vec(children));
-            },
+            }
             Corollarium(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
                 node.set_node_type(EthicsSchema_NodeType::COROLLARIUM);
                 node.set_num(nf.num.unwrap_or(0) as i32);
                 node.set_children(RepeatedField::from_vec(children));
-            },
+            }
             Definitio(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
                 node.set_node_type(EthicsSchema_NodeType::DEFINITIO);
                 node.set_num(nf.num.unwrap_or(0) as i32);
                 node.set_children(RepeatedField::from_vec(children));
-            },
+            }
             Demonstratio => {
                 node.set_node_type(EthicsSchema_NodeType::DEMONSTRATIO);
-            },
+            }
             Explicatio => {
                 node.set_node_type(EthicsSchema_NodeType::EXPLICATIO);
-            },
+            }
             Lemma(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
                 node.set_node_type(EthicsSchema_NodeType::LEMMA);
                 node.set_num(nf.num.unwrap_or(0) as i32);
                 node.set_children(RepeatedField::from_vec(children));
-            },
+            }
             Pars(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
                 node.set_node_type(EthicsSchema_NodeType::PARS);
                 node.set_num(nf.num.unwrap_or(0) as i32);
                 node.set_children(RepeatedField::from_vec(children));
-            },
+            }
             Postulatum(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
                 node.set_node_type(EthicsSchema_NodeType::POSTULATUM);
                 node.set_num(nf.num.unwrap_or(0) as i32);
                 node.set_children(RepeatedField::from_vec(children));
-            },
+            }
             Praefatio => {
                 node.set_node_type(EthicsSchema_NodeType::PRAEFATIO);
-            },
+            }
             Propositio(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
                 node.set_node_type(EthicsSchema_NodeType::PROPOSITIO);
                 node.set_num(nf.num.unwrap_or(0) as i32);
                 node.set_children(RepeatedField::from_vec(children));
-            },
+            }
             Scholium(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
                 node.set_node_type(EthicsSchema_NodeType::SCHOLIUM);
                 node.set_num(nf.num.unwrap_or(0) as i32);
                 node.set_children(RepeatedField::from_vec(children));
-            },
+            }
             Scope(ref nf) => {
                 let children = nf.children.iter().map(|node| node.to_protobuf()).collect();
                 node.set_title(nf.title.to_string());
                 node.set_children(RepeatedField::from_vec(children));
-            },
+            }
         }
         node
     }
@@ -218,8 +218,15 @@ pub mod schema {
             Propositio(nf![13 => Demonstratio, Corollarium(nf![]), Scholium(nf![])]),
             Propositio(nf![14 => Demonstratio, Corollarium(nf![1]), Corollarium(nf![2])]),
             Propositio(nf![15 => Demonstratio, Scholium(nf![])]),
-            Propositio(nf![16 => Demonstratio, Corollarium(nf![1]), Corollarium(nf![2]), Corollarium(nf![3])]),
-            Propositio(nf![17 => Demonstratio, Corollarium(nf![1]), Corollarium(nf![2]), Scholium(nf![])]),
+            Propositio(nf![16 =>
+                                 Demonstratio,
+                                 Corollarium(nf![1]),
+                                 Corollarium(nf![2]),
+                                 Corollarium(nf![3])]),
+            Propositio(nf![17 => Demonstratio,
+                                 Corollarium(nf![1]),
+                                 Corollarium(nf![2]),
+                                 Scholium(nf![])]),
             Propositio(nf![18 => Demonstratio]),
             Propositio(nf![19 => Demonstratio, Scholium(nf![])]),
             Propositio(nf![20 => Demonstratio, Corollarium(nf![1]), Corollarium(nf![2])]),
@@ -275,7 +282,11 @@ pub mod schema {
             Propositio(nf![7 => Demonstratio, Corollarium(nf![]), Scholium(nf![])]),
             Propositio(nf![8 => Demonstratio, Corollarium(nf![]), Scholium(nf![])]),
             Propositio(nf![9 => Demonstratio, Corollarium(nf![]), Demonstratio]),
-            Propositio(nf![10 => Demonstratio, Scholium(nf![]), Corollarium(nf![]), Demonstratio, Scholium(nf![])]),
+            Propositio(nf![10 => Demonstratio,
+                                 Scholium(nf![]),
+                                 Corollarium(nf![]),
+                                 Demonstratio,
+                                 Scholium(nf![])]),
             Propositio(nf![11 => Demonstratio, Corollarium(nf![]), Scholium(nf![])]),
             Propositio(nf![12 => Demonstratio, Scholium(nf![])]),
             Propositio(nf![13 => Demonstratio, Corollarium(nf![]), Scholium(nf![])]),
@@ -585,7 +596,10 @@ pub mod schema {
             Propositio(nf![32 => Demonstratio, Scholium(nf![])]),
             Propositio(nf![33 => Demonstratio]),
             Propositio(nf![34 => Demonstratio, Scholium(nf![])]),
-            Propositio(nf![35 => Demonstratio, Corollarium(nf![1]), Corollarium(nf![2]), Scholium(nf![])]),
+            Propositio(nf![35 => Demonstratio,
+                                 Corollarium(nf![1]),
+                                 Corollarium(nf![2]),
+                                 Scholium(nf![])]),
             Propositio(nf![36 => Demonstratio, Scholium(nf![])]),
             Propositio(nf![37 => Demonstratio, Aliter, Scholium(nf![1]), Scholium(nf![2])]),
             Propositio(nf![38 => Demonstratio]),

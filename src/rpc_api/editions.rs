@@ -8,10 +8,10 @@ use rpc::repository::*;
 pub fn get_editions(
     _ctx: &Repository,
     _req: GetEditionsParams,
-    conn: &PgConnection
+    conn: &PgConnection,
 ) -> Result<Editions, Error> {
     use protobuf::RepeatedField;
-    use ::std::iter::*;
+    use std::iter::*;
 
     let mut response = Editions::new();
     let editions = models::Edition::all(&conn).map_err(Error::from)?;
@@ -26,7 +26,11 @@ pub fn edit_edition(
     conn: &PgConnection,
 ) -> Result<Edition, Error> {
     let id: uuid::Uuid = req.id.parse()?;
-    Ok(models::EditionPatch::from_proto(req).save(id, conn)?.into_proto())
+    Ok(
+        models::EditionPatch::from_proto(req)
+            .save(id, conn)?
+            .into_proto(),
+    )
 }
 
 pub fn create_edition(
@@ -34,7 +38,11 @@ pub fn create_edition(
     req: Edition,
     conn: &PgConnection,
 ) -> Result<Edition, Error> {
-    Ok(models::EditionNew::from_proto(req)?.save(conn)?.into_proto())
+    Ok(
+        models::EditionNew::from_proto(req)?
+            .save(conn)?
+            .into_proto(),
+    )
 }
 
 pub fn delete_edition(

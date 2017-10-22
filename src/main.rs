@@ -16,9 +16,9 @@ extern crate serde;
 extern crate serde_derive;
 extern crate serde_json as json;
 extern crate uuid;
+extern crate validator;
 #[macro_use]
 extern crate validator_derive;
-extern crate validator;
 
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
@@ -60,7 +60,7 @@ macro_rules! handler {
 fn get_fragments(
     _ctx: &Repository,
     req: rpc::repository::GetFragmentsParams,
-    conn: &PgConnection
+    conn: &PgConnection,
 ) -> Result<rpc::repository::EthicsFragments, Error> {
     use rpc::repository::*;
     let mut response = EthicsFragments::new();
@@ -76,10 +76,10 @@ fn get_fragments(
 
 fn get_schema(
     _ctx: &Repository,
-    _req: rpc::repository::GetSchemaParams
+    _req: rpc::repository::GetSchemaParams,
 ) -> Result<rpc::repository::EthicsSchema, Error> {
     use protobuf::RepeatedField;
-    use ::std::iter::*;
+    use std::iter::*;
 
     let mut schema = rpc::repository::EthicsSchema::new();
     let parts = ETHICA.0.iter().map(|node| node.to_protobuf());
@@ -92,7 +92,11 @@ fn edit_fragment(
     req: rpc::repository::EthicsFragment,
     conn: &PgConnection,
 ) -> Result<rpc::repository::EthicsFragment, Error> {
-    Ok(models::FragmentPatch::from_proto(req)?.save(conn)?.into_proto())
+    Ok(
+        models::FragmentPatch::from_proto(req)?
+            .save(conn)?
+            .into_proto(),
+    )
 }
 
 // fn dead_end<T, U>(_ctx: &Repository, _req: T) -> Result<U, Error> {
@@ -156,7 +160,7 @@ fn main() {
     let database_url = ::std::env::var("DATABASE_URL").unwrap();
     let pool_manager = ConnectionManager::<PgConnection>::new(database_url);
     let pool = r2d2::Pool::new(pool_config, pool_manager)
-            .expect("Failed to create a database connection pool");
+        .expect("Failed to create a database connection pool");
 
     let repo = Repository { pool };
     let env = grpcio::Environment::new(4);

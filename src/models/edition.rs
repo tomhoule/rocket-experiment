@@ -23,16 +23,12 @@ pub struct Edition {
 #[derive(Debug, Deserialize, Serialize, Insertable, Validate)]
 #[table_name = "editions"]
 pub struct EditionNew {
-    #[validate(length(message = "Please specify a title", min = "1"))]
-    pub title: String,
-    #[validate(length(message = "The editor is missing", min = "1"))]
-    pub editor: String,
+    #[validate(length(message = "Please specify a title", min = "1"))] pub title: String,
+    #[validate(length(message = "The editor is missing", min = "1"))] pub editor: String,
     #[validate(range(message = "Please specify a valid year", min = "1500", max = "3000"))]
     pub year: i32,
-    #[validate(length(equal = "2"))]
-    pub language_code: String,
-    #[validate(length(message = "The edition needs a valid slug", min = "2"))]
-    pub slug: String,
+    #[validate(length(equal = "2"))] pub language_code: String,
+    #[validate(length(message = "The edition needs a valid slug", min = "2"))] pub slug: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, AsChangeset)]
@@ -64,14 +60,12 @@ impl EditionPatch {
         }
     }
 
-    pub fn save(
-        &self,
-        id_: Uuid,
-        conn: &PgConnection,
-    ) -> Result<Edition, diesel::result::Error> {
+    pub fn save(&self, id_: Uuid, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
         use db::schema::editions::dsl::*;
         use diesel::*;
-        update(editions.filter(id.eq(id_))).set(self).get_result(conn)
+        update(editions.filter(id.eq(id_)))
+            .set(self)
+            .get_result(conn)
     }
 }
 
