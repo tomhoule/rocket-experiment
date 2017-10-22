@@ -4,6 +4,7 @@ use diesel;
 use diesel::pg::PgConnection;
 use validator::Validate;
 use rpc::repository as rpc;
+use error;
 
 use db::schema::*;
 
@@ -43,7 +44,26 @@ pub struct EditionPatch {
     pub language_code: Option<String>,
 }
 
+macro_rules! take {
+    ($proto:ident, $field_name:ident, $default:expr) => {
+        if $proto.$field_name == $default {
+            None
+        } else {
+            Some($proto.$field_name)
+        }
+    }
+}
+
 impl EditionPatch {
+    pub fn from_proto(proto: rpc::Edition) -> Self {
+        EditionPatch {
+            title: take!(proto, title, ""),
+            editor: take!(proto, editor, ""),
+            year: take!(proto, year, 0),
+            language_code: take!(proto, language_code, ""),
+        }
+    }
+
     pub fn save(
         &self,
         id_: Uuid,
@@ -57,7 +77,7 @@ impl EditionPatch {
 
 impl Edition {
     #[deny(unused_variables)]
-    pub fn to_proto(self) -> rpc::Edition {
+    pub fn into_proto(self) -> rpc::Edition {
         let mut edition = rpc::Edition::new();
         let Edition {
             id: _unused_id,
@@ -105,6 +125,18 @@ impl Edition {
 }
 
 impl EditionNew {
+    pub fn from_proto(proto: rpc::Edition) -> Result<Self, error::Error> {
+        let payload = EditionNew {
+            title: proto.title,
+            editor: proto.editor,
+            year: proto.year,
+            slug: proto.slug,
+            language_code: proto.language_code,
+        };
+        payload.validate()?;
+        Ok(payload)
+    }
+
     pub fn save(&self, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
         use db::schema::editions::dsl::*;
         use diesel::*;

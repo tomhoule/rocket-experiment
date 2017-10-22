@@ -82,7 +82,7 @@ fn get_editions(
 
     let mut response = rpc::repository::Editions::new();
     let editions = models::Edition::all(&conn).map_err(Error::from)?;
-    let transformed = editions.into_iter().map(|ed| ed.to_proto());
+    let transformed = editions.into_iter().map(|ed| ed.into_proto());
     response.set_data(RepeatedField::from_iter(transformed));
     Ok(response)
 }
@@ -125,9 +125,35 @@ fn edit_fragment(
     Ok(models::FragmentPatch::from_proto(req)?.save(conn)?.into_proto())
 }
 
-fn dead_end<T, U>(_ctx: &Repository, _req: T) -> Result<U, Error> {
-    unimplemented!()
+fn edit_edition(
+    _ctx: &Repository,
+    req: rpc::repository::Edition,
+    conn: &PgConnection,
+) -> Result<rpc::repository::Edition, Error> {
+    let id: uuid::Uuid = req.id.parse()?;
+    Ok(models::EditionPatch::from_proto(req).save(id, conn)?.into_proto())
 }
+
+fn create_edition(
+    _ctx: &Repository,
+    req: rpc::repository::Edition,
+    conn: &PgConnection,
+) -> Result<rpc::repository::Edition, Error> {
+    Ok(models::EditionNew::from_proto(req)?.save(conn)?.into_proto())
+}
+
+fn delete_edition(
+    _ctx: &Repository,
+    req: rpc::repository::Edition,
+    conn: &PgConnection,
+) -> Result<rpc::repository::Empty, Error> {
+    models::Edition::delete(req.id.parse()?, conn)?;
+    Ok(rpc::repository::Empty::new())
+}
+
+// fn dead_end<T, U>(_ctx: &Repository, _req: T) -> Result<U, Error> {
+//     unimplemented!()
+// }
 
 impl rpc::repository_grpc::EthicsRepository for Repository {
     handler! {
@@ -162,14 +188,21 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
         create_edition,
         rpc::repository::Edition,
         rpc::repository::Edition,
-        dead_end
+        |it: &Repository, req| it.with_connection(req, &create_edition)
     }
 
     handler! {
         delete_edition,
         rpc::repository::Edition,
         rpc::repository::Empty,
-        dead_end
+        |it: &Repository, req| it.with_connection(req, &delete_edition)
+    }
+
+    handler! {
+        edit_edition,
+        rpc::repository::Edition,
+        rpc::repository::Edition,
+        |it: &Repository, req| it.with_connection(req, &edit_edition)
     }
 }
 

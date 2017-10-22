@@ -21,7 +21,12 @@ service EthicsRepository {
   }
   rpc DeleteEdition (Edition) returns (Empty) {
     option (google.api.http) = {
-      delete: "/v1/ethics/fragments"
+      delete: "/v1/ethics/editions/{id}"
+    };
+  }
+  rpc EditEdition (Edition) returns (Edition) {
+    option (google.api.http) = {
+      patch: "/v1/ethics/editions/{id}"
     };
   }
   rpc GetFragments (GetFragmentsParams) returns (EthicsFragments) {
