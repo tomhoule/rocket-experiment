@@ -15,6 +15,7 @@ interface DispatchProps {
 
 interface StateProps {
   changes: Partial<RepositoryEdition>
+  errors: Errors
 }
 
 interface OwnProps {}
@@ -32,11 +33,12 @@ export class CreateEdition extends React.Component<Props, {}> {
   }
 
   render() {
-    const { changes } = this.props
+    const { changes, errors } = this.props
     return (
       <div className={shellStyles.container}>
         <Form
           changes={changes}
+          errors={errors}
           elements={[
             { type: 'heading', content: 'Create an edition' },
             { type: 'text', label: 'Title', name: 'title' },
@@ -53,6 +55,7 @@ export class CreateEdition extends React.Component<Props, {}> {
 export default connect<StateProps, DispatchProps, OwnProps>(
   (state: AppState) => ({
     changes: state.editions.changes,
+    errors: state.editions.errors,
   }),
   d => bindActionCreators({
     mergeChanges: a.mergeChanges,

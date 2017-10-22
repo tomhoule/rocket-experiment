@@ -33,6 +33,7 @@ function renderElement(
   elem: FormElement,
   mergeChanges: Function,
   changes: { [name: string]: any } = {},
+  errors: Errors
 ): React.ReactElement<any> {
     switch (elem.type) {
         case 'text':
@@ -45,6 +46,7 @@ function renderElement(
                   name={elem.name}
                   value={elem.value || changes[elem.name]}
                 />
+                {errors[elem.name] && <div style={{ color: 'red' }}>{errors[elem.name]}</div>}
               </div>)
         case 'textarea':
             return <textarea value={elem.value} />
@@ -64,6 +66,7 @@ function renderElement(
 
 interface Props<T> {
   changes?: Partial<T>
+  errors: { [key: string]: string },
   mergeChanges: (changes: Partial<T>) => any
   submit?: () => void
   elements: FormElement[]
@@ -71,10 +74,11 @@ interface Props<T> {
 
 export class Form<T> extends React.Component<Props<T>, never> {
   render() {
-    const { changes, elements, mergeChanges, submit } = this.props
+    const { changes, elements, errors, mergeChanges, submit } = this.props
     return (
       <div className={styles['form-container']}>
-        {elements.map(elem => renderElement(elem, mergeChanges, changes))}
+        {errors.other && errors.other}
+        {elements.map(elem => renderElement(elem, mergeChanges, changes, errors))}
         {submit &&
             <div className={styles.submit}>
               <button onClick={submit}>Save</button>

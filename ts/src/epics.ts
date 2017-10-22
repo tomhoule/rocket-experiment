@@ -26,12 +26,8 @@ const createEdition: AppEpic = (action$, store, d) =>
     .throttle(() => Rx.Observable.merge(
       action$.ofAction(actions.create.done).mapTo(null),
       action$.ofAction(actions.create.failed)).mapTo(null))
-    .flatMap(async ({ payload }) =>
-      await fetch('http://localhost:8008/v1/ethics/editions', { method: 'POST', body: payload })
-        .then(async r => [payload, await r.json()])
-        .catch(err => [payload, err]))
-    .flatMap(([params, result]) => [actions.create.done({ params, result })])
-    .catch(([params, error]) => [actions.create.failed({ params, error })])
+    .flatMap(({ payload }) => Rx.Observable.fromPromise(
+      d.post(actions.create, payload, 'http://localhost:8008/v1/ethics/editions')))
 
 export const rootEpic = combineEpics(
   schemaEpic,

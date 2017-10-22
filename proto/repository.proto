@@ -12,6 +12,7 @@ service EthicsRepository {
   rpc CreateEdition (Edition) returns (Edition) {
     option (google.api.http) = {
       post: "/v1/ethics/editions"
+      body: "*"
     };
   }
   rpc GetEditions (GetEditionsParams) returns (Editions) {
@@ -27,6 +28,7 @@ service EthicsRepository {
   rpc EditEdition (Edition) returns (Edition) {
     option (google.api.http) = {
       patch: "/v1/ethics/editions/{id}"
+      body: "*"
     };
   }
   rpc GetFragments (GetFragmentsParams) returns (EthicsFragments) {
@@ -37,6 +39,7 @@ service EthicsRepository {
   rpc EditFragment (EthicsFragment) returns (EthicsFragment) {
     option (google.api.http) = {
       post: "/v1/ethics/fragments"
+      body: "*"
     };
   }
 }

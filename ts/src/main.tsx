@@ -27,6 +27,7 @@ function main() {
     {
       dependencies: {
         get: epicUtils.get,
+        post: epicUtils.post,
       },
     }
   )
