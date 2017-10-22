@@ -28,32 +28,17 @@ mod error;
 mod models;
 mod rpc;
 mod schemas;
+mod rpc_api;
 
+use rpc_api::Repository;
 use error::Error;
 use futures::Future;
 use schemas::ethica::ETHICA;
+use rpc_api::editions::*;
 
 fn bail(err: grpcio::Error) {
     panic!("{}", err)
 }
-
-#[derive(Clone)]
-struct Repository {
-    pool: r2d2::Pool<ConnectionManager<PgConnection>>
-}
-
-impl Repository {
-    fn with_connection<Req, Res>(
-        &self,
-        req: Req,
-        inner: &Fn(&Self, Req, &PgConnection) -> Result<Res, Error>
-    ) -> Result<Res, Error> {
-        self.pool.get()
-            .map_err(Error::from)
-            .and_then(|conn| inner(self, req, &conn))
-    }
-}
-
 
 macro_rules! handler {
     ($name:ident, $req:path, $res:path, $inner:expr) => {
@@ -71,21 +56,6 @@ macro_rules! handler {
     }
 }
 
-
-fn get_editions(
-    _ctx: &Repository,
-    _req: rpc::repository::GetEditionsParams,
-    conn: &PgConnection
-) -> Result<rpc::repository::Editions, Error> {
-    use protobuf::RepeatedField;
-    use ::std::iter::*;
-
-    let mut response = rpc::repository::Editions::new();
-    let editions = models::Edition::all(&conn).map_err(Error::from)?;
-    let transformed = editions.into_iter().map(|ed| ed.into_proto());
-    response.set_data(RepeatedField::from_iter(transformed));
-    Ok(response)
-}
 
 fn get_fragments(
     _ctx: &Repository,
@@ -123,32 +93,6 @@ fn edit_fragment(
     conn: &PgConnection,
 ) -> Result<rpc::repository::EthicsFragment, Error> {
     Ok(models::FragmentPatch::from_proto(req)?.save(conn)?.into_proto())
-}
-
-fn edit_edition(
-    _ctx: &Repository,
-    req: rpc::repository::Edition,
-    conn: &PgConnection,
-) -> Result<rpc::repository::Edition, Error> {
-    let id: uuid::Uuid = req.id.parse()?;
-    Ok(models::EditionPatch::from_proto(req).save(id, conn)?.into_proto())
-}
-
-fn create_edition(
-    _ctx: &Repository,
-    req: rpc::repository::Edition,
-    conn: &PgConnection,
-) -> Result<rpc::repository::Edition, Error> {
-    Ok(models::EditionNew::from_proto(req)?.save(conn)?.into_proto())
-}
-
-fn delete_edition(
-    _ctx: &Repository,
-    req: rpc::repository::Edition,
-    conn: &PgConnection,
-) -> Result<rpc::repository::Empty, Error> {
-    models::Edition::delete(req.id.parse()?, conn)?;
-    Ok(rpc::repository::Empty::new())
 }
 
 // fn dead_end<T, U>(_ctx: &Repository, _req: T) -> Result<U, Error> {
