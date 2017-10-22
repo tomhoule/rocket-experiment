@@ -1,9 +1,7 @@
 import * as React from 'react'
 import { bindActionCreators } from 'redux'
 import { Link, match } from 'react-router-dom'
-import * as a from './actions'
 import * as api from 'api-types'
-import { AppState } from './reducers'
 import styles = require('./home.scss')
 
 interface StateProps {}

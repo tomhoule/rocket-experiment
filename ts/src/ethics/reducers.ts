@@ -2,7 +2,7 @@ import { reducerWithInitialState } from 'typescript-fsa-reducers'
 import * as a from './actions'
 import * as redux from 'redux'
 import * as api from 'api-types'
-import { GrpcStatusCode, GrpcStatus } from './types'
+import { GrpcStatusCode, GrpcStatus } from 'types'
 
 interface CrudState<T> {
   index: T[]
@@ -21,15 +21,11 @@ function crudState<T>(): CrudState<T> {
 }
 
 export interface AppState {
-    status: string
     schema: SchemaReducerState
     editions: CrudState<api.RepositoryEdition>
 }
 
 export type SchemaReducerState = api.RepositoryEthicsSchema | null
-
-const statusReducer = reducerWithInitialState('还可以')
-    .case(a.changeStatus, (state, { newStatus }) => newStatus)
 
 const schemaReducer = reducerWithInitialState(null as SchemaReducerState)
     .case(a.getSchema.done, (state, { result }) => result)
@@ -51,8 +47,7 @@ const editionsReducer = reducerWithInitialState(crudState<api.RepositoryEdition>
         : { details: errors.error.error }
     }))
 
-export const reducers = redux.combineReducers<AppState>({
-    status: statusReducer,
+export const ethicsReducers = redux.combineReducers<AppState>({
     schema: schemaReducer,
     editions: editionsReducer,
 })

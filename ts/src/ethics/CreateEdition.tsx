@@ -1,11 +1,11 @@
 import * as React from 'react'
 import * as a from './actions'
-import Form from './Form'
+import Form from 'Form'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { AppState } from './reducers'
 import { RepositoryEdition } from 'api-types'
-import shellStyles = require('./shell.scss')
+import shellStyles = require('../shell.scss')
 
 interface DispatchProps {
   setChanges: typeof a.setChanges

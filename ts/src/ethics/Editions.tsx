@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { AppState } from 'reducers'
+import { AppState } from './reducers'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router-dom'
 import * as api from 'api-types'
-import * as a from 'actions'
-import styles = require('./home.scss')
+import * as a from './actions'
+import styles = require('../home.scss')
 
 interface StateProps {
   editions: api.RepositoryEdition[]

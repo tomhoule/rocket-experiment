@@ -1,8 +1,8 @@
 import actionCreatorFactory from 'typescript-fsa'
 import * as api from 'api-types'
-import { GrpcStatus } from './types'
+import { GrpcStatus } from 'types'
 
-const actionCreator = actionCreatorFactory('main')
+const actionCreator = actionCreatorFactory('editions')
 export const changeStatus = actionCreator<{ newStatus: string }>('CHANGE_STATUS')
 
 export const create = actionCreator.async<
@@ -29,3 +29,4 @@ export const getEditions = actionCreator.async<
     api.RepositoryEditions,
     never
 >('EDITIONS')
+

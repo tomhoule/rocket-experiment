@@ -1,10 +1,9 @@
 import * as React from 'react'
-import { AppState } from './reducers'
 import { Link, Route, Switch, match } from 'react-router-dom'
-import Editions from './Editions'
+import Editions from './ethics/Editions'
 import Home from './Home'
-import Ethics from './Ethics'
-import CreateEdition from './CreateEdition'
+import Ethics from './ethics/Ethics'
+import CreateEdition from './ethics/CreateEdition'
 import styles = require('./shell.scss')
 
 interface StateProps {}
