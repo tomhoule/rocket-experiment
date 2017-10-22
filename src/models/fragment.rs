@@ -52,10 +52,10 @@ impl FragmentPatch {
 }
 
 impl Fragment {
-    pub fn for_edition(id: &str, conn: &PgConnection) -> Result<Vec<Fragment>, diesel::result::Error> {
+    pub fn for_edition(edid: &Uuid, conn: &PgConnection) -> Result<Vec<Fragment>, diesel::result::Error> {
         use db::schema::fragments::dsl::*;
         fragments
-            .filter(edition_id.eq(id))
+            .filter(edition_id.eq(edid))
             .load(conn)
     }
 

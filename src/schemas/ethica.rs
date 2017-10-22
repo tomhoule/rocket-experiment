@@ -3,7 +3,9 @@ pub use self::schema::ETHICA;
 #[derive(Serialize, Debug)]
 pub struct Schema(pub &'static [Node]);
 
-type Path = String;
+// struct Path(String);
+//
+// impl FromStr for Path
 
 // impl Schema {
 //     fn contains_path(&self, path: &Path) -> bool {

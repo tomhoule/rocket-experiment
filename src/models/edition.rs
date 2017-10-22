@@ -7,17 +7,6 @@ use rpc::repository as rpc;
 
 use db::schema::*;
 
-pub static LANGUAGE_CODES: &'static [&'static str] = &[
-    "de",
-    "en",
-    "es",
-    "fr",
-    "ja",
-    "la",
-    "ru",
-    "zh",
-];
-
 #[derive(Queryable, Serialize)]
 pub struct Edition {
     id: Uuid,

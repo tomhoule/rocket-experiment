@@ -94,9 +94,9 @@ fn get_fragments(
 ) -> Result<rpc::repository::EthicsFragments, Error> {
     use rpc::repository::*;
     let mut response = EthicsFragments::new();
-    let fragments = models::Fragment::for_edition(&req.edition_id, conn)?;
+    let fragments = models::Fragment::for_edition(&req.edition_id.parse()?, conn)?;
     {
-        let mut map = response.mut_fragments();
+        let map = response.mut_fragments();
         for fragment in fragments.into_iter() {
             map.insert(fragment.fragment_path.clone(), fragment.into_proto());
         }
@@ -105,8 +105,8 @@ fn get_fragments(
 }
 
 fn get_schema(
-    ctx: &Repository,
-    req: rpc::repository::GetSchemaParams
+    _ctx: &Repository,
+    _req: rpc::repository::GetSchemaParams
 ) -> Result<rpc::repository::EthicsSchema, Error> {
     use protobuf::RepeatedField;
     use ::std::iter::*;
@@ -118,14 +118,14 @@ fn get_schema(
 }
 
 fn edit_fragment(
-    ctx: &Repository,
+    _ctx: &Repository,
     req: rpc::repository::EthicsFragment,
     conn: &PgConnection,
 ) -> Result<rpc::repository::EthicsFragment, Error> {
     Ok(models::FragmentPatch::from_proto(req)?.save(conn)?.into_proto())
 }
 
-fn dead_end<T, U>(ctx: &Repository, _req: T) -> Result<U, Error> {
+fn dead_end<T, U>(_ctx: &Repository, _req: T) -> Result<U, Error> {
     unimplemented!()
 }
 
@@ -162,6 +162,13 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
         create_edition,
         rpc::repository::Edition,
         rpc::repository::Edition,
+        dead_end
+    }
+
+    handler! {
+        delete_edition,
+        rpc::repository::Edition,
+        rpc::repository::Empty,
         dead_end
     }
 }

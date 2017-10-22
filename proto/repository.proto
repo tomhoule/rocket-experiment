@@ -19,6 +19,11 @@ service EthicsRepository {
       get: "/v1/ethics/editions"
     };
   }
+  rpc DeleteEdition (Edition) returns (Empty) {
+    option (google.api.http) = {
+      delete: "/v1/ethics/fragments"
+    };
+  }
   rpc GetFragments (GetFragmentsParams) returns (EthicsFragments) {
     option (google.api.http) = {
       get: "/v1/ethics/fragments"
@@ -30,6 +35,8 @@ service EthicsRepository {
     };
   }
 }
+
+message Empty {}
 
 message GetFragmentsParams {
   string edition_id = 1;
