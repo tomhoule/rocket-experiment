@@ -32,7 +32,15 @@ const schemaReducer = reducerWithInitialState(null as SchemaReducerState)
     .case(a.getSchema.done, (state, { result }) => result)
 
 const editionsReducer = reducerWithInitialState(crudState<api.RepositoryEdition>())
-    .case(a.getEditions.done, (state, changes) => ({ ...state, index: changes.result.data || [] }))
+    .case(a.getEditions.done, (state, changes) => ({
+      ...state,
+      index: changes.result.data || [],
+    }))
+    .case(a.mergeChanges, (state, changes) => ({
+      ...state,
+      changes: { ...state.changes, ...changes },
+    }))
+    .case(a.setChanges, (state, changes) => ({ ...state, changes }))
 
 export const reducers = redux.combineReducers<AppState>({
     status: statusReducer,

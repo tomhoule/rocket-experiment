@@ -1,0 +1,42 @@
+@import './shell.scss';
+
+$form-width: 200px;
+
+.form-container {
+  max-width: $form-width;
+  margin: auto;
+  position: relative;
+
+  label {
+    display: block;
+    margin: 4px 0;
+  }
+
+  label:after {
+    content: ":";
+  }
+
+  input {
+    width: 100%;
+  }
+
+  .field {
+    margin: 20px 0;
+  }
+
+  .submit {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+      padding: .7em 1.3em;
+      text-transform: uppercase;
+      background-color: $fg-color;
+      font-weight: bold;
+      color: $bg-color;
+      border: none;
+      border-radius: 2px;
+    }
+  }
+}

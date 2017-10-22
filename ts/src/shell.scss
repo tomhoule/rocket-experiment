@@ -1,5 +1,9 @@
-$bg-color : #232323;
-$fg-color:  #F6EFE8;
+
+$bg-color : #F5F5F5;
+// $bg-color : #232323;
+// $bg-color: #F1EFE9;
+$fg-color: #232323;
+// $fg-color:  #F6EFE8;
 $link-color: #7777dd;
 $visited-link-color: #9966dd;
 
@@ -7,7 +11,7 @@ $content-width: 60em;
 
 body {
   margin: 0;
-  font-family: sans-serif;
+  font-family: 'EB Garamond', serif;
 }
 
 .app-container {
@@ -23,6 +27,7 @@ body {
   align-items: center;
   font-size: 2em;
   background-color: #a00;
+  font-family: sans-serif;
 
   a {
     color: #eee;
@@ -38,6 +43,11 @@ body {
   background-color: $bg-color;
   color: $fg-color;
   padding: 1em;
+
+  .container {
+    max-width: 40em;
+    margin: auto;
+  }
 
   nav {
     width: $content-width;

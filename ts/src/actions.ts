@@ -4,16 +4,22 @@ import * as api from 'api-types'
 const actionCreator = actionCreatorFactory('main')
 export const changeStatus = actionCreator<{ newStatus: string }>('CHANGE_STATUS')
 
+export const create = actionCreator.async<
+  Partial<api.RepositoryEdition>,
+  api.RepositoryEdition,
+  {}
+>('CREATE')
+
 export const getSchema = actionCreator.async<
     {},
     api.RepositoryEthicsSchema,
     any
 >('GET_SCHEMA')
 
-export const editionMergeChanges = actionCreator<Partial<api.RepositoryEdition>>(
+export const mergeChanges = actionCreator<Partial<api.RepositoryEdition>>(
     'EDITION_MERGE_CHANGES'
 )
-export const editionSetChanges = actionCreator<Partial<api.RepositoryEdition>>(
+export const setChanges = actionCreator<Partial<api.RepositoryEdition>>(
     'EDITION_SET_CHANGES'
 )
 

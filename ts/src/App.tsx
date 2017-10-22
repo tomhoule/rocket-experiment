@@ -4,6 +4,7 @@ import { Link, Route, Switch, match } from 'react-router-dom'
 import Editions from './Editions'
 import Home from './Home'
 import Ethics from './Ethics'
+import CreateEdition from './CreateEdition'
 import styles = require('./shell.scss')
 
 interface StateProps {}
@@ -26,6 +27,7 @@ export const App = (props: Props) => (
         <Switch>
           <Route exact path='/' component={Home} />
           <Route exact path='/ethica' component={Editions} />
+          <Route path='/ethica/create' component={CreateEdition} />
           <Route path='/ethica/:editionSlug' component={Ethics} />
         </Switch>
       </div>

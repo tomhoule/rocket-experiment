@@ -20,4 +20,21 @@ const editions: AppEpic = (action$, store, d) => {
   return get(filtered$, actions.getEditions, '/v1/ethics/editions')
 }
 
-export const rootEpic = combineEpics(schemaEpic, editions)
+const createEdition: AppEpic = (action$, store, d) =>
+  action$
+    .ofAction(actions.create.started)
+    .throttle(() => Rx.Observable.merge(
+      action$.ofAction(actions.create.done).mapTo(null),
+      action$.ofAction(actions.create.failed)).mapTo(null))
+    .flatMap(async ({ payload }) =>
+      await fetch('http://localhost:8008/v1/ethics/editions', { method: 'POST', body: payload })
+        .then(async r => [payload, await r.json()])
+        .catch(err => [payload, err]))
+    .flatMap(([params, result]) => [actions.create.done({ params, result })])
+    .catch(([params, error]) => [actions.create.failed({ params, error })])
+
+export const rootEpic = combineEpics(
+  schemaEpic,
+  editions,
+  createEdition,
+)

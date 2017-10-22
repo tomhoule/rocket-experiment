@@ -1,15 +1,19 @@
 import * as React from 'react'
+import styles = require('./form.scss')
 
-interface TextInput {
-    extraClass?: string
-    type: 'text'
-    value: string
+interface TextBase {
+  extraClass?: string
+  label: React.ReactElement<any> | string
+  name: string
+  value?: string
 }
 
-interface TextArea {
-    extraClass?: string
+interface TextInput extends TextBase {
+    type: 'text'
+}
+
+interface TextArea extends TextBase {
     type: 'textarea'
-    value: string
 }
 
 interface Select {
@@ -20,15 +24,28 @@ interface Select {
 
 interface FormHeading {
     type: 'heading'
-    content: React.ReactElement<any>
+    content: React.ReactElement<any> | string
 }
 
 type FormElement = TextInput | TextArea | Select | FormHeading
 
-function renderElement(elem: FormElement): React.ReactElement<any> {
+function renderElement(
+  elem: FormElement,
+  mergeChanges: Function,
+  changes: { [name: string]: any } = {},
+): React.ReactElement<any> {
     switch (elem.type) {
         case 'text':
-            return <input type='text' value={elem.value} />
+            return (
+              <div className={styles.field}>
+                <label>{elem.label}</label>
+                <input
+                  type='text'
+                  onChange={event => mergeChanges({ [elem.name]: event.target.value })}
+                  name={elem.name}
+                  value={elem.value || changes[elem.name]}
+                />
+              </div>)
         case 'textarea':
             return <textarea value={elem.value} />
         // case 'select':
@@ -46,15 +63,25 @@ function renderElement(elem: FormElement): React.ReactElement<any> {
 }
 
 interface Props<T> {
-    mergeChanges?: (changes: Partial<T>) => void
-    submit: () => void
-    elements: FormElement[]
+  changes?: Partial<T>
+  mergeChanges: (changes: Partial<T>) => any
+  submit?: () => void
+  elements: FormElement[]
 }
 
 export class Form<T> extends React.Component<Props<T>, never> {
-    render() {
-        return (
-            <div>This is a form</div>
-        )
-    }
+  render() {
+    const { changes, elements, mergeChanges, submit } = this.props
+    return (
+      <div className={styles['form-container']}>
+        {elements.map(elem => renderElement(elem, mergeChanges, changes))}
+        {submit &&
+            <div className={styles.submit}>
+              <button onClick={submit}>Save</button>
+            </div>}
+      </div>
+    )
+  }
 }
+
+export default Form
