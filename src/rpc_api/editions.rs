@@ -59,6 +59,7 @@ mod tests {
     use super::*;
     use dotenv;
     use error::*;
+    use grpcio::{RpcStatusCode};
 
     #[test]
     fn create_edition_validates() {
@@ -71,5 +72,9 @@ mod tests {
             Err(Error(ErrorKind::Validation(_), _)) => (),
             other => panic!("Unexpected: {:?}", other),
         }
+        assert_eq!(
+            res.unwrap_err().into_grpc_status().status,
+            RpcStatusCode::InvalidArgument
+        );
     }
 }
