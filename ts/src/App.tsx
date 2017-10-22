@@ -25,9 +25,9 @@ export const App = (props: Props) => (
       <div>
         <Switch>
           <Route exact path='/' component={Home} />
-          <Route exact path='/ethica' component={Editions} />
-          <Route path='/ethica/create' component={CreateEdition} />
-          <Route path='/ethica/:editionSlug' component={Ethics} />
+          <Route exact path='/ethics' component={Editions} />
+          <Route path='/ethics/create' component={CreateEdition} />
+          <Route path='/ethics/:editionSlug' component={Ethics} />
         </Switch>
       </div>
     </div>

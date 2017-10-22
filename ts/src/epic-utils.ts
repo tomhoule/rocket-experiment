@@ -28,7 +28,6 @@ export async function post<T, U>(
   url: string,
   rqinit: RequestInit = {}
 ): Promise<Action> {
-  console.log('posting ', params)
   const response = await fetch(url, {
     ...rqinit,
     method: 'POST',

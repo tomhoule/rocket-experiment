@@ -30,7 +30,7 @@ export class Editions extends React.Component<Props, never> {
         <h2>Editions</h2>
         <div className={styles.books}>
           {this.props.editions.map(ed =>
-            <Link key={ed.slug} to={`/ethica/editions/${ed.slug}`}>
+            <Link key={ed.slug} to={`/ethics/editions/${ed.slug}`}>
               {ed.title}
             </Link>)}
         </div>

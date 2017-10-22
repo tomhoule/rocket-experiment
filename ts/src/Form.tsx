@@ -9,25 +9,31 @@ interface TextBase {
 }
 
 interface TextInput extends TextBase {
-    type: 'text'
+  type: 'text'
 }
 
 interface TextArea extends TextBase {
-    type: 'textarea'
+  type: 'textarea'
+}
+
+interface NumberInput extends TextBase {
+  type: 'number'
 }
 
 interface Select {
-    type: 'select'
-    options: { value: string | number | null, label?: string }[]
-    value: string | number | null
+  label: React.ReactElement<any> | string
+  name: string
+  options: { value: string | number | undefined, label?: string }[]
+  type: 'select'
+  value?: string | number | null
 }
 
 interface FormHeading {
-    type: 'heading'
-    content: React.ReactElement<any> | string
+  type: 'heading'
+  content: React.ReactElement<any> | string
 }
 
-type FormElement = TextInput | TextArea | Select | FormHeading
+type FormElement = TextInput | TextArea | Select | FormHeading | NumberInput
 
 function renderElement(
   elem: FormElement,
@@ -36,26 +42,38 @@ function renderElement(
   errors: Errors
 ): React.ReactElement<any> {
     switch (elem.type) {
+        case 'number':
         case 'text':
-            return (
-              <div className={styles.field}>
-                <label>{elem.label}</label>
-                <input
-                  type='text'
-                  onChange={event => mergeChanges({ [elem.name]: event.target.value })}
-                  name={elem.name}
-                  value={elem.value || changes[elem.name]}
-                />
-                {errors[elem.name] && <div style={{ color: 'red' }}>{errors[elem.name]}</div>}
-              </div>)
+          return (
+            <div className={styles.field}>
+              <label>{elem.label}</label>
+              <input
+                type={elem.type}
+                onChange={event => mergeChanges({
+                  [elem.name]: elem.type === 'number' ?
+                    parseInt(event.target.value, 10) :
+                    event.target.value
+                })}
+                name={elem.name}
+                value={elem.value || changes[elem.name]}
+              />
+              {errors[elem.name] && <div style={{ color: 'red' }}>{errors[elem.name]}</div>}
+            </div>)
         case 'textarea':
-            return <textarea value={elem.value} />
-        // case 'select':
-        //     return (
-        //     <select value={elem.value}>
-        //         {elem.options.map(opt =>
-        //             <option value={opt.value} key={opt.value}>{opt.label}</option>)}
-        //     </select>)
+          return <textarea value={elem.value} />
+        case 'select':
+          const value = elem.value || changes[elem.name] || ''
+          return (
+            <div className={styles.field}>
+              <label>{elem.label}</label>
+                <select
+                  value={value}
+                  onChange={event => mergeChanges({ [elem.name]: event.target.value })}
+                >
+                  {elem.options.map(opt =>
+                    <option value={opt.value} key={opt.value}>{opt.label}</option>)}
+                </select>
+            </div>)
         case 'heading':
             return (<h2>{elem.content}</h2>)
         default:

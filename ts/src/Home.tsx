@@ -16,11 +16,11 @@ type Props = StateProps & DispatchProps & OwnProps
 
 export const Home = (props: Props) =>
     <div className={styles.home}>
-        <p>
-            Choose your adventure:
-        </p>
+        <h2>
+            Choose your adventure
+        </h2>
         <div className={styles.books}>
-          <Link className='book' to='/ethica'>
+          <Link className='book' to='/ethics'>
               Ethica more geometrico demonstrata
           </Link>
         </div>

@@ -18,6 +18,17 @@ interface StateProps {
   errors: Errors
 }
 
+const langOptions = [
+  { value: '', label: '---' },
+  { value: 'de', label: 'de' },
+  { value: 'en', label: 'en' },
+  { value: 'es', label: 'es' },
+  { value: 'fr', label: 'fr' },
+  { value: 'la', label: 'la' },
+  { value: 'ru', label: 'ru' },
+  { value: 'zh', label: 'zh' },
+]
+
 interface OwnProps {}
 
 type Props = StateProps & DispatchProps & OwnProps
@@ -42,7 +53,10 @@ export class CreateEdition extends React.Component<Props, {}> {
           elements={[
             { type: 'heading', content: 'Create an edition' },
             { type: 'text', label: 'Title', name: 'title' },
+            { type: 'text', label: 'Slug', name: 'slug' },
             { type: 'text', label: 'Editor', name: 'editor'},
+            { type: 'number', label: 'Year', name: 'year' },
+            { type: 'select', label: 'Lang', name: 'language_code', options: langOptions },
           ]}
           mergeChanges={this.props.mergeChanges}
           submit={this.submit}

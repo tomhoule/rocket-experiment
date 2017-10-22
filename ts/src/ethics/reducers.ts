@@ -27,10 +27,10 @@ export interface AppState {
 
 export type SchemaReducerState = api.RepositoryEthicsSchema | null
 
-const schemaReducer = reducerWithInitialState(null as SchemaReducerState)
+export const schemaReducer = reducerWithInitialState(null as SchemaReducerState)
     .case(a.getSchema.done, (state, { result }) => result)
 
-const editionsReducer = reducerWithInitialState(crudState<api.RepositoryEdition>())
+export const editionsReducer = reducerWithInitialState(crudState<api.RepositoryEdition>())
     .case(a.getEditions.done, (state, changes) => ({
       ...state,
       index: changes.result.data || [],
@@ -40,14 +40,9 @@ const editionsReducer = reducerWithInitialState(crudState<api.RepositoryEdition>
       changes: { ...state.changes, ...changes },
     }))
     .case(a.setChanges, (state, changes) => ({ ...state, changes }))
-    .case(a.create.failed, (state, errors) => console.log(errors) || ({
+    .case(a.create.failed, (state, errors) => ({
       ...state,
       errors: errors.error.code === GrpcStatusCode.InvalidArgument
         ? JSON.parse(errors.error.error)
         : { details: errors.error.error }
     }))
-
-export const ethicsReducers = redux.combineReducers<AppState>({
-    schema: schemaReducer,
-    editions: editionsReducer,
-})

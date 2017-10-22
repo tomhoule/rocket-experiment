@@ -11,9 +11,11 @@ import App from './App'
 import { rootEpic as ethicsRootEpic } from './ethics/epics'
 import * as epicUtils from 'epic-utils'
 import 'rxjs'
-import { ethicsReducers } from './ethics/reducers'
+import * as ethicsReducers from './ethics/reducers'
 import * as api from 'api-types'
 import { InjectedDependencies } from './types'
+import createHistory from 'history/createBrowserHistory'
+import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux'
 
 const composeEnhancers =
     (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -21,6 +23,14 @@ const composeEnhancers =
     : redux.compose
 
 const rootEpic = ethicsRootEpic
+
+const history = createHistory()
+
+export const reducers = redux.combineReducers<ethicsReducers.AppState>({
+    schema: ethicsReducers.schemaReducer,
+    editions: ethicsReducers.editionsReducer,
+    router: routerReducer
+})
 
 function main() {
   const epicMiddleware = createEpicMiddleware<Action, {}, InjectedDependencies>(
@@ -32,12 +42,14 @@ function main() {
       },
     }
   )
-  const store = redux.createStore(ethicsReducers, composeEnhancers(redux.applyMiddleware(epicMiddleware)))
+  const store = redux.createStore(reducers, composeEnhancers(redux.applyMiddleware(epicMiddleware, routerMiddleware(history as any))))
   const root = document.getElementById('react-root')
   render(
     <BrowserRouter>
       <Provider store={store}>
-        <Route path='/' component={App} />
+        <ConnectedRouter history={history as any}>
+          <Route path='/' component={App} />
+        </ConnectedRouter>
       </Provider>
     </BrowserRouter>,
     root)

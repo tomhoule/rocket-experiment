@@ -6,6 +6,7 @@ import 'typescript-fsa-redux-observable'
 import { InjectedDependencies } from 'types'
 import { AppState } from './reducers'
 import * as api from 'api-types'
+import { push } from 'react-router-redux'
 
 type AppEpic = Epic<Action, AppState, InjectedDependencies>
 
@@ -28,8 +29,14 @@ const createEdition: AppEpic = (action$, store, d) =>
     .flatMap(({ payload }) => Rx.Observable.fromPromise(
       d.post(actions.create, payload, 'http://localhost:8008/v1/ethics/editions')))
 
+const createEditionSuccess: AppEpic = (action$, store, d) =>
+  action$
+    .ofAction(actions.create.done)
+    .flatMap(() => [push('/ethics/editions')])
+
 export const rootEpic = combineEpics(
   schemaEpic,
   editions,
   createEdition,
+  createEditionSuccess,
 )
