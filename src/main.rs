@@ -21,10 +21,9 @@ extern crate validator;
 extern crate validator_derive;
 
 use diesel::pg::PgConnection;
-use r2d2_diesel::ConnectionManager;
 
 mod db;
-mod error;
+pub mod error;
 mod models;
 mod rpc;
 mod schemas;
@@ -156,13 +155,7 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
 
 fn main() {
     dotenv::dotenv().ok();
-    let pool_config = r2d2::Config::default();
-    let database_url = ::std::env::var("DATABASE_URL").unwrap();
-    let pool_manager = ConnectionManager::<PgConnection>::new(database_url);
-    let pool = r2d2::Pool::new(pool_config, pool_manager)
-        .expect("Failed to create a database connection pool");
-
-    let repo = Repository { pool };
+    let repo = Repository::new();
     let env = grpcio::Environment::new(4);
     let port = 9090;
     let mut server = grpcio::ServerBuilder::new(::std::sync::Arc::new(env))

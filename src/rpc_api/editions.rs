@@ -53,3 +53,23 @@ pub fn delete_edition(
     models::Edition::delete(req.id.parse()?, conn)?;
     Ok(Empty::new())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use dotenv;
+    use error::*;
+
+    #[test]
+    fn create_edition_validates() {
+        dotenv::dotenv().ok();
+        let repo = Repository::new();
+        let conn = repo.pool.get().unwrap();
+        let req = Edition::new();
+        let res = create_edition(&repo, req, &conn);
+        match res {
+            Err(Error(ErrorKind::Validation(_), _)) => (),
+            other => panic!("Unexpected: {:?}", other),
+        }
+    }
+}
