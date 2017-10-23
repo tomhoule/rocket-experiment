@@ -34,9 +34,33 @@ const createEditionSuccess: AppEpic = (action$, store, d) =>
     .ofAction(actions.create.done)
     .flatMap(() => [push('/ethics/editions')])
 
+const getFragments: AppEpic = (action$, store, d) =>
+  action$
+    .ofAction(actions.getFragments.started)
+    .distinctUntilChanged((a1, a2) => a1.payload.slug === a2.payload.slug)
+    .do(console.log)
+    .flatMap(({ payload }) => {
+      const editions = store.getState().editions.index
+      const extractEdition = (ed: api.RepositoryEdition[]): api.RepositoryEdition[] =>
+        ed.filter(elem => elem.slug === payload.slug)
+      return Rx.Observable
+        .from(extractEdition(editions))
+        .merge(
+          action$
+            .ofAction(actions.getEditions.done)
+            .flatMap((action) => extractEdition(action.payload.result.data || [])))
+        .take(1)
+        .map((edition): [{ slug: string }, string] => [payload, edition.id as string])
+    })
+    .flatMap(async ([params, editionId]) =>
+      await d.simpleGet('/ethics/fragments')
+        .then(result => actions.getFragments.done({ params, result }))
+        .catch(error => actions.getFragments.failed({ params, error })))
+
 export const rootEpic = combineEpics(
   schemaEpic,
   editions,
   createEdition,
   createEditionSuccess,
+  getFragments,
 )

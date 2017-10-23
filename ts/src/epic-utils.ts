@@ -41,3 +41,8 @@ export async function post<T, U>(
     return actions.failed({ params, error: json })
   }
 }
+
+export function simpleGet(url: string): Promise<any> {
+  return fetch(`http://localhost:8008${url}`)
+    .then(r => r.json())
+}

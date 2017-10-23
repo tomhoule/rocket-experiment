@@ -39,6 +39,7 @@ function main() {
       dependencies: {
         get: epicUtils.get,
         post: epicUtils.post,
+        simpleGet: epicUtils.simpleGet,
       },
     }
   )

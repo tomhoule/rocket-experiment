@@ -2,8 +2,14 @@ import actionCreatorFactory from 'typescript-fsa'
 import * as api from 'api-types'
 import { GrpcStatus } from 'types'
 
-const actionCreator = actionCreatorFactory('editions')
-export const changeStatus = actionCreator<{ newStatus: string }>('CHANGE_STATUS')
+const actionCreator = actionCreatorFactory('ethics')
+
+export const getFragments = actionCreator.async<
+  // api.getFragmentsParams,
+  { slug: string },
+  api.RepositoryEthicsFragments,
+  any
+>('GET_FRAGMENTS')
 
 export const create = actionCreator.async<
   Partial<api.RepositoryEdition>,

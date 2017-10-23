@@ -14,6 +14,7 @@ interface StateProps {
 
 interface DispatchProps {
   getSchema: typeof a.getSchema.started
+  getFragments: typeof a.getFragments.started
 }
 
 interface OwnProps {
@@ -25,6 +26,7 @@ type Props = StateProps & DispatchProps & OwnProps
 export class Ethics extends React.Component<Props, {}> {
   componentWillMount() {
     this.props.getSchema({})
+    this.props.getFragments({ slug: this.props.match.params.editionSlug })
   }
 
   renderNode = (node: api.EthicsSchemaNode, idx: number): React.ReactElement<any> => {
@@ -57,10 +59,11 @@ export class Ethics extends React.Component<Props, {}> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps>(
-    (state: AppState) => ({
-        schema: state.schema,
-    }),
-    dispatch => bindActionCreators({
-        getSchema: a.getSchema.started,
-    }, dispatch)
+  (state: AppState) => ({
+    schema: state.schema,
+  }),
+  dispatch => bindActionCreators({
+    getSchema: a.getSchema.started,
+    getFragments: a.getFragments.started,
+  }, dispatch)
 )(Ethics)
