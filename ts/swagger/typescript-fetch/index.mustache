@@ -4,3 +4,23 @@
 {{#models}}
 {{#model}}{{#isEnum}}{{>modelEnum}}{{/isEnum}}{{^isEnum}}{{>modelGeneric}}{{/isEnum}}{{/model}}
 {{/models}}
+
+{{#apiInfo}}{{#apis}}{{#operations}}
+  {{#operation}}
+// {{{path}}}
+export interface {{nickname}} {
+  (
+    {{#allParams}}
+    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+    {{/allParams}}
+  ): {{returnType}}{{^returnType}}void{{/returnType}}
+}
+
+export interface {{nickname}}Params {
+  {{#allParams}}
+  {{paramName}}{{^required}}?{{/required}}: {{{dataType}}}
+  {{/allParams}}
+}
+
+  {{/operation}}
+{{/operations}}{{/apis}}{{/apiInfo}}
