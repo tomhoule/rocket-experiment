@@ -33,12 +33,12 @@ service EthicsRepository {
   }
   rpc GetFragments (GetFragmentsParams) returns (EthicsFragments) {
     option (google.api.http) = {
-      get: "/v1/ethics/fragments"
+      get: "/v1/ethics/editions/{edition_id}/fragments"
     };
   }
   rpc EditFragment (EthicsFragment) returns (EthicsFragment) {
     option (google.api.http) = {
-      post: "/v1/ethics/fragments"
+      put: "/v1/ethics/editions/{edition_id}/fragments"
       body: "*"
     };
   }
