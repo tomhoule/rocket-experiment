@@ -22,12 +22,12 @@ extern crate validator_derive;
 
 use diesel::pg::PgConnection;
 
-mod db;
+pub mod db;
 pub mod error;
-mod models;
-mod rpc;
-mod schemas;
-mod rpc_api;
+pub mod models;
+pub mod rpc;
+pub mod schemas;
+pub mod rpc_api;
 
 use rpc_api::Repository;
 use error::Error;
