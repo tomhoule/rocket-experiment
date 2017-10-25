@@ -69,27 +69,20 @@ impl EditionPatch {
     }
 }
 
+macro_rules! self_into {
+    ($selfe:ident, $target:ident : $($field:ident),* ) => { {
+        $($target.$field = $selfe.$field;)*
+    } }
+}
+
 impl Edition {
     #[deny(unused_variables)]
     pub fn into_proto(self) -> rpc::Edition {
         let mut edition = rpc::Edition::new();
-        let Edition {
-            id: _unused_id,
-            year,
-            editor,
-            title,
-            slug,
-            updated_at,
-            created_at,
-            language_code,
-        } = self;
-        edition.set_year(year);
-        edition.set_editor(editor);
-        edition.set_title(title);
-        edition.set_slug(slug);
-        edition.set_updated_at(updated_at.to_rfc3339());
-        edition.set_created_at(created_at.to_rfc3339());
-        edition.set_language_code(language_code);
+        self_into!(self, edition : year, editor, title, slug, language_code);
+        edition.id = self.id.to_string();
+        edition.created_at = self.created_at.to_rfc3339();
+        edition.updated_at = self.updated_at.to_rfc3339();
         edition
     }
 
