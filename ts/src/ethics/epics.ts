@@ -38,7 +38,6 @@ const getFragments: AppEpic = (action$, store, d) =>
   action$
     .ofAction(actions.getFragments.started)
     .distinctUntilChanged((a1, a2) => a1.payload.slug === a2.payload.slug)
-    .do(console.log)
     .flatMap(({ payload }) => {
       const editions = store.getState().editions.index
       const extractEdition = (ed: api.RepositoryEdition[]): api.RepositoryEdition[] =>
@@ -53,7 +52,7 @@ const getFragments: AppEpic = (action$, store, d) =>
         .map((edition): [{ slug: string }, string] => [payload, edition.id as string])
     })
     .flatMap(async ([params, editionId]) =>
-      await d.simpleGet('/ethics/fragments')
+      await d.simpleGet(`/v1/ethics/editions/${editionId}/fragments`)
         .then(result => actions.getFragments.done({ params, result }))
         .catch(error => actions.getFragments.failed({ params, error })))
 

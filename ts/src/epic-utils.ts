@@ -42,7 +42,14 @@ export async function post<T, U>(
   }
 }
 
-export function simpleGet(url: string): Promise<any> {
-  return fetch(`http://localhost:8008${url}`)
-    .then(r => r.json())
+export async function simpleGet(url: string): Promise<any> {
+  const res = await fetch(`http://localhost:8008${url}`)
+  if (res.status !== 200) {
+    if ((res.headers.get('Content-Type') || '').includes('application/json')) {
+      throw await res.json()
+    } else {
+      throw { message: res.body }
+    }
+  }
+  return res.json()
 }
