@@ -5,6 +5,9 @@ use regex::Regex;
 #[derive(Serialize, Debug)]
 pub struct Schema(pub &'static [Node]);
 
+#[derive(Debug)]
+pub struct Schema2(pub &'static [NodeN]);
+
 #[derive(Debug, PartialEq)]
 pub struct Path(String);
 
@@ -67,13 +70,15 @@ pub enum Node {
     Scholium(NumberedFragment),
 }
 
-struct NodeN {
+#[derive(Debug)]
+pub struct NodeN {
     node_type: NodeType,
     title: Option<&'static str>,
     num: Option<u8>,
-    children: &'static [Node],
+    children: &'static [NodeN],
 }
 
+#[derive(Debug)]
 pub enum NodeType {
     AnonymousFragment,
     Aliter,
@@ -98,22 +103,54 @@ impl Node {
         use self::Node::*;
 
         match *self {
-            AnonymousFragment(ref nf) => format!("Node {{ node_type: NodeType::AnonymousFragment, {} }}", nf.to_new()),
-            Appendix => "Node { node_type: NodeType::Appendix }".to_string(),
-            Axioma(ref nf) => format!("Node {{ node_type: NodeType::Axioma, {} }}", nf.to_new()),
-            Aliter => "Node { node_type: NodeType::Aliter }".to_string(),
-            Caput(ref nf) => format!("Node {{ node_type: NodeType::Caput, {} }}", nf.to_new()),
-            Corollarium(ref nf) => format!("Node {{ node_type: NodeType::Corollarium, {} }}", nf.to_new()),
-            Definitio(ref nf) => format!("Node {{ node_type: NodeType::Definitio, {} }}", nf.to_new()),
-            Demonstratio => "Node { node_type: NodeType::Demonstratio }".to_string(),
-            Explicatio => "Node { node_type: NodeType::Explicatio }".to_string(),
-            Scope(ref nf) => format!("Node {{ node_type: NodeType::Scope, {} }}", nf.to_new()),
-            Lemma(ref nf) => format!("Node {{ node_type: NodeType::Lemma, {} }}", nf.to_new()),
-            Pars(ref nf) => format!("Node {{ node_type: NodeType::Pars, {} }}", nf.to_new()),
-            Postulatum(ref nf) => format!("Node {{ node_type: NodeType::Postulatum, {} }}", nf.to_new()),
-            Praefatio => "Node { node_type: NodeType::Praefatio }".to_string(),
-            Propositio(ref nf) => format!("Node {{ node_type: NodeType::Propositio, {} }}", nf.to_new()),
-            Scholium(ref nf) => format!("Node {{ node_type: NodeType::Scholium, {} }}", nf.to_new()),
+            AnonymousFragment(ref nf) => format!(
+                "NodeN {{ node_type: NodeType::AnonymousFragment, {} }}",
+                nf.to_new()
+            ),
+            Appendix => {
+                "NodeN { node_type: NodeType::Appendix, num: None, title: None, children: &[] }"
+                    .to_string()
+            }
+            Axioma(ref nf) => format!("NodeN {{ node_type: NodeType::Axioma, {} }}", nf.to_new()),
+            Aliter => {
+                "NodeN { node_type: NodeType::Aliter, num: None, title: None, children: &[] }"
+                    .to_string()
+            }
+            Caput(ref nf) => format!("NodeN {{ node_type: NodeType::Caput, {} }}", nf.to_new()),
+            Corollarium(ref nf) => format!(
+                "NodeN {{ node_type: NodeType::Corollarium, {} }}",
+                nf.to_new()
+            ),
+            Definitio(ref nf) => format!(
+                "NodeN {{ node_type: NodeType::Definitio, {} }}",
+                nf.to_new()
+            ),
+            Demonstratio => {
+                "NodeN { node_type: NodeType::Demonstratio, num: None, title: None, children: &[] }"
+                    .to_string()
+            }
+            Explicatio => {
+                "NodeN { node_type: NodeType::Explicatio, num: None, title: None, children: &[] }"
+                    .to_string()
+            }
+            Scope(ref nf) => format!("NodeN {{ node_type: NodeType::Scope, {} }}", nf.to_new()),
+            Lemma(ref nf) => format!("NodeN {{ node_type: NodeType::Lemma, {} }}", nf.to_new()),
+            Pars(ref nf) => format!("NodeN {{ node_type: NodeType::Pars, {} }}", nf.to_new()),
+            Postulatum(ref nf) => format!(
+                "NodeN {{ node_type: NodeType::Postulatum, {} }}",
+                nf.to_new()
+            ),
+            Praefatio => {
+                "NodeN { node_type: NodeType::Praefatio, num: None, title: None, children: &[] }"
+                    .to_string()
+            }
+            Propositio(ref nf) => format!(
+                "NodeN {{ node_type: NodeType::Propositio, {} }}",
+                nf.to_new()
+            ),
+            Scholium(ref nf) => {
+                format!("NodeN {{ node_type: NodeType::Scholium, {} }}", nf.to_new())
+            }
         }
     }
 
@@ -220,7 +257,7 @@ impl Node {
                 .and_then(|s| u8::from_str(s).ok());
 
             if found_name != name || found_num != num {
-                return false
+                return false;
             }
 
             unimplemented!();
@@ -266,7 +303,11 @@ impl NumberedFragment {
             children.push_str(&child.to_new());
             children.push_str(", ");
         }
-        format!("title: None, num: {:?}, children: {}", self.num, children)
+        format!(
+            "title: None, num: {:?}, children: &[{}]",
+            self.num,
+            children
+        )
     }
 }
 
@@ -282,8 +323,13 @@ impl ScopeDescriptor {
         let mut children = String::new();
         for child in self.children.iter() {
             children.push_str(&child.to_new());
+            children.push_str(", ");
         }
-        format!("title: {:?}, num: None, children: {}", self.title, children)
+        format!(
+            "title: Some({:?}), num: None, children: &[{}]",
+            self.title,
+            children
+        )
     }
 }
 
@@ -881,3 +927,6010 @@ pub mod schema {
         ]),
     ]);
 }
+
+pub const ETHICA_2: Schema2 = Schema2(&[
+    NodeN {
+        node_type: NodeType::Pars,
+        title: None,
+        num: Some(1),
+        children: &[
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Definitiones"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(3),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(4),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(5),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(6),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(7),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(8),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Axiomata"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(3),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(4),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(5),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(6),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(7),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(1),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(2),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(3),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(4),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(5),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(6),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Aliter,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(7),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(8),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(9),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(10),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(11),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Aliter,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Aliter,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(12),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(13),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(14),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(15),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(16),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(3),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(17),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(18),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(19),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(20),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(21),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(22),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(23),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(24),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(25),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(26),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(27),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(28),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(29),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(30),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(31),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(32),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(33),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(34),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(35),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(36),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Appendix,
+                num: None,
+                title: None,
+                children: &[],
+            },
+        ],
+    },
+    NodeN {
+        node_type: NodeType::Pars,
+        title: None,
+        num: Some(2),
+        children: &[
+            NodeN {
+                node_type: NodeType::Praefatio,
+                num: None,
+                title: None,
+                children: &[],
+            },
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Definitiones"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(3),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(4),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(5),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(6),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(7),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Axiomata"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(3),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(4),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Axioma,
+                        title: None,
+                        num: Some(5),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(1),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(2),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(3),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(4),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(4),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(6),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(7),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(8),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(9),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(10),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(11),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(12),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(13),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Axioma,
+                title: None,
+                num: Some(1),
+                children: &[],
+            },
+            NodeN {
+                node_type: NodeType::Axioma,
+                title: None,
+                num: Some(2),
+                children: &[],
+            },
+            NodeN {
+                node_type: NodeType::Lemma,
+                title: None,
+                num: Some(1),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Lemma,
+                title: None,
+                num: Some(2),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Lemma,
+                title: None,
+                num: Some(3),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Axioma,
+                title: None,
+                num: Some(1),
+                children: &[],
+            },
+            NodeN {
+                node_type: NodeType::Axioma,
+                title: None,
+                num: Some(2),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Axioma,
+                title: None,
+                num: Some(3),
+                children: &[],
+            },
+            NodeN {
+                node_type: NodeType::Lemma,
+                title: None,
+                num: Some(4),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Lemma,
+                title: None,
+                num: Some(5),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Lemma,
+                title: None,
+                num: Some(6),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Lemma,
+                title: None,
+                num: Some(7),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Postulata"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Postulatum,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Postulatum,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Postulatum,
+                        title: None,
+                        num: Some(3),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Postulatum,
+                        title: None,
+                        num: Some(4),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Postulatum,
+                        title: None,
+                        num: Some(5),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Postulatum,
+                        title: None,
+                        num: Some(6),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(14),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(15),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(16),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(17),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(18),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(19),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(20),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(21),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(22),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(23),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(24),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(25),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(26),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(27),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(28),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(29),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(30),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(31),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(32),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(33),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(34),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(35),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(36),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(37),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(38),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(39),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(40),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(41),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(42),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(43),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(44),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(45),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(46),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(47),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(48),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(49),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+        ],
+    },
+    NodeN {
+        node_type: NodeType::Pars,
+        title: None,
+        num: Some(3),
+        children: &[
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Praefatio"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Definitiones"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(3),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Postulata"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Postulatum,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Postulatum,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(1),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(2),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(3),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(4),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(5),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(6),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(7),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(8),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(9),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(10),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(11),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(12),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(13),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(14),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(15),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(16),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(17),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(18),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(19),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(20),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(21),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(22),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(23),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(24),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(25),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(26),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(27),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(3),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(28),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(29),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(30),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(31),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(32),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(33),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(34),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(35),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(36),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(37),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(38),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(40),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(41),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(42),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(43),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(44),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(45),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(46),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(47),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(48),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(49),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(50),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(51),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(52),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(53),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(54),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(55),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(56),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(57),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(58),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(59),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Affectuum definitiones"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(1),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(3),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(4),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(5),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(6),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(7),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(8),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(9),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(10),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(11),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(12),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(13),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(14),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(15),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(16),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(17),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(18),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(19),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(20),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(21),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(22),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(23),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(24),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(25),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(26),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(27),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(28),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(29),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(30),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(31),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(32),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(33),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(34),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(35),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(36),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(37),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(38),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(39),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(40),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(41),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(42),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(43),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(44),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(45),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(46),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(47),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(48),
+                        children: &[
+                            NodeN {
+                                node_type: NodeType::Explicatio,
+                                num: None,
+                                title: None,
+                                children: &[],
+                            },
+                        ],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Affectuus generalis definitio"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Explicatio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::AnonymousFragment,
+                title: None,
+                num: None,
+                children: &[],
+            },
+        ],
+    },
+    NodeN {
+        node_type: NodeType::Pars,
+        title: None,
+        num: Some(4),
+        children: &[
+            NodeN {
+                node_type: NodeType::Praefatio,
+                num: None,
+                title: None,
+                children: &[],
+            },
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Praefatio"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(3),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(4),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(5),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(6),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(7),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Definitio,
+                        title: None,
+                        num: Some(8),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Axioma,
+                title: None,
+                num: None,
+                children: &[],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(1),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(2),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(3),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(4),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(5),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(6),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(7),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(8),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(9),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(10),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(11),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(12),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(13),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(14),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(15),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(16),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(17),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(18),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(19),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(20),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(21),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(22),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(23),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(24),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(25),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(26),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(27),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(28),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(29),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(30),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(31),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(32),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(33),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(34),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(35),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(36),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(37),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Aliter,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(38),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(39),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(40),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(41),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(42),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(43),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(44),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(45),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(46),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(47),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(48),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(49),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(50),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(51),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Aliter,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(52),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(53),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(54),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(55),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(56),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(57),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(58),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(59),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Aliter,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(60),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(61),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(62),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(63),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(64),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(65),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(66),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(67),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(68),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(69),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(70),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(71),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(72),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(73),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Appendix"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(3),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(4),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(5),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(6),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(7),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(8),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(9),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(10),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(11),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(12),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(13),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(14),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(15),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(16),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(17),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(18),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(19),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(20),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(21),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(22),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(23),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(24),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(25),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(26),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(27),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(28),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(29),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(30),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(31),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(32),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Caput,
+                        title: None,
+                        num: Some(33),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::AnonymousFragment,
+                title: None,
+                num: None,
+                children: &[],
+            },
+        ],
+    },
+    NodeN {
+        node_type: NodeType::Pars,
+        title: None,
+        num: Some(5),
+        children: &[
+            NodeN {
+                node_type: NodeType::Praefatio,
+                num: None,
+                title: None,
+                children: &[],
+            },
+            NodeN {
+                node_type: NodeType::Scope,
+                title: Some("Axiomata"),
+                num: None,
+                children: &[
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(1),
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::AnonymousFragment,
+                        title: None,
+                        num: Some(2),
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(1),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(2),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(3),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(4),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(5),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(6),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(7),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(8),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(9),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(10),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(11),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(12),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(13),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(14),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(15),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(16),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(17),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(18),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(19),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(20),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(21),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(22),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(23),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(24),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(25),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(26),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(27),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(28),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(29),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(30),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(31),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(32),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(33),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(34),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(35),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(36),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(37),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(38),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(39),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(40),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Corollarium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(41),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+            NodeN {
+                node_type: NodeType::Propositio,
+                title: None,
+                num: Some(42),
+                children: &[
+                    NodeN {
+                        node_type: NodeType::Demonstratio,
+                        num: None,
+                        title: None,
+                        children: &[],
+                    },
+                    NodeN {
+                        node_type: NodeType::Scholium,
+                        title: None,
+                        num: None,
+                        children: &[],
+                    },
+                ],
+            },
+        ],
+    },
+]);

@@ -59,7 +59,7 @@ mod tests {
     use super::*;
     use dotenv;
     use error::*;
-    use grpcio::{RpcStatusCode};
+    use grpcio::RpcStatusCode;
 
     #[test]
     fn create_edition_validates() {

@@ -1,4 +1,4 @@
-use super::ethics::{ETHICA, Path};
+use super::ethics::{Path, ETHICA};
 use std::str::FromStr;
 
 #[test]
@@ -11,7 +11,9 @@ fn path_from_str_returns_err_on_invalid_path() {
 #[test]
 fn path_from_str_returns_a_path_when_valid() {
     assert!(Path::from_str("pars(1):yolo").is_ok());
-    assert!(Path::from_str("pars(9):praefatio:axioma(3):aliter:scholium(2):demonstratio(3)").is_ok());
+    assert!(
+        Path::from_str("pars(9):praefatio:axioma(3):aliter:scholium(2):demonstratio(3)").is_ok()
+    );
 }
 
 // #[test]
@@ -23,7 +25,7 @@ fn path_from_str_returns_a_path_when_valid() {
 #[test]
 fn print_new_schema() {
     for part in ETHICA.0.iter().map(|n| n.to_new()) {
-        println!("{}", part)
+        println!("{}, ", part)
     }
     panic!()
 }
