@@ -67,7 +67,56 @@ pub enum Node {
     Scholium(NumberedFragment),
 }
 
+struct NodeN {
+    node_type: NodeType,
+    title: Option<&'static str>,
+    num: Option<u8>,
+    children: &'static [Node],
+}
+
+pub enum NodeType {
+    AnonymousFragment,
+    Aliter,
+    Appendix,
+    Axioma,
+    Caput,
+    Corollarium,
+    Definitio,
+    Demonstratio,
+    Explicatio,
+    Scope,
+    Lemma,
+    Pars,
+    Postulatum,
+    Praefatio,
+    Propositio,
+    Scholium,
+}
+
 impl Node {
+    pub fn to_new(&self) -> String {
+        use self::Node::*;
+
+        match *self {
+            AnonymousFragment(ref nf) => format!("Node {{ node_type: NodeType::AnonymousFragment, {} }}", nf.to_new()),
+            Appendix => "Node { node_type: NodeType::Appendix }".to_string(),
+            Axioma(ref nf) => format!("Node {{ node_type: NodeType::Axioma, {} }}", nf.to_new()),
+            Aliter => "Node { node_type: NodeType::Aliter }".to_string(),
+            Caput(ref nf) => format!("Node {{ node_type: NodeType::Caput, {} }}", nf.to_new()),
+            Corollarium(ref nf) => format!("Node {{ node_type: NodeType::Corollarium, {} }}", nf.to_new()),
+            Definitio(ref nf) => format!("Node {{ node_type: NodeType::Definitio, {} }}", nf.to_new()),
+            Demonstratio => "Node { node_type: NodeType::Demonstratio }".to_string(),
+            Explicatio => "Node { node_type: NodeType::Explicatio }".to_string(),
+            Scope(ref nf) => format!("Node {{ node_type: NodeType::Scope, {} }}", nf.to_new()),
+            Lemma(ref nf) => format!("Node {{ node_type: NodeType::Lemma, {} }}", nf.to_new()),
+            Pars(ref nf) => format!("Node {{ node_type: NodeType::Pars, {} }}", nf.to_new()),
+            Postulatum(ref nf) => format!("Node {{ node_type: NodeType::Postulatum, {} }}", nf.to_new()),
+            Praefatio => "Node { node_type: NodeType::Praefatio }".to_string(),
+            Propositio(ref nf) => format!("Node {{ node_type: NodeType::Propositio, {} }}", nf.to_new()),
+            Scholium(ref nf) => format!("Node {{ node_type: NodeType::Scholium, {} }}", nf.to_new()),
+        }
+    }
+
     pub fn to_protobuf(&self) -> ::rpc::repository::EthicsSchema_Node {
         use rpc::repository::*;
         use self::Node::*;
@@ -210,11 +259,32 @@ pub struct NumberedFragment {
     children: &'static [Node],
 }
 
+impl NumberedFragment {
+    fn to_new(&self) -> String {
+        let mut children = String::new();
+        for child in self.children.iter() {
+            children.push_str(&child.to_new());
+            children.push_str(", ");
+        }
+        format!("title: None, num: {:?}, children: {}", self.num, children)
+    }
+}
+
 /// A nested fragment with a title
 #[derive(Serialize, Debug)]
 pub struct ScopeDescriptor {
     title: &'static str,
     children: &'static [Node],
+}
+
+impl ScopeDescriptor {
+    fn to_new(&self) -> String {
+        let mut children = String::new();
+        for child in self.children.iter() {
+            children.push_str(&child.to_new());
+        }
+        format!("title: {:?}, num: None, children: {}", self.title, children)
+    }
 }
 
 // fn empty_vec<T>() -> &'static [T; 0] { &[] }
