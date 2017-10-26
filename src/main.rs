@@ -8,9 +8,12 @@ extern crate dotenv;
 extern crate error_chain;
 extern crate futures;
 extern crate grpcio;
+#[macro_use]
+extern crate lazy_static;
 extern crate protobuf;
 extern crate r2d2;
 extern crate r2d2_diesel;
+extern crate regex;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -32,7 +35,7 @@ pub mod rpc_api;
 use rpc_api::Repository;
 use error::Error;
 use futures::Future;
-use schemas::ethica::ETHICA;
+use schemas::ethics::ETHICA;
 use rpc_api::editions::*;
 
 fn bail(err: grpcio::Error) {

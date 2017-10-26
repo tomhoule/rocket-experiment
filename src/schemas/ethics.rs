@@ -1,21 +1,49 @@
 pub use self::schema::ETHICA;
+use std::str::FromStr;
+use regex::Regex;
 
 #[derive(Serialize, Debug)]
 pub struct Schema(pub &'static [Node]);
 
-// struct Path(String);
-//
-// impl FromStr for Path
+#[derive(Debug, PartialEq)]
+pub struct Path(String);
 
-// impl Schema {
-//     fn contains_path(&self, path: &Path) -> bool {
-//         unimplemented!();
-//     }
+lazy_static! {
+    static ref PATH_RE: Regex = Regex::new(
+        r"(?x)           # enable whitespace-insensitive mode
+          ^pars\(\d\)    # always starts with a numbered part
+          (?:            # do not capture
+            :([a-z]+)    # a fragment type
+            (?:
+              \((\d+)\)
+            )?           # an optional index
+          )+             # any number of times
+          $              # until the end of the string"
+      ).unwrap();
+    static ref SEGMENT_RE: Regex = Regex::new(r"([a-z])+(?:\((\d)\))").unwrap();
+}
 
-//     fn all_paths(&self) -> Vec<Path> {
-//         unimplemented!();
-//     }
-// }
+impl FromStr for Path {
+    type Err = ();
+
+    fn from_str(input: &str) -> Result<Path, ()> {
+        if PATH_RE.is_match(input) {
+            Ok(Path(input.to_string()))
+        } else {
+            Err(())
+        }
+    }
+}
+
+impl Schema {
+    pub fn contains_path(&self, path: &Path) -> bool {
+        self.0.iter().any(|node| node.contains_path(path))
+    }
+
+    // fn all_paths(&self) -> Vec<Path> {
+    //     unimplemented!();
+    // }
+}
 
 
 #[derive(Serialize, Debug)]
@@ -129,6 +157,48 @@ impl Node {
             }
         }
         node
+    }
+
+    fn contains_path(&self, path: &Path) -> bool {
+        let mut node = self;
+        for segment in path.0.split(':') {
+            let captures = SEGMENT_RE.captures(segment).unwrap();
+            let (name, num) = node.to_segment();
+            let found_name: &str = &captures[0];
+            let found_num: Option<u8> = captures
+                .get(1)
+                .map(|m| m.as_str())
+                .and_then(|s| u8::from_str(s).ok());
+
+            if found_name != name || found_num != num {
+                return false
+            }
+
+            unimplemented!();
+        }
+        true
+    }
+
+    fn to_segment(&self) -> (&'static str, Option<u8>) {
+        use self::Node::*;
+        match *self {
+            AnonymousFragment(NumberedFragment { num: n, .. }) => ("anon", n),
+            Aliter => ("aliter", None),
+            Appendix => ("appendix", None),
+            Axioma(NumberedFragment { num: n, .. }) => ("axioma", n),
+            Caput(NumberedFragment { num: n, .. }) => ("caput", n),
+            Corollarium(NumberedFragment { num: n, .. }) => ("corollarium", n),
+            Definitio(NumberedFragment { num: n, .. }) => ("definitio", n),
+            Demonstratio => ("demonstratio", None),
+            Explicatio => ("explicatio", None),
+            Scope(ScopeDescriptor { title: t, .. }) => (t, None),
+            Lemma(NumberedFragment { num: n, .. }) => ("lemma", n),
+            Postulatum(NumberedFragment { num: n, .. }) => ("postulatum", n),
+            Praefatio => ("praefatio", None),
+            Propositio(NumberedFragment { num: n, .. }) => ("propositio", n),
+            Scholium(NumberedFragment { num: n, .. }) => ("scholium", n),
+            Pars(NumberedFragment { num: n, .. }) => ("pars", n),
+        }
     }
 }
 

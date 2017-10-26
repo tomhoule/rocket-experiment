@@ -1,1 +1,3 @@
-pub mod ethica;
+pub mod ethics;
+#[cfg(test)]
+mod ethics_tests;

@@ -45,5 +45,6 @@ export class Fragment extends React.Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps>(
-  () => ({})
+  () => ({
+  })
 )(Fragment)
