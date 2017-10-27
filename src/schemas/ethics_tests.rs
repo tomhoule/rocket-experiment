@@ -16,16 +16,8 @@ fn path_from_str_returns_a_path_when_valid() {
     );
 }
 
-// #[test]
-// fn schema_contains_path_works() {
-//     assert!(ETHICA.contains_path(&"pars(1):propositio(1)".parse().unwrap()));
-// }
-
-
 #[test]
-fn print_new_schema() {
-    for part in ETHICA.0.iter().map(|n| n.to_new()) {
-        println!("{}, ", part)
-    }
-    panic!()
+fn schema_contains_path_works() {
+    assert!(ETHICA.contains_path(&"pars(1):propositio(1)".parse().unwrap()));
+    assert!(!ETHICA.contains_path(&"pars(1):propositio(82)".parse().unwrap()));
 }
