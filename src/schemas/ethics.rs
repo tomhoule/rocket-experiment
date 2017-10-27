@@ -73,7 +73,6 @@ pub enum Node {
 #[derive(Debug)]
 pub struct NodeN {
     node_type: NodeType,
-    title: Option<&'static str>,
     num: Option<u8>,
     children: &'static [NodeN],
 }
@@ -82,18 +81,16 @@ pub struct NodeN {
 pub enum NodeType {
     AnonymousFragment,
     Aliter,
-    Appendix,
     Axioma,
     Caput,
     Corollarium,
     Definitio,
     Demonstratio,
     Explicatio,
-    Scope,
     Lemma,
     Pars,
     Postulatum,
-    Praefatio,
+    Scope(&'static str),
     Propositio,
     Scholium,
 }
@@ -108,14 +105,11 @@ impl Node {
                 nf.to_new()
             ),
             Appendix => {
-                "NodeN { node_type: NodeType::Appendix, num: None, title: None, children: &[] }"
+                "NodeN { node_type: NodeType::Scope(\"Appendix\"), num: None, children: &[] }"
                     .to_string()
             }
             Axioma(ref nf) => format!("NodeN {{ node_type: NodeType::Axioma, {} }}", nf.to_new()),
-            Aliter => {
-                "NodeN { node_type: NodeType::Aliter, num: None, title: None, children: &[] }"
-                    .to_string()
-            }
+            Aliter => "NodeN { node_type: NodeType::Aliter, num: None, children: &[] }".to_string(),
             Caput(ref nf) => format!("NodeN {{ node_type: NodeType::Caput, {} }}", nf.to_new()),
             Corollarium(ref nf) => format!(
                 "NodeN {{ node_type: NodeType::Corollarium, {} }}",
@@ -126,14 +120,16 @@ impl Node {
                 nf.to_new()
             ),
             Demonstratio => {
-                "NodeN { node_type: NodeType::Demonstratio, num: None, title: None, children: &[] }"
-                    .to_string()
+                "NodeN { node_type: NodeType::Demonstratio, num: None, children: &[] }".to_string()
             }
             Explicatio => {
-                "NodeN { node_type: NodeType::Explicatio, num: None, title: None, children: &[] }"
-                    .to_string()
+                "NodeN { node_type: NodeType::Explicatio, num: None, children: &[] }".to_string()
             }
-            Scope(ref nf) => format!("NodeN {{ node_type: NodeType::Scope, {} }}", nf.to_new()),
+            Scope(ref nf) => format!(
+                "NodeN {{ node_type: NodeType::Scope(\"{}\"), {} }}",
+                nf.title,
+                nf.to_new()
+            ),
             Lemma(ref nf) => format!("NodeN {{ node_type: NodeType::Lemma, {} }}", nf.to_new()),
             Pars(ref nf) => format!("NodeN {{ node_type: NodeType::Pars, {} }}", nf.to_new()),
             Postulatum(ref nf) => format!(
@@ -141,7 +137,7 @@ impl Node {
                 nf.to_new()
             ),
             Praefatio => {
-                "NodeN { node_type: NodeType::Praefatio, num: None, title: None, children: &[] }"
+                "NodeN { node_type: NodeType::Scope(\"Praefatio\"), num: None, children: &[] }"
                     .to_string()
             }
             Propositio(ref nf) => format!(
@@ -303,11 +299,7 @@ impl NumberedFragment {
             children.push_str(&child.to_new());
             children.push_str(", ");
         }
-        format!(
-            "title: None, num: {:?}, children: &[{}]",
-            self.num,
-            children
-        )
+        format!("num: {:?}, children: &[{}]", self.num, children)
     }
 }
 
@@ -325,11 +317,7 @@ impl ScopeDescriptor {
             children.push_str(&child.to_new());
             children.push_str(", ");
         }
-        format!(
-            "title: Some({:?}), num: None, children: &[{}]",
-            self.title,
-            children
-        )
+        format!("num: None, children: &[{}]", children)
     }
 }
 
@@ -931,72 +919,60 @@ pub mod schema {
 pub const ETHICA_2: Schema2 = Schema2(&[
     NodeN {
         node_type: NodeType::Pars,
-        title: None,
         num: Some(1),
         children: &[
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Definitiones"),
+                node_type: NodeType::Scope("Definitiones"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(3),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(4),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(5),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(6),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(7),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(8),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
@@ -1004,49 +980,41 @@ pub const ETHICA_2: Schema2 = Schema2(&[
                 ],
             },
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Axiomata"),
+                node_type: NodeType::Scope("Axiomata"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(3),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(4),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(5),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(6),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(7),
                         children: &[],
                     },
@@ -1054,127 +1022,107 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(1),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(2),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(3),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(4),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(5),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(6),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Aliter,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(7),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(8),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
@@ -1182,31 +1130,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(9),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(10),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1214,30 +1157,25 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(11),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Aliter,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Aliter,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1245,37 +1183,31 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(12),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(13),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1283,24 +1215,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(14),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
@@ -1308,18 +1236,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(15),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1327,30 +1252,25 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(16),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(3),
                         children: &[],
                     },
@@ -1358,30 +1278,25 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(17),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1389,31 +1304,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(18),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(19),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1421,24 +1331,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(20),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
@@ -1446,57 +1352,48 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(21),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(22),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(23),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(24),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1504,24 +1401,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(25),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1529,44 +1422,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(26),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(27),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(28),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1574,18 +1460,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(29),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1593,31 +1476,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(30),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(31),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1625,24 +1503,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(32),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
@@ -1650,24 +1524,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(33),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
@@ -1675,164 +1545,138 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(34),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(35),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(36),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
-                node_type: NodeType::Appendix,
+                node_type: NodeType::Scope("Appendix"),
                 num: None,
-                title: None,
                 children: &[],
             },
         ],
     },
     NodeN {
         node_type: NodeType::Pars,
-        title: None,
         num: Some(2),
         children: &[
             NodeN {
-                node_type: NodeType::Praefatio,
+                node_type: NodeType::Scope("Praefatio"),
                 num: None,
-                title: None,
                 children: &[],
             },
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Definitiones"),
+                node_type: NodeType::Scope("Definitiones"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(3),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(4),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(5),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(6),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(7),
                         children: &[],
                     },
                 ],
             },
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Axiomata"),
+                node_type: NodeType::Scope("Axiomata"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(3),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(4),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Axioma,
-                        title: None,
                         num: Some(5),
                         children: &[],
                     },
@@ -1840,18 +1684,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(1),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1859,31 +1700,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(2),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(3),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1891,44 +1727,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(4),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(4),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(6),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1936,24 +1765,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(7),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1961,24 +1786,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(8),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -1986,61 +1807,51 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(9),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(10),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2048,24 +1859,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(11),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2073,18 +1880,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(12),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2092,24 +1896,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(13),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2117,50 +1917,42 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Axioma,
-                title: None,
                 num: Some(1),
                 children: &[],
             },
             NodeN {
                 node_type: NodeType::Axioma,
-                title: None,
                 num: Some(2),
                 children: &[],
             },
             NodeN {
                 node_type: NodeType::Lemma,
-                title: None,
                 num: Some(1),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Lemma,
-                title: None,
                 num: Some(2),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Lemma,
-                title: None,
                 num: Some(3),
                 children: &[
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2168,18 +1960,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Axioma,
-                title: None,
                 num: Some(1),
                 children: &[],
             },
             NodeN {
                 node_type: NodeType::Axioma,
-                title: None,
                 num: Some(2),
                 children: &[
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2187,106 +1976,89 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Axioma,
-                title: None,
                 num: Some(3),
                 children: &[],
             },
             NodeN {
                 node_type: NodeType::Lemma,
-                title: None,
                 num: Some(4),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Lemma,
-                title: None,
                 num: Some(5),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Lemma,
-                title: None,
                 num: Some(6),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Lemma,
-                title: None,
                 num: Some(7),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Postulata"),
+                node_type: NodeType::Scope("Postulata"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::Postulatum,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Postulatum,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Postulatum,
-                        title: None,
                         num: Some(3),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Postulatum,
-                        title: None,
                         num: Some(4),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Postulatum,
-                        title: None,
                         num: Some(5),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Postulatum,
-                        title: None,
                         num: Some(6),
                         children: &[],
                     },
@@ -2294,50 +2066,42 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(14),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(15),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(16),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
@@ -2345,36 +2109,30 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(17),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2382,18 +2140,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(18),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2401,44 +2156,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(19),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(20),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(21),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2446,108 +2194,91 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(22),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(23),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(24),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(25),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(26),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(27),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(28),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2555,24 +2286,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(29),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2580,31 +2307,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(30),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(31),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2612,57 +2334,48 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(32),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(33),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(34),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(35),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2670,44 +2383,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(36),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(37),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(38),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2715,18 +2421,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(39),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2734,24 +2437,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(40),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
@@ -2759,44 +2458,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(41),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(42),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(43),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2804,55 +2496,46 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(44),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(45),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2860,31 +2543,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(46),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(47),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2892,18 +2570,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(48),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2911,30 +2586,25 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(49),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -2944,61 +2614,51 @@ pub const ETHICA_2: Schema2 = Schema2(&[
     },
     NodeN {
         node_type: NodeType::Pars,
-        title: None,
         num: Some(3),
         children: &[
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Praefatio"),
+                node_type: NodeType::Scope("Praefatio"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Definitiones"),
+                node_type: NodeType::Scope("Definitiones"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(3),
                         children: &[],
                     },
                 ],
             },
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Postulata"),
+                node_type: NodeType::Scope("Postulata"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::Postulatum,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Postulatum,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
@@ -3006,18 +2666,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(1),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3025,18 +2682,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(2),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3044,18 +2698,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(3),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3063,83 +2714,70 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(4),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(5),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(6),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(7),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(8),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(9),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3147,31 +2785,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(10),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(11),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3179,37 +2812,31 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(12),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(13),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3217,43 +2844,36 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(14),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(15),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3261,31 +2881,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(16),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(17),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3293,24 +2908,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(18),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
@@ -3318,57 +2929,48 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(19),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(20),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(21),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(22),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3376,18 +2978,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(23),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3395,18 +2994,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(24),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3414,31 +3010,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(25),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(26),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3446,60 +3037,50 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(27),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(3),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3507,31 +3088,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(28),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(29),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3539,18 +3115,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(30),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3558,24 +3131,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(31),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3583,18 +3152,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(32),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3602,44 +3168,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(33),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(34),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(35),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3647,30 +3206,25 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(36),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3678,68 +3232,57 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(37),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(38),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(40),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3747,30 +3290,25 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(41),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3778,44 +3316,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(42),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(43),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(44),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3823,44 +3354,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(45),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(46),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(47),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3868,31 +3392,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(48),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(49),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3900,18 +3419,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(50),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3919,18 +3435,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(51),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3938,18 +3451,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(52),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3957,18 +3467,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(53),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -3976,55 +3483,46 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(54),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(55),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -4032,18 +3530,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(56),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -4051,18 +3546,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(57),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -4070,542 +3562,457 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(58),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(59),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Affectuum definitiones"),
+                node_type: NodeType::Scope("Affectuum definitiones"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(1),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(3),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(4),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(5),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(6),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(7),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(8),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(9),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(10),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(11),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(12),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(13),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(14),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(15),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(16),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(17),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(18),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(19),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(20),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(21),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(22),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(23),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(24),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(25),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(26),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(27),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(28),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(29),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(30),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(31),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(32),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(33),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(34),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(35),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(36),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(37),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(38),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(39),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(40),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(41),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(42),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(43),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(44),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(45),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(46),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(47),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(48),
                         children: &[
                             NodeN {
                                 node_type: NodeType::Explicatio,
                                 num: None,
-                                title: None,
                                 children: &[],
                             },
                         ],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Affectuus generalis definitio"),
+                node_type: NodeType::Scope("Affectuus generalis definitio"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::Explicatio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::AnonymousFragment,
-                title: None,
                 num: None,
                 children: &[],
             },
@@ -4613,65 +4020,54 @@ pub const ETHICA_2: Schema2 = Schema2(&[
     },
     NodeN {
         node_type: NodeType::Pars,
-        title: None,
         num: Some(4),
         children: &[
             NodeN {
-                node_type: NodeType::Praefatio,
+                node_type: NodeType::Scope("Praefatio"),
                 num: None,
-                title: None,
                 children: &[],
             },
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Praefatio"),
+                node_type: NodeType::Scope("Praefatio"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(3),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(4),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(5),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(6),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(7),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Definitio,
-                        title: None,
                         num: Some(8),
                         children: &[],
                     },
@@ -4679,24 +4075,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Axioma,
-                title: None,
                 num: None,
                 children: &[],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(1),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -4704,44 +4096,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(2),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(3),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(4),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -4749,44 +4134,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(5),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(6),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(7),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -4794,37 +4172,31 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(8),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(9),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -4832,18 +4204,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(10),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -4851,108 +4220,91 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(11),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(12),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(13),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(14),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(15),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(16),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(17),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -4960,18 +4312,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(18),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -4979,31 +4328,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(19),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(20),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5011,31 +4355,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(21),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(22),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5043,122 +4382,103 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(23),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(24),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(25),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(26),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(27),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(28),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(29),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(30),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(31),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5166,18 +4486,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(32),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5185,31 +4502,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(33),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(34),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5217,30 +4529,25 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(35),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5248,18 +4555,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(36),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5267,30 +4571,25 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(37),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Aliter,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
@@ -5298,31 +4597,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(38),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(39),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5330,70 +4624,59 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(40),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(41),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(42),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(43),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(44),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5401,36 +4684,30 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(45),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5438,18 +4715,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(46),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5457,18 +4731,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(47),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5476,50 +4747,42 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(48),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(49),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(50),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5527,24 +4790,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(51),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Aliter,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5552,18 +4811,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(52),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5571,31 +4827,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(53),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(54),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5603,37 +4854,31 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(55),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(56),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5641,18 +4886,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(57),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5660,18 +4902,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(58),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5679,24 +4918,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(59),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Aliter,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5704,18 +4939,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(60),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5723,31 +4955,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(61),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(62),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5755,30 +4982,25 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(63),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5786,18 +5008,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(64),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5805,18 +5024,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(65),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5824,24 +5040,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(66),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5849,31 +5061,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(67),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(68),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5881,24 +5088,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(69),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5906,18 +5109,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(70),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5925,18 +5125,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(71),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5944,18 +5141,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(72),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -5963,229 +5157,191 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(73),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Appendix"),
+                node_type: NodeType::Scope("Appendix"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(3),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(4),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(5),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(6),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(7),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(8),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(9),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(10),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(11),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(12),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(13),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(14),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(15),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(16),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(17),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(18),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(19),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(20),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(21),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(22),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(23),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(24),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(25),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(26),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(27),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(28),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(29),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(30),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(31),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(32),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Caput,
-                        title: None,
                         num: Some(33),
                         children: &[],
                     },
@@ -6193,7 +5349,6 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::AnonymousFragment,
-                title: None,
                 num: None,
                 children: &[],
             },
@@ -6201,29 +5356,24 @@ pub const ETHICA_2: Schema2 = Schema2(&[
     },
     NodeN {
         node_type: NodeType::Pars,
-        title: None,
         num: Some(5),
         children: &[
             NodeN {
-                node_type: NodeType::Praefatio,
+                node_type: NodeType::Scope("Praefatio"),
                 num: None,
-                title: None,
                 children: &[],
             },
             NodeN {
-                node_type: NodeType::Scope,
-                title: Some("Axiomata"),
+                node_type: NodeType::Scope("Axiomata"),
                 num: None,
                 children: &[
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(1),
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::AnonymousFragment,
-                        title: None,
                         num: Some(2),
                         children: &[],
                     },
@@ -6231,44 +5381,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(1),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(2),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(3),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6276,24 +5419,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(4),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6301,31 +5440,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(5),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(6),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6333,31 +5467,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(7),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(8),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6365,31 +5494,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(9),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(10),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6397,96 +5521,81 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(11),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(12),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(13),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(14),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(15),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(16),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(17),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6494,24 +5603,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(18),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6519,31 +5624,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(19),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(20),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6551,44 +5651,37 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(21),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(22),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(23),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6596,83 +5689,70 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(24),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(25),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(26),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(27),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(28),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(29),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6680,31 +5760,26 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(30),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(31),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6712,18 +5787,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(32),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6731,18 +5803,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(33),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6750,24 +5819,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(34),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6775,37 +5840,31 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(35),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                 ],
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(36),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6813,18 +5872,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(37),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6832,18 +5888,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(38),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6851,18 +5904,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(39),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6870,24 +5920,20 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(40),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Corollarium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6895,18 +5941,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(41),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
@@ -6914,18 +5957,15 @@ pub const ETHICA_2: Schema2 = Schema2(&[
             },
             NodeN {
                 node_type: NodeType::Propositio,
-                title: None,
                 num: Some(42),
                 children: &[
                     NodeN {
                         node_type: NodeType::Demonstratio,
                         num: None,
-                        title: None,
                         children: &[],
                     },
                     NodeN {
                         node_type: NodeType::Scholium,
-                        title: None,
                         num: None,
                         children: &[],
                     },
