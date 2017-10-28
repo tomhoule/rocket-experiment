@@ -29,26 +29,47 @@ function renderNodeType(nt: NodeType): string {
   }
 }
 
+function buildPath(
+  prefix: string,
+  suffix: SchemaNode,
+): string {
+  const title = typeof suffix.node_type === 'string'
+    ? suffix.node_type
+    : suffix.node_type.Scope
+  const num = suffix.num ? `(${suffix.num})` : ''
+  return `${prefix}${prefix.length ? ':' : ''}${title.toLowerCase()}${num}`
+}
+
+interface DecoratedNode extends SchemaNode {
+  path: string
+}
+
 export class Ethics extends React.Component<Props, {}> {
   componentWillMount() {
     this.props.getSchema({})
     this.props.getFragments({ slug: this.props.match.params.editionSlug })
   }
 
-  renderNode = (node: SchemaNode, idx: number): React.ReactElement<any> => {
+  renderNode = (node: DecoratedNode, idx: number): React.ReactElement<any> => {
     const num = node.num ? node.num : ''
     const { editionSlug } = this.props.match.params
     return (
       <div
         className={styles.node}
-        key={`${node.node_type}${node.num}${idx}`}
+        key={`${node.path}${idx}`}
       >
         <div>
           {node.node_type && `${renderNodeType(node.node_type)} ${num}`}
         </div>
-        <Fragment editionSlug={editionSlug} path='meh' />
         <div>
-          {(node.children || []).map(this.renderNode)}
+          path: {node.path}
+        </div>
+        <Fragment editionSlug={editionSlug} path={node.path} />
+        <div>
+          {node.children.map((child, idx) => this.renderNode({
+            ...child,
+            path: buildPath(node.path, child),
+          }, idx))}
         </div>
       </div>)
   }
@@ -57,7 +78,12 @@ export class Ethics extends React.Component<Props, {}> {
     const { schema } = this.props
     return (
       <div>
-        <div>{schema && schema.children.map(this.renderNode)}</div>
+        <div>
+          {schema && schema.children.map((node, idx) => this.renderNode({
+            ...node,
+            path: buildPath('', node),
+          }, idx))}
+        </div>
       </div>
     )
   }
