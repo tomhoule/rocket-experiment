@@ -1,38 +1,36 @@
 import actionCreatorFactory from 'typescript-fsa'
-import * as api from 'api-types'
-import { GrpcStatus } from 'types'
 
 const actionCreator = actionCreatorFactory('ethics')
 
 export const getFragments = actionCreator.async<
   // api.getFragmentsParams,
   { slug: string },
-  api.RepositoryEthicsFragments,
+  Fragment[],
   any
 >('GET_FRAGMENTS')
 
 export const create = actionCreator.async<
-  Partial<api.RepositoryEdition>,
-  api.RepositoryEdition,
-  GrpcStatus
+  Partial<Edition>,
+  Edition,
+  Errors
 >('CREATE')
 
 export const getSchema = actionCreator.async<
     {},
-    api.RepositoryEthicsSchema,
+    EthicsSchema,
     any
 >('GET_SCHEMA')
 
-export const mergeChanges = actionCreator<Partial<api.RepositoryEdition>>(
+export const mergeChanges = actionCreator<Partial<Edition>>(
     'EDITION_MERGE_CHANGES'
 )
-export const setChanges = actionCreator<Partial<api.RepositoryEdition>>(
+export const setChanges = actionCreator<Partial<Edition>>(
     'EDITION_SET_CHANGES'
 )
 
 export const getEditions = actionCreator.async<
     {},
-    api.RepositoryEditions,
+    Edition[],
     never
 >('EDITIONS')
 

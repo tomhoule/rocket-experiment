@@ -3,12 +3,11 @@ import { connect } from 'react-redux'
 import { AppState } from './reducers'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router-dom'
-import * as api from 'api-types'
 import * as a from './actions'
 import styles = require('../home.scss')
 
 interface StateProps {
-  editions: api.RepositoryEdition[]
+  editions: Edition[]
 }
 
 interface DispatchProps {
@@ -42,7 +41,5 @@ export default connect<StateProps, DispatchProps, OwnProps>(
   (state: AppState) => ({
     editions: state.editions.index,
   }),
-  dispatch => bindActionCreators({
-    getEditions: a.getEditions.started,
-  }, dispatch)
+  { getEditions: a.getEditions.started }
 )(Editions)

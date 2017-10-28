@@ -1,29 +1,13 @@
+import { API_URL } from 'config'
 import { ActionsObservable, combineEpics, Epic } from 'redux-observable'
 import 'typescript-fsa-redux-observable'
 import * as Rx from 'rxjs'
 import { Action } from 'redux'
-import { AsyncActionCreators, Success, ActionCreator } from 'typescript-fsa'
+import { AsyncActionCreators, Success, ActionCreator, Failure } from 'typescript-fsa'
 import * as jspb from 'google-protobuf'
-import { GrpcStatus } from './types'
-
-export function get<I, S, F>(
-  obs$: Rx.Observable<Action>,
-  ty: AsyncActionCreators<I, S, F>,
-  url: string,
-  params?: { [key: string]: string }
-): Rx.Observable<any> {
-  return (obs$ as ActionsObservable<Action>)
-    .ofAction(ty.started)
-    .mergeMap(async action =>
-      await fetch(`http://localhost:8008${url}`)
-        .then(async r => [action.payload, await r.json()])
-        .catch(err => [action.payload, err]))
-    .mergeMap(([params, result]) => [ty.done({ params, result })])
-    .catch(([params, error]) => [ty.failed({ params , error })])
-}
 
 export async function post<T, U>(
-  actions: AsyncActionCreators<T, U, GrpcStatus>,
+  actions: AsyncActionCreators<T, U, Errors>,
   params: T,
   url: string,
   rqinit: RequestInit = {}
@@ -42,14 +26,38 @@ export async function post<T, U>(
   }
 }
 
-export async function simpleGet(url: string): Promise<any> {
-  const res = await fetch(`http://localhost:8008${url}`)
-  if (res.status !== 200) {
-    if ((res.headers.get('Content-Type') || '').includes('application/json')) {
-      throw await res.json()
+async function extractBody(res: Response): Promise<any> {
+  if (isJson(res)) {
+    return res.json()
+  } else {
+    return res.text()
+  }
+}
+
+function isJson(res: Response): boolean {
+  return (res.headers.get('Content-Type') || '').includes('application/json')
+}
+
+export async function simpleGet<T extends GetPayload, U>(
+  url: string,
+  params?: T
+): Promise<Success<T, U>> {
+  const res = await fetch(`${API_URL}${url}`)
+  if (res.status > 299) {
+    if (isJson(res)) {
+      const error = await res.json()
+      throw { params, error }
     } else {
-      throw { message: res.body }
+      const error = await res.text()
+      throw { params, error }
     }
   }
-  return res.json()
+  return extractBody(res)
+}
+
+export function get<T extends GetPayload, U>(
+  url: string,
+  payload?: T
+): Rx.Observable<Success<T, U>> {
+  return Rx.Observable.fromPromise(simpleGet(url, payload))
 }

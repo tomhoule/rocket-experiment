@@ -1,8 +1,6 @@
 import { reducerWithInitialState } from 'typescript-fsa-reducers'
 import * as a from './actions'
 import * as redux from 'redux'
-import * as api from 'api-types'
-import { GrpcStatusCode, GrpcStatus } from 'types'
 
 interface CrudState<T> {
   index: T[]
@@ -22,18 +20,18 @@ function crudState<T>(): CrudState<T> {
 
 export interface AppState {
     schema: SchemaReducerState
-    editions: CrudState<api.RepositoryEdition>
+    editions: CrudState<Edition>
 }
 
-export type SchemaReducerState = api.RepositoryEthicsSchema | null
+export type SchemaReducerState = EthicsSchema | null
 
 export const schemaReducer = reducerWithInitialState(null as SchemaReducerState)
     .case(a.getSchema.done, (state, { result }) => result)
 
-export const editionsReducer = reducerWithInitialState(crudState<api.RepositoryEdition>())
+export const editionsReducer = reducerWithInitialState(crudState<Edition>())
     .case(a.getEditions.done, (state, changes) => ({
       ...state,
-      index: changes.result.data || [],
+      index: changes.result,
     }))
     .case(a.mergeChanges, (state, changes) => ({
       ...state,
@@ -42,7 +40,5 @@ export const editionsReducer = reducerWithInitialState(crudState<api.RepositoryE
     .case(a.setChanges, (state, changes) => ({ ...state, changes }))
     .case(a.create.failed, (state, errors) => ({
       ...state,
-      errors: errors.error.code === GrpcStatusCode.InvalidArgument
-        ? JSON.parse(errors.error.error)
-        : { details: errors.error.error }
+      errors: errors.error,
     }))

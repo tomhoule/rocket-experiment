@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { Link, match } from 'react-router-dom'
-import * as api from 'api-types'
 import * as a from './actions'
 import { AppState } from './reducers'
 import { bindActionCreators } from 'redux'

@@ -97,18 +97,6 @@ pub struct Node {
 }
 
 impl Node {
-    // pub fn to_protobuf(&self) -> ::rpc::repository::EthicsSchema_Node {
-    //     use rpc::repository::*;
-    //     use protobuf::RepeatedField;
-
-    //     let mut node = EthicsSchema_Node::new();
-    //     if let Some(num) = self.num { node.set_num(num as i32) }
-    //     let children = self.children.iter().map(|node| node.to_protobuf()).collect();
-    //     node.set_children(RepeatedField::from_vec(children));
-    //     node.set_title(self.node_type.segment_title().to_string());
-    //     node
-    // }
-
     fn contains_path(&self, path: &str) -> bool {
         let mut node = Some(self);
         for segment in path.split(':') {

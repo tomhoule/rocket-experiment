@@ -10,15 +10,29 @@ import { push } from 'react-router-redux'
 
 type AppEpic = Epic<Action, AppState, InjectedDependencies>
 
-const schemaEpic: AppEpic= (action$, store, d) => {
-  const filtered$ = action$.filter(() => !store.getState().schema)
-  return d.get(filtered$, actions.getSchema, '/v1/ethics/schema')
+function unary<T, U>(fn: (arg: T, ...rest: any[]) => U): (arg: T) => U {
+  return (arg: T, ...rest: any[]) => fn(arg)
 }
 
-const editions: AppEpic = (action$, store, d) => {
-  const filtered$ = action$.filter(() => !store.getState().editions.index.length)
-  return d.get(filtered$, actions.getEditions, '/v1/ethics/editions')
+function catcher<T, U>(fn: (arg: T, ...rest: any[]) => U): (arg: T) => Rx.Observable<U> {
+  return (arg: T, ...rest: any[]) => Rx.Observable.of(fn(arg))
 }
+
+const schemaEpic: AppEpic= (action$, store, d) =>
+  action$
+    .ofAction(actions.getSchema.started)
+    .filter(() => !store.getState().schema)
+    .flatMap(({ payload }) => d.get('/v1/ethics/schema', payload))
+    .map(unary(actions.getSchema.done))
+    .catch(catcher(actions.getSchema.failed))
+
+const editions: AppEpic = (action$, store, d) =>
+  action$
+    .ofAction(actions.getEditions.started)
+    .distinctUntilChanged((a, b) => true) // only ever fetch once
+    .flatMap(({ payload }) => d.simpleGet('/v1/ethics/editions', payload))
+    .map(unary(actions.getEditions.done))
+    .catch(catcher(actions.getEditions.failed))
 
 const createEdition: AppEpic = (action$, store, d) =>
   action$
@@ -37,24 +51,24 @@ const createEditionSuccess: AppEpic = (action$, store, d) =>
 const getFragments: AppEpic = (action$, store, d) =>
   action$
     .ofAction(actions.getFragments.started)
-    .distinctUntilChanged((a1, a2) => a1.payload.slug === a2.payload.slug)
+    .takeUntil(action$.ofAction(actions.getFragments.started))
     .flatMap(({ payload }) => {
       const editions = store.getState().editions.index
-      const extractEdition = (ed: api.RepositoryEdition[]): api.RepositoryEdition[] =>
+      const extractEdition = (ed: Edition[]): Edition[] =>
         ed.filter(elem => elem.slug === payload.slug)
       return Rx.Observable
         .from(extractEdition(editions))
         .merge(
           action$
             .ofAction(actions.getEditions.done)
-            .flatMap((action) => extractEdition(action.payload.result.data || [])))
+            .flatMap((action) => extractEdition(action.payload.result)))
         .take(1)
         .map((edition): [{ slug: string }, string] => [payload, edition.id as string])
     })
-    .flatMap(async ([params, editionId]) =>
-      await d.simpleGet(`/v1/ethics/editions/${editionId}/fragments`)
-        .then(result => actions.getFragments.done({ params, result }))
-        .catch(error => actions.getFragments.failed({ params, error })))
+    .flatMap(([params, editionId]) =>
+      d.get(`/v1/ethics/editions/${editionId}/fragments`, params))
+    .map(unary(actions.getFragments.done))
+    .catch(catcher(actions.getFragments.failed))
 
 export const rootEpic = combineEpics(
   schemaEpic,

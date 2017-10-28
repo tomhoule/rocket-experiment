@@ -10,7 +10,7 @@ use rocket::response::status;
 
 type DbConn<'a> = State<'a, Pool<ConnectionManager<PgConnection>>>;
 
-#[post("/api/editions", data = "<edition>")]
+#[post("/v1/ethics/editions", data = "<edition>")]
 pub fn editions_create(
     edition: Json<models::EditionNew>,
     conn: DbConn,
@@ -19,25 +19,25 @@ pub fn editions_create(
     Ok(status::Created("".to_string(), Some(Json(edition))))
 }
 
-#[get("/api/editions")]
+#[get("/v1/ethics/editions")]
 pub fn editions_index(conn: DbConn) -> Result<Json<Vec<models::Edition>>, Error> {
     Ok(Json(models::Edition::all(&*conn.inner().get()?)?))
 }
 
-#[get("/api/editions/<id>")]
+#[get("/v1/ethics/editions/<id>")]
 pub fn edition(id: String, conn: DbConn) -> Result<Json<models::Edition>, Error> {
     Ok(Json(
         models::Edition::by_id(id.parse()?, &*conn.inner().get()?)?,
     ))
 }
 
-#[delete("/api/editions/<id>")]
+#[delete("/v1/editions/<id>")]
 pub fn edition_delete(id: String, conn: DbConn) -> Result<(), Error> {
     let _deleted = models::Edition::delete(id.parse()?, &*conn.inner().get()?)?;
     Ok(())
 }
 
-#[patch("/api/editions/<id>", data = "<patch>")]
+#[patch("/v1/ethics/editions/<id>", data = "<patch>")]
 pub fn edition_patch(
     patch: Json<models::EditionPatch>,
     id: String,

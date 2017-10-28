@@ -4,7 +4,6 @@ import Form from 'Form'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { AppState } from './reducers'
-import { RepositoryEdition } from 'api-types'
 import shellStyles = require('../shell.scss')
 
 interface DispatchProps {
@@ -14,7 +13,7 @@ interface DispatchProps {
 }
 
 interface StateProps {
-  changes: Partial<RepositoryEdition>
+  changes: Partial<Edition>
   errors: Errors
 }
 
