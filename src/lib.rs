@@ -16,6 +16,7 @@ extern crate r2d2_diesel;
 extern crate regex;
 extern crate rocket;
 extern crate rocket_contrib;
+extern crate rocket_cors;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -46,6 +47,8 @@ pub fn start() {
         r2d2::Pool::new(pool_config, pool_manager)
             .expect("Failed to create a database connection pool");
 
+    let cors_options: rocket_cors::Cors = ::std::default::Default::default();
+
     rocket::ignite()
         .mount(
             "/",
@@ -58,6 +61,7 @@ pub fn start() {
                 schema
             ],
         )
+        .attach(cors_options)
         .manage(pool)
         .launch();
 }
