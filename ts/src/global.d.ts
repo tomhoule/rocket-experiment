@@ -18,13 +18,15 @@ interface Fragment {
   value: string
 }
 
+type NodeType = string | { 'Scope': string }
+
 interface SchemaNode {
-  node_type: string
+  node_type: NodeType
   num: number | null
   children: SchemaNode[]
 }
 
-type EthicsSchema = any
+type EthicsSchema = SchemaNode
 
 declare module '*.scss' {
   const styles: any

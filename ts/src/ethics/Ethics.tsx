@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { Link, match } from 'react-router-dom'
-import * as api from 'api-types'
 import * as a from './actions'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -8,7 +7,7 @@ import styles = require('./ethics.scss')
 import Fragment from './Fragment'
 
 interface StateProps {
-  schema: api.RepositoryEthicsSchema | null
+  schema: EthicsSchema | null
 }
 
 interface DispatchProps {
@@ -22,13 +21,21 @@ interface OwnProps {
 
 type Props = StateProps & DispatchProps & OwnProps
 
+function renderNodeType(nt: NodeType): string {
+  if (typeof nt === 'string') {
+    return nt
+  } else {
+    return nt.Scope
+  }
+}
+
 export class Ethics extends React.Component<Props, {}> {
   componentWillMount() {
     this.props.getSchema({})
     this.props.getFragments({ slug: this.props.match.params.editionSlug })
   }
 
-  renderNode = (node: api.EthicsSchemaNode, idx: number): React.ReactElement<any> => {
+  renderNode = (node: SchemaNode, idx: number): React.ReactElement<any> => {
     const num = node.num ? node.num : ''
     const { editionSlug } = this.props.match.params
     return (
@@ -37,8 +44,7 @@ export class Ethics extends React.Component<Props, {}> {
         key={`${node.node_type}${node.num}${idx}`}
       >
         <div>
-          {node.node_type && `${node.node_type} ${num}`}
-          {node.title && `--- Title: ${node.title}`}
+          {node.node_type && `${renderNodeType(node.node_type)} ${num}`}
         </div>
         <Fragment editionSlug={editionSlug} path='meh' />
         <div>
@@ -51,7 +57,7 @@ export class Ethics extends React.Component<Props, {}> {
     const { schema } = this.props
     return (
       <div>
-        <div>{schema && (schema.parts || []).map(this.renderNode)}</div>
+        <div>{schema && schema.children.map(this.renderNode)}</div>
       </div>
     )
   }
