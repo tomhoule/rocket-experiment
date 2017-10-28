@@ -2,10 +2,10 @@ pub use self::schema::ETHICA;
 use std::str::FromStr;
 use regex::Regex;
 
-#[derive(Debug)]
-pub struct Schema(pub &'static [Node]);
+#[derive(Serialize, Debug)]
+pub struct Schema(Node);
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Serialize, PartialEq)]
 pub struct Path(String);
 
 lazy_static! {
@@ -20,7 +20,7 @@ lazy_static! {
           )+             # any number of times
           $              # until the end of the string"
       ).unwrap();
-    static ref SEGMENT_RE: Regex = Regex::new(r"([a-z])+(?:\((\d)\))").unwrap();
+    static ref SEGMENT_RE: Regex = Regex::new(r"([a-z]+)(?:\((\d+)\))").unwrap();
 }
 
 impl FromStr for Path {
@@ -37,7 +37,7 @@ impl FromStr for Path {
 
 impl Schema {
     pub fn contains_path(&self, path: &Path) -> bool {
-        self.0.iter().any(|node| node.contains_path(path))
+        self.0.contains_path(&path.0)
     }
 
     // fn all_paths(&self) -> Vec<Path> {
@@ -46,7 +46,7 @@ impl Schema {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub enum NodeType {
     AnonymousFragment,
     Aliter,
@@ -59,6 +59,7 @@ pub enum NodeType {
     Lemma,
     Pars,
     Postulatum,
+    Root,
     Scope(&'static str),
     Propositio,
     Scholium,
@@ -80,6 +81,7 @@ impl NodeType {
             Lemma => "lemma",
             Pars => "pars",
             Postulatum => "postulatum",
+            Root => unreachable!(),
             Scope(title) => title,
             Propositio => "propositio",
             Scholium => "scholium",
@@ -87,7 +89,7 @@ impl NodeType {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Node {
     node_type: NodeType,
     num: Option<u8>,
@@ -95,41 +97,44 @@ pub struct Node {
 }
 
 impl Node {
-    pub fn to_protobuf(&self) -> ::rpc::repository::EthicsSchema_Node {
-        use rpc::repository::*;
-        use protobuf::RepeatedField;
+    // pub fn to_protobuf(&self) -> ::rpc::repository::EthicsSchema_Node {
+    //     use rpc::repository::*;
+    //     use protobuf::RepeatedField;
 
-        let mut node = EthicsSchema_Node::new();
-        if let Some(num) = self.num { node.set_num(num as i32) }
-        let children = self.children.iter().map(|node| node.to_protobuf()).collect();
-        node.set_children(RepeatedField::from_vec(children));
-        node.set_title(self.node_type.segment_title().to_string());
-        node
-    }
+    //     let mut node = EthicsSchema_Node::new();
+    //     if let Some(num) = self.num { node.set_num(num as i32) }
+    //     let children = self.children.iter().map(|node| node.to_protobuf()).collect();
+    //     node.set_children(RepeatedField::from_vec(children));
+    //     node.set_title(self.node_type.segment_title().to_string());
+    //     node
+    // }
 
-    fn contains_path(&self, path: &Path) -> bool {
+    fn contains_path(&self, path: &str) -> bool {
         let mut node = Some(self);
-        for segment in path.0.split(':') {
+        for segment in path.split(':') {
             match node {
                 Some(current) => {
                     for child in current.children.iter() {
                         let captures = SEGMENT_RE.captures(segment).unwrap();
-                        let found_name: &str = &captures[0];
+                        let found_name: &str = &captures[1];
                         let found_num: Option<u8> = captures
-                            .get(1)
+                            .get(2)
                             .map(|m| m.as_str())
                             .and_then(|s| u8::from_str(s).ok());
 
+                        println!("name {:?}, num {:?}  / name {:?}, num {:?}", found_name, found_num, child.node_type.segment_title(), child.num);
                         if found_name == child.node_type.segment_title() && found_num == child.num {
+                            println!("{:?} {:?} == {:?} {:?}",  found_name, found_num, child.node_type.segment_title(), child.num);
                             node = Some(child);
                             break
                         }
+                        node = None
                     }
                 },
                 None => return false,
             }
         }
-        true
+        !node.is_none()
     }
 }
 
@@ -137,7 +142,13 @@ pub mod schema {
     use super::*;
     use super::NodeType::*;
 
-    pub const ETHICA: Schema = Schema(&[
+    pub const ETHICA: Schema = Schema(Node {
+        node_type: Root,
+        num: None,
+        children: parts,
+    });
+
+    const parts: &'static [Node] = &[
     Node {
         node_type: Pars,
         num: Some(1),
@@ -5194,5 +5205,5 @@ pub mod schema {
             },
         ],
     },
-    ]);
+    ];
 }

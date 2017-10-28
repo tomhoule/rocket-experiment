@@ -1,5 +1,5 @@
 pub mod editions;
 pub mod error;
-pub mod ethica;
+pub mod ethics;
 
 pub use self::error::Error;
