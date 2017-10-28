@@ -40,7 +40,7 @@ function isJson(res: Response): boolean {
 
 export async function simpleGet<T extends GetPayload, U>(
   url: string,
-  params?: T
+  params: T
 ): Promise<Success<T, U>> {
   const res = await fetch(`${API_URL}${url}`)
   if (res.status > 299) {
@@ -52,12 +52,13 @@ export async function simpleGet<T extends GetPayload, U>(
       throw { params, error }
     }
   }
-  return extractBody(res)
+  const result = await extractBody(res)
+  return { params, result }
 }
 
 export function get<T extends GetPayload, U>(
   url: string,
-  payload?: T
+  payload: T
 ): Rx.Observable<Success<T, U>> {
   return Rx.Observable.fromPromise(simpleGet(url, payload))
 }

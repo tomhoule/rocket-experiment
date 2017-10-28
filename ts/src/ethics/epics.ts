@@ -29,7 +29,7 @@ const editions: AppEpic = (action$, store, d) =>
   action$
     .ofAction(actions.getEditions.started)
     .distinctUntilChanged((a, b) => true) // only ever fetch once
-    .flatMap(({ payload }) => d.simpleGet('/v1/ethics/editions', payload))
+    .flatMap(({ payload }) => d.get('/v1/ethics/editions', payload))
     .map(unary(actions.getEditions.done))
     .catch(catcher(actions.getEditions.failed))
 
