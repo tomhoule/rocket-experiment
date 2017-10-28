@@ -13,7 +13,7 @@ interface Edition {
 
 interface Fragment {
   id: string
-  edition: string
+  edition_id: string
   fragment_path: string
   value: string
 }

@@ -40,6 +40,7 @@ function main() {
         get: epicUtils.get,
         post: epicUtils.post,
         simpleGet: epicUtils.simpleGet,
+        put: epicUtils.put,
       },
     }
   )

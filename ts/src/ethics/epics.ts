@@ -9,29 +9,21 @@ import { push } from 'react-router-redux'
 
 type AppEpic = Epic<Action, AppState, InjectedDependencies>
 
-function unary<T, U>(fn: (arg: T, ...rest: any[]) => U): (arg: T) => U {
-  return (arg: T, ...rest: any[]) => fn(arg)
-}
-
-function catcher<T, U>(fn: (arg: T, ...rest: any[]) => U): (arg: T) => Rx.Observable<U> {
-  return (arg: T, ...rest: any[]) => Rx.Observable.of(fn(arg))
-}
-
 const schemaEpic: AppEpic= (action$, store, d) =>
   action$
     .ofAction(actions.getSchema.started)
     .filter(() => !store.getState().schema)
     .flatMap(({ payload }) => d.get('/v1/ethics/schema', payload))
-    .map(unary(actions.getSchema.done))
-    .catch(catcher(actions.getSchema.failed))
+    .map(result => actions.getSchema.done(result))
+    .catch(err => Rx.Observable.of(actions.getSchema.failed(err)))
 
 const editions: AppEpic = (action$, store, d) =>
   action$
     .ofAction(actions.getEditions.started)
     .distinctUntilChanged((a, b) => true) // only ever fetch once
     .flatMap(({ payload }) => d.get('/v1/ethics/editions', payload))
-    .map(unary(actions.getEditions.done))
-    .catch(catcher(actions.getEditions.failed))
+    .map(result => actions.getEditions.done(result))
+    .catch(err => Rx.Observable.of(actions.getEditions.failed(err)))
 
 const createEdition: AppEpic = (action$, store, d) =>
   action$
@@ -40,7 +32,15 @@ const createEdition: AppEpic = (action$, store, d) =>
       action$.ofAction(actions.create.done).mapTo(null),
       action$.ofAction(actions.create.failed)).mapTo(null))
     .flatMap(({ payload }) => Rx.Observable.fromPromise(
-      d.post(actions.create, payload, 'http://localhost:8008/v1/ethics/editions')))
+      d.post(actions.create, payload, '/v1/ethics/editions')))
+
+const editFragment: AppEpic = (action$, store, d) =>
+  action$
+    .ofAction(actions.editFragment.started)
+    .flatMap(({ payload }) =>
+      d.put(`/v1/ethics/editions/${payload.edition_id}/fragments`, payload))
+    .map(result => actions.editFragment.done(result))
+    .catch(err => Rx.Observable.of(actions.editFragment.failed(err)))
 
 const createEditionSuccess: AppEpic = (action$, store, d) =>
   action$
@@ -66,8 +66,8 @@ const getFragments: AppEpic = (action$, store, d) =>
     })
     .flatMap(([params, editionId]) =>
       d.get(`/v1/ethics/editions/${editionId}/fragments`, params))
-    .map(unary(actions.getFragments.done))
-    .catch(catcher(actions.getFragments.failed))
+    .map(result => actions.getFragments.done(result))
+    .catch(err => Rx.Observable.of(actions.getFragments.failed(err)))
 
 export const rootEpic = combineEpics(
   schemaEpic,

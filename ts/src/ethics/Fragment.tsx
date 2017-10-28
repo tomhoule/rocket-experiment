@@ -37,7 +37,10 @@ export class Fragment extends React.Component<Props, State> {
         </p>)
     } else {
       return (
-        <textarea onBlur={this.toggleEdit}>This is an editable fragment</textarea>)
+        <textarea
+          defaultValue='Caute'
+          onBlur={this.toggleEdit}
+        />)
     }
   }
 }
