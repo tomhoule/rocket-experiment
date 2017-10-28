@@ -49,6 +49,8 @@ pub fn edition_patch(
 #[cfg(test)]
 mod tests {
     use r2d2;
+    use diesel;
+    use diesel::prelude::*;
     use diesel::pg::PgConnection;
     use dotenv;
     use r2d2_diesel::ConnectionManager;
@@ -58,18 +60,21 @@ mod tests {
     use rocket::http::{ContentType, Header, Status};
     use rocket::local::Client;
 
+    fn create_pool() -> r2d2::Pool<ConnectionManager<PgConnection>> {
+        dotenv::dotenv().ok();
+        let pool_config = r2d2::Config::default();
+        let pool_manager =
+            ConnectionManager::<PgConnection>::new(::std::env::var("DATABASE_URL").unwrap());
+        r2d2::Pool::new(pool_config, pool_manager)
+            .expect("Failed to create a database connection pool")
+    }
+
     pub fn test_post<H, B: AsRef<[u8]>>(body: B, uri: &str, header: H, status: Status)
     where
         H: Into<Header<'static>>,
     {
         dotenv::dotenv().ok();
-        let pool_config = r2d2::Config::default();
-        let pool_manager =
-            ConnectionManager::<PgConnection>::new(::std::env::var("DATABASE_URL").unwrap());
-        let pool: r2d2::Pool<ConnectionManager<PgConnection>> =
-            r2d2::Pool::new(pool_config, pool_manager)
-                .expect("Failed to create a database connection pool");
-
+        let pool = create_pool();
         let rocket = rocket::ignite()
             .manage(pool)
             .mount("/", routes![super::editions_create]);
@@ -81,6 +86,10 @@ mod tests {
 
     #[test]
     fn edition_create_happy_path() {
+        use db::schema::editions::dsl::*;
+        let pool = create_pool();
+        let conn = pool.get().unwrap();
+        diesel::delete(editions).execute(&*conn).unwrap();
         let payload = EditionNew {
             title: "Collector edition".to_string(),
             editor: "Freddy Mercury".to_string(),

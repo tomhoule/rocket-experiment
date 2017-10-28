@@ -25,7 +25,6 @@ extern crate uuid;
 extern crate validator_derive;
 extern crate validator;
 
-use rocket::response::NamedFile;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 

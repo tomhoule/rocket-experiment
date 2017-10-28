@@ -1,8 +1,7 @@
 use diesel::result::Error as DieselError;
 use r2d2::GetTimeout;
 use validator;
-// use grpcio::{RpcStatus, RpcStatusCode};
-use json::{to_value, Value};
+// use json::{to_value, Value};
 use uuid;
 
 error_chain! {
@@ -25,23 +24,23 @@ error_chain! {
     }
 }
 
-fn validation_errors_to_json(errs: validator::ValidationErrors) -> Value {
-    use std::collections::HashMap;
-    let map: HashMap<&str, String> = errs.inner()
-        .into_iter()
-        .map(|(k, v)| {
-            let joined: String = v.into_iter().fold(String::new(), |mut acc, err| {
-                if let Some(msg) = err.message {
-                    acc.push_str(&msg);
-                    acc.push_str("\n");
-                }
-                acc
-            });
-            (k, joined)
-        })
-        .collect();
-    to_value(&map).unwrap()
-}
+// fn validation_errors_to_json(errs: validator::ValidationErrors) -> Value {
+//     use std::collections::HashMap;
+//     let map: HashMap<&str, String> = errs.inner()
+//         .into_iter()
+//         .map(|(k, v)| {
+//             let joined: String = v.into_iter().fold(String::new(), |mut acc, err| {
+//                 if let Some(msg) = err.message {
+//                     acc.push_str(&msg);
+//                     acc.push_str("\n");
+//                 }
+//                 acc
+//             });
+//             (k, joined)
+//         })
+//         .collect();
+//     to_value(&map).unwrap()
+// }
 
 // fn report<T: ::std::fmt::Display>(status: RpcStatusCode, err: T) -> RpcStatus {
 //     RpcStatus {

@@ -3,7 +3,6 @@ use uuid::Uuid;
 use diesel;
 use diesel::pg::PgConnection;
 use validator::Validate;
-use error;
 
 use db::schema::*;
 

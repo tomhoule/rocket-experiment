@@ -145,10 +145,10 @@ pub mod schema {
     pub const ETHICA: Schema = Schema(Node {
         node_type: Root,
         num: None,
-        children: parts,
+        children: PARTS,
     });
 
-    const parts: &'static [Node] = &[
+    const PARTS: &'static [Node] = &[
     Node {
         node_type: Pars,
         num: Some(1),

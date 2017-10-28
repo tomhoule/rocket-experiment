@@ -1,4 +1,3 @@
-use error::Error;
 use chrono::{DateTime, Utc};
 use diesel;
 use diesel::pg::PgConnection;
