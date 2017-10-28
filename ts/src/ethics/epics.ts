@@ -4,7 +4,6 @@ import * as Rx from 'rxjs/Rx'
 import { AsyncActionCreators } from 'typescript-fsa'
 import 'typescript-fsa-redux-observable'
 import { InjectedDependencies } from 'types'
-import { AppState } from './reducers'
 import * as api from 'api-types'
 import { push } from 'react-router-redux'
 

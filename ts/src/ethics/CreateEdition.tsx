@@ -3,7 +3,6 @@ import * as a from './actions'
 import Form from 'Form'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { AppState } from './reducers'
 import shellStyles = require('../shell.scss')
 
 interface DispatchProps {

@@ -26,7 +26,7 @@ const rootEpic = ethicsRootEpic
 
 const history = createHistory()
 
-export const reducers = redux.combineReducers<ethicsReducers.AppState>({
+export const reducers = redux.combineReducers<AppState>({
     schema: ethicsReducers.schemaReducer,
     editions: ethicsReducers.editionsReducer,
     router: routerReducer

@@ -37,3 +37,16 @@ interface GetPayload extends Record<string, any> {
   params?: Record<string, string>
 }
 
+interface CrudState<T> {
+  index: T[]
+  single: T | null
+  changes: Partial<T>
+  errors: Errors
+}
+
+interface AppState {
+    schema: SchemaReducerState
+    editions: CrudState<Edition>
+}
+
+type SchemaReducerState = EthicsSchema | null

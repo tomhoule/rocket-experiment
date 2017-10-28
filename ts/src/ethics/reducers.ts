@@ -2,13 +2,6 @@ import { reducerWithInitialState } from 'typescript-fsa-reducers'
 import * as a from './actions'
 import * as redux from 'redux'
 
-interface CrudState<T> {
-  index: T[]
-  single: T | null
-  changes: Partial<T>
-  errors: Errors
-}
-
 function crudState<T>(): CrudState<T> {
   return {
     index: [],
@@ -17,13 +10,6 @@ function crudState<T>(): CrudState<T> {
     errors: {},
   }
 }
-
-export interface AppState {
-    schema: SchemaReducerState
-    editions: CrudState<Edition>
-}
-
-export type SchemaReducerState = EthicsSchema | null
 
 export const schemaReducer = reducerWithInitialState(null as SchemaReducerState)
     .case(a.getSchema.done, (state, { result }) => result)
