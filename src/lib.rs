@@ -30,8 +30,8 @@ use r2d2_diesel::ConnectionManager;
 
 mod api;
 mod error;
-mod db;
-mod models;
+pub mod db;
+pub mod models;
 mod schemas;
 
 use api::editions::*;
