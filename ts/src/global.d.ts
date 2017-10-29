@@ -51,4 +51,18 @@ interface AppState {
     editions: CrudState<Edition>
 }
 
+interface JApiSuccessResponse {
+  data: any
+  errors?: any[]
+  meta?: any
+}
+
+interface JApiErrorResponse {
+  data?: any
+  errors: any[]
+  meta?: any
+}
+
+interface JApiResponse = JApiSuccessResponse | JApiErrorResponse
+
 type SchemaReducerState = EthicsSchema | null
