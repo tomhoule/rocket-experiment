@@ -2,11 +2,11 @@ use models;
 
 use api::error::*;
 use diesel::pg::PgConnection;
-use rocket::State;
 use rocket_contrib::Json;
 use r2d2::Pool;
 use r2d2_diesel::ConnectionManager;
 use rocket::response::status;
+use rocket::State;
 
 type DbConn<'a> = State<'a, Pool<ConnectionManager<PgConnection>>>;
 

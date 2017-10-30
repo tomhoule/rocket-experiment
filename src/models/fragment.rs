@@ -5,8 +5,10 @@ use diesel::*;
 use validator::Validate;
 use db::schema::*;
 use uuid::Uuid;
+use error::Error;
+use rpc::repository::EthicsFragment;
 
-#[derive(Queryable)]
+#[derive(Queryable, Deserialize, Serialize)]
 pub struct Fragment {
     pub id: Uuid,
     pub edition_id: Uuid,
@@ -25,15 +27,15 @@ pub struct FragmentPatch {
 }
 
 impl FragmentPatch {
-    // pub fn from_proto(proto: EthicsFragment) -> Result<Self, Error> {
-    //     let patch = FragmentPatch {
-    //         fragment_path: proto.path,
-    //         edition_id: proto.edition_id.parse()?,
-    //         value: proto.value,
-    //     };
-    //     patch.validate()?;
-    //     Ok(patch)
-    // }
+    pub fn from_proto(proto: EthicsFragment) -> Result<Self, Error> {
+        let patch = FragmentPatch {
+            fragment_path: proto.path,
+            edition_id: proto.edition_id.parse()?,
+            value: proto.value,
+        };
+        patch.validate()?;
+        Ok(patch)
+    }
 
     pub fn save(&self, conn: &PgConnection) -> Result<Fragment, diesel::result::Error> {
         use db::schema::fragments::dsl::*;
@@ -56,18 +58,18 @@ impl Fragment {
         fragments.filter(edition_id.eq(edid)).load(conn)
     }
 
-    // #[deny(unused_variables)]
-    // pub fn into_proto(self) -> EthicsFragment {
-    //     let Fragment {
-    //         fragment_path,
-    //         edition_id,
-    //         value,
-    //         ..
-    //     } = self;
-    //     let mut proto = EthicsFragment::new();
-    //     proto.set_path(fragment_path);
-    //     proto.set_edition_id(format!("{}", edition_id));
-    //     proto.set_value(value);
-    //     proto
-    // }
+    #[deny(unused_variables)]
+    pub fn into_proto(self) -> EthicsFragment {
+        let Fragment {
+            fragment_path,
+            edition_id,
+            value,
+            ..
+        } = self;
+        let mut proto = EthicsFragment::new();
+        proto.set_path(fragment_path);
+        proto.set_edition_id(format!("{}", edition_id));
+        proto.set_value(value);
+        proto
+    }
 }

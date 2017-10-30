@@ -6,6 +6,7 @@ use diesel::pg::PgConnection;
 use r2d2::Pool;
 use r2d2_diesel::ConnectionManager;
 use models;
+use rocket::State;
 
 type DbConn<'a> = State<'a, Pool<ConnectionManager<PgConnection>>>;
 
@@ -20,6 +21,6 @@ pub fn edit_fragment(
     edition_id: String,
     conn: DbConn
 ) -> Result<Json<models::Fragment>, Error> {
-    let path: Path = fragment.fragment_path.parse()?;
+    // let path: Path = fragment.fragment_path.parse()?;
     unimplemented!()
 }

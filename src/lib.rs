@@ -9,8 +9,11 @@ extern crate diesel_codegen;
 extern crate dotenv;
 #[macro_use]
 extern crate error_chain;
+extern crate futures;
+extern crate grpcio;
 #[macro_use]
 extern crate lazy_static;
+extern crate protobuf;
 extern crate r2d2;
 extern crate r2d2_diesel;
 extern crate regex;
@@ -30,9 +33,11 @@ use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 
 mod api;
+pub mod rpc_api;
 mod error;
 pub mod db;
 pub mod models;
+pub mod rpc;
 mod schemas;
 
 use api::editions::*;
