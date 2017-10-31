@@ -60,10 +60,10 @@ export async function simpleGet<T extends GetPayload, U>(
   return { params, result }
 }
 
-export function get<T extends GetPayload>(
+export function get<T extends GetPayload, U>(
   url: string,
   payload: T
-): Rx.Observable<Success<T, any>> {
+): Rx.Observable<Success<T, U>> {
   return Rx.Observable.fromPromise(simpleGet(url, payload))
 }
 
