@@ -23,6 +23,7 @@ extern crate rocket_cors;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+#[macro_use]
 extern crate serde_json as json;
 extern crate uuid;
 extern crate validator;
@@ -35,13 +36,23 @@ use r2d2_diesel::ConnectionManager;
 mod api;
 pub mod rpc_api;
 mod error;
+mod files;
 pub mod db;
 pub mod models;
+mod pages;
 pub mod rpc;
 mod schemas;
 
 use api::editions::*;
 use api::ethics::*;
+
+use rocket_contrib::Template;
+
+#[get("/")]
+fn index() -> Template {
+    let context = json!({});
+    Template::render("index", &context)
+}
 
 pub fn start() {
     dotenv::dotenv().ok();
@@ -58,15 +69,21 @@ pub fn start() {
         .mount(
             "/",
             routes![
+                index,
+                files::files,
+                pages::editions_index,
+                pages::editions_create,
+                pages::editions_new,
                 edition,
                 editions_index,
                 editions_create,
                 edition_delete,
                 edition_patch,
-                schema
+                schema,
             ],
         )
         .attach(cors_options)
+        .attach(Template::fairing())
         .manage(pool)
         .launch();
 }
