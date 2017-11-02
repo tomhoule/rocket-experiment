@@ -50,7 +50,9 @@ use rocket_contrib::Template;
 
 #[get("/")]
 fn index() -> Template {
-    let context = json!({});
+    let context = json!({
+        "links": { "editions_index": "/ethics" }
+    });
     Template::render("index", &context)
 }
 

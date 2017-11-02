@@ -25,7 +25,7 @@ error_chain! {
     }
 }
 
-fn validation_errors_to_json(errs: validator::ValidationErrors) -> Value {
+pub fn validation_errors_to_json(errs: validator::ValidationErrors) -> Value {
     use std::collections::HashMap;
     let map: HashMap<&str, String> = errs.inner()
         .into_iter()

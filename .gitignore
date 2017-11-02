@@ -9,6 +9,7 @@ node_modules
 ts/api-types
 proto/**/*
 !proto/**/*.proto
+/static
 
 rocket-experiment
 locutions-rs
