@@ -2,6 +2,7 @@ api-docs
 src/rpc
 /target/
 **/*.rs.bk
+frontend/dist
 ts/dist
 ts/typescript-fetch-api
 node_modules

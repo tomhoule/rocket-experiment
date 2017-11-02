@@ -1,5 +1,9 @@
 codegen: compile-proto compile-swagger
 
+do-frontend:
+  yarn frontend/build
+  cp frontend/dist/wholebundle.js static/wholebundle.js
+
 compile-go:
   go build
 
