@@ -1,0 +1,37 @@
+{{#*inline "node"}}
+<div style="margin-left: 12px">
+  {{#if node_type.Scope }}
+    {{node_type.Scope}}
+  {{else}}
+    {{node_type}} {{num}}
+  {{/if}}
+  {{#each children}}
+    {{>node}}
+  {{/each}}
+</div>
+{{/inline}}
+
+{{#*inline "page"}}
+<section>
+  <div class="container">
+    <div class="box">
+      {{slug}}
+
+      <div>Schema</div>
+      <div>
+        {{#each schema.children}}
+          <div>
+            {{node_type}}
+            {{num}}
+            {{#each children}}
+              {{> node }}
+            {{/each}}
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</section>
+{{/inline}}
+{{> base}}
+

@@ -17,11 +17,17 @@
       </article>
     </div>
 
-    Choose an edition:
+    <div class="box">
+      <div>
+      Choose an edition
+      </div>
 
-    <p>
-    </p>
-
+      <ul>
+        {{#each editions}}
+        <li><a href="/ethics/editions/{{slug}}">{{title}} ({{year}})</a></li>
+        {{/each}}
+      </ul>
+    </div>
   </div>
 </section>
 {{/inline}}

@@ -2,20 +2,32 @@ use rocket_contrib::Template;
 use rocket::response::{Flash, Redirect};
 use rocket::request::Form;
 use json;
-use models::edition::EditionNew;
+use models::edition::{Edition, EditionNew};
 use validator::Validate;
 use error::{Error, validation_errors_to_json};
+use super::DbConn;
+
+#[get("/ethics/editions/<slug>")]
+pub fn ethics_home(slug: String) -> Template {
+    let context = json!({
+        "slug": slug,
+        "schema": ::schemas::ethics::ETHICA
+    });
+    Template::render("editions/home", context)
+}
 
 #[get("/ethics")]
-pub fn editions_index(flash: Option<Flash<()>>) -> Template {
+pub fn editions_index(flash: Option<Flash<()>>, conn: DbConn) -> Result<Template, Error> {
     let mut context = json::Map::new();
+    let editions = Edition::all(&*conn.inner().get()?)?;
     if let Some(flash) = flash {
         context.insert(flash.name().into(), json!(flash.msg()));
     }
+    context.insert("editions".into(), json!(editions));
     context.insert("links".into(), json!({
         "create_edition": "/ethics/editions/create"
     }));
-    Template::render("editions", &json::Value::Object(context))
+    Ok(Template::render("editions", &json::Value::Object(context)))
 }
 
 #[get("/ethics/editions/create")]
