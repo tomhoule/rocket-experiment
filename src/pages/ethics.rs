@@ -44,10 +44,13 @@ pub fn editions_create(flash: Option<Flash<()>>) -> Template {
 }
 
 #[post("/ethics/editions/new", data = "<form>")]
-pub fn editions_new(form: Form<EditionNew>) -> Result<Flash<Redirect>, Error> {
+pub fn editions_new(form: Form<EditionNew>, conn: DbConn) -> Result<Flash<Redirect>, Error> {
     let payload = form.into_inner();
     match payload.validate() {
-        Ok(()) => Ok(Flash::success(Redirect::to("/ethics"), r##""Successfully created an edition""##)),
+        Ok(()) => {
+            payload.save(&*conn.inner().get()?)?;
+            Ok(Flash::success(Redirect::to("/ethics"), r##""Successfully created an edition""##))
+        },
         Err(errors) => {
             let mut json_err = json::Map::new();
             json_err.insert("original".to_string(), json::to_value(&payload)?);
