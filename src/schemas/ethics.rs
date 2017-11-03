@@ -107,7 +107,7 @@ impl Node {
         use protobuf::RepeatedField;
         use std::iter::FromIterator;
         use self::NodeType::*;
-        use ::rpc::repository::EthicsSchema_NodeType::*;
+        use rpc::repository::EthicsSchema_NodeType::*;
 
         let mut node = ::rpc::repository::EthicsSchema_Node::new();
         let children = self.children.iter().map(|child| child.to_proto());

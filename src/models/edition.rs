@@ -79,7 +79,7 @@ impl Edition {
     #[deny(unused_variables)]
     pub fn into_proto(self) -> rpc::Edition {
         let mut edition = rpc::Edition::new();
-        self_into!(self, edition : year, editor, title, slug, language_code);
+        self_into!(self, edition: year, editor, title, slug, language_code);
         edition.id = self.id.to_string();
         edition.created_at = self.created_at.to_rfc3339();
         edition.updated_at = self.updated_at.to_rfc3339();

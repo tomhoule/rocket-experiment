@@ -4,7 +4,7 @@ use rocket::request::Form;
 use json;
 use models::edition::{Edition, EditionNew};
 use validator::Validate;
-use error::{Error, validation_errors_to_json};
+use error::{validation_errors_to_json, Error};
 use super::DbConn;
 
 #[get("/ethics/editions/<slug>")]
@@ -24,16 +24,21 @@ pub fn editions_index(flash: Option<Flash<()>>, conn: DbConn) -> Result<Template
         context.insert(flash.name().into(), json!(flash.msg()));
     }
     context.insert("editions".into(), json!(editions));
-    context.insert("links".into(), json!({
+    context.insert(
+        "links".into(),
+        json!({
         "create_edition": "/ethics/editions/create"
-    }));
+    }),
+    );
     Ok(Template::render("editions", &json::Value::Object(context)))
 }
 
 #[get("/ethics/editions/create")]
 pub fn editions_create(flash: Option<Flash<()>>) -> Template {
     let flash = flash
-        .map(|f| (f.name().to_string(), json::from_str::<json::Value>(f.msg())))
+        .map(|f| {
+            (f.name().to_string(), json::from_str::<json::Value>(f.msg()))
+        })
         .map(|(name, value)| json!({ name: value.unwrap_or(json::Value::Null) }))
         .unwrap_or(json::Value::Null);
     let context = json!({
@@ -49,14 +54,20 @@ pub fn editions_new(form: Form<EditionNew>, conn: DbConn) -> Result<Flash<Redire
     match payload.validate() {
         Ok(()) => {
             payload.save(&*conn.inner().get()?)?;
-            Ok(Flash::success(Redirect::to("/ethics"), r##""Successfully created an edition""##))
-        },
+            Ok(Flash::success(
+                Redirect::to("/ethics"),
+                r##""Successfully created an edition""##,
+            ))
+        }
         Err(errors) => {
             let mut json_err = json::Map::new();
             json_err.insert("original".to_string(), json::to_value(&payload)?);
             json_err.insert("errors".to_string(), validation_errors_to_json(errors));
             let json_err = json::to_string(&json_err).unwrap();
-            Ok(Flash::error(Redirect::to("/ethics/editions/create"), json_err))
-        },
+            Ok(Flash::error(
+                Redirect::to("/ethics/editions/create"),
+                json_err,
+            ))
+        }
     }
 }

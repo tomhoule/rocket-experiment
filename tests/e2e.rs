@@ -1,6 +1,6 @@
+extern crate diesel;
 extern crate dotenv;
 extern crate locutions;
-extern crate diesel;
 extern crate reqwest;
 
 use diesel::connection::Connection;
@@ -38,7 +38,8 @@ fn e2e() {
         year: 1977,
         language_code: "en".to_string(),
     };
-    let res = client.post(&format!("{}{}", api_url, "/api/editions"))
+    let res = client
+        .post(&format!("{}{}", api_url, "/api/editions"))
         .json(&payload)
         .send()
         .expect("api is reachable");

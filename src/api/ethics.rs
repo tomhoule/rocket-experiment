@@ -19,7 +19,7 @@ pub fn schema() -> Json<Schema> {
 pub fn edit_fragment(
     fragment: Json<models::Fragment>,
     edition_id: String,
-    conn: DbConn
+    conn: DbConn,
 ) -> Result<Json<models::Fragment>, Error> {
     // let path: Path = fragment.fragment_path.parse()?;
     unimplemented!()
