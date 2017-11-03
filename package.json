@@ -8,6 +8,7 @@
   "scripts": {
     "build": "webpack -p --config ts/webpack.config.js",
     "frontend/build": "webpack -p --config frontend/webpack.config.js",
+    "frontend/watch": "webpack --watch --config frontend/webpack.config.js --output-path=./static",
     "watch": "webpack --watch --config ts/webpack.config.js",
     "wds": "webpack-dev-server --config ts/webpack.config.js"
   },
@@ -29,6 +30,7 @@
     "babel-preset-env": "^1.6.1",
     "bulma": "^0.6.0",
     "css-loader": "^0.28.7",
+    "extract-text-webpack-plugin": "^3.0.2",
     "node-sass": "^4.5.3",
     "sass-loader": "^6.0.6",
     "scss-loader": "^0.0.1",

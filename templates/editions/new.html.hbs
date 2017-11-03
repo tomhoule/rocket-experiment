@@ -1,11 +1,19 @@
 {{#*inline "page"}}
 <section>
   <div class="container">
-    <h2 class="title">Add an edition</h2>
+    <div class="message is-info">
+      <h2 class="message-header">Add an edition</h2>
+      <div class="message-body">
+        Add a new edition of the book. It will be empty, but with the structure
+        already filled in. The fragments can then be filled in in place.
+      </div>
+    </div>
     {{#if flash.error.errors}}
     <div class="message is-danger">
+      <div class="message-header">
+        The form that was submitted was not valid
+      </div>
       <div class="message-body">
-        <p>The form that was submitted was not valid:</p>
         <ul>
           {{#each flash.error.errors}}
           <li>{{@key}}: {{this}}</li>
@@ -14,10 +22,6 @@
       </div>
     </div>
     {{/if}}
-    <div class="box">
-      Add a new edition of the book. It will be empty, but with the structure
-      already filled in. The fragments can then be filled in in place.
-    </div>
     <form class="box" action="/ethics/editions/new" method="post">
       <div class="field is-horizontal">
         <div class="field-label">
@@ -117,7 +121,7 @@
         <div class="field-body">
           <div class="field">
             <div class="control">
-              <button class="button is-primary">Submit</button>
+              <button class="button is-primary">Save</button>
             </div>
           </div>
         </div>

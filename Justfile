@@ -2,7 +2,11 @@ codegen: compile-proto compile-swagger
 
 do-frontend:
   yarn frontend/build
-  cp frontend/dist/wholebundle.js static/wholebundle.js
+  rm static/*
+  cp frontend/dist/* static/
+
+watch-frontend:
+  yarn frontend/watch
 
 compile-go:
   go build

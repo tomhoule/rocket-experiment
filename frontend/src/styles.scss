@@ -1,1 +1,8 @@
 @import 'bulma/bulma';
+
+body {
+  background-image: url('/static/bg.png');
+  background-color: white;
+  background-opacity: 0.8;
+  min-height: 100vh;
+}
