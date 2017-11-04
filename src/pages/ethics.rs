@@ -48,6 +48,15 @@ pub fn editions_create(flash: Option<Flash<()>>) -> Template {
     Template::render("editions/new", &context)
 }
 
+#[get("/ethics/editions/<slug>/edit")]
+pub fn editions_edit(slug: String, conn: DbConn) -> Result<Template, Error> {
+    let edition = Edition::by_slug(&slug, &*conn.inner().get()?)?;
+    let context = json!({
+        "edition": edition
+    });
+    Ok(Template::render("editions/edit", &context))
+}
+
 #[post("/ethics/editions/new", data = "<form>")]
 pub fn editions_new(form: Form<EditionNew>, conn: DbConn) -> Result<Flash<Redirect>, Error> {
     let payload = form.into_inner();

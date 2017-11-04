@@ -24,7 +24,10 @@
 
       <ul>
         {{#each editions}}
-        <li><a href="/ethics/editions/{{slug}}">{{title}} ({{year}})</a></li>
+        <li>
+          <a href="/ethics/editions/{{slug}}">{{title}} ({{year}})</a>
+          <a href="/ethics/editions/{{slug}}/edit">(edit)</a>
+        </li>
         {{/each}}
       </ul>
     </div>
