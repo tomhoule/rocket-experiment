@@ -1,5 +1,6 @@
 #![feature(plugin, custom_derive)]
 #![plugin(rocket_codegen)]
+#![feature(test)]
 
 extern crate chrono;
 #[macro_use]
@@ -25,6 +26,8 @@ extern crate serde;
 extern crate serde_derive;
 #[macro_use]
 extern crate serde_json as json;
+#[cfg(test)]
+extern crate test;
 extern crate uuid;
 extern crate validator;
 #[macro_use]

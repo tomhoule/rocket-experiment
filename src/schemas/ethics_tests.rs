@@ -1,5 +1,8 @@
+#![cfg(test)]
+
 use super::ethics::{Path, ETHICA};
 use std::str::FromStr;
+use test::Bencher;
 
 #[test]
 fn path_from_str_returns_err_on_invalid_path() {
@@ -34,4 +37,21 @@ fn expanded_paths_are_contained_paths() {
         let path = path.unwrap();
         assert!(ETHICA.contains_path(&path), "Path is contained: {:?}", path);
     }
+}
+
+#[bench]
+fn bench_expand(bench: &mut Bencher) {
+    bench.iter(|| ETHICA.expand());
+}
+
+#[bench]
+fn bench_contains_path(bench: &mut Bencher) {
+    let expanded = ETHICA.expand();
+    bench.iter(|| {
+        for node in &expanded {
+            let path = Path::from_str(&node.path).unwrap();
+            if !ETHICA.contains_path(&path) { return false }
+        }
+        true
+    });
 }

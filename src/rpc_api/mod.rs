@@ -16,7 +16,6 @@ use futures::Future;
 use schemas::ethics::ETHICA;
 use rpc_api::editions::*;
 use diesel::pg::PgConnection;
-use r2d2_diesel::ConnectionManager;
 
 fn bail(err: grpcio::Error) {
     panic!("{}", err)

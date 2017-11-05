@@ -183,13 +183,13 @@ impl Node {
                         .map(|m| m.as_str())
                         .and_then(|s| u8::from_str(s).ok());
 
-                    println!(
-                        "name {:?}, num {:?}  / name {:?}, num {:?}",
-                        found_name,
-                        found_num,
-                        child.node_type.segment_title(),
-                        child.num
-                    );
+                    // println!(
+                    //     "name {:?}, num {:?}  / name {:?}, num {:?}",
+                    //     found_name,
+                    //     found_num,
+                    //     child.node_type.segment_title(),
+                    //     child.num
+                    // );
                     if found_name == child.node_type.segment_title() && found_num == child.num {
                         node = Some(child);
                         break;
