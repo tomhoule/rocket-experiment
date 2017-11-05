@@ -22,3 +22,16 @@ fn schema_contains_path_works() {
     assert!(!ETHICA
         .contains_path(&"pars(1):propositio(82)".parse().unwrap()));
 }
+
+#[test]
+fn expanded_paths_are_contained_paths() {
+    let expanded = ETHICA.expand();
+    assert!(expanded.len() > 900);
+
+    for node in expanded {
+        let path = Path::from_str(&node.path);
+        assert!(path.is_ok(), "Path is ok: {:?}", node.path);
+        let path = path.unwrap();
+        assert!(ETHICA.contains_path(&path), "Path is contained: {:?}", path);
+    }
+}

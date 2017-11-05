@@ -7,6 +7,11 @@ use validator::Validate;
 use error::{validation_errors_to_json, Error};
 use super::DbConn;
 
+#[get("/ethics/editions/<edition_slug>/fragments/<fragment_path>")]
+pub fn ethics_fragment(edition_slug: String, fragment_path: String) -> Result<Template, Error> {
+    unimplemented!()
+}
+
 #[get("/ethics/editions/<slug>")]
 pub fn ethics_home(slug: String) -> Template {
     let context = json!({

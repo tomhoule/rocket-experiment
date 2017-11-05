@@ -2,12 +2,26 @@ pub use self::schema::ETHICA;
 use std::str::FromStr;
 use regex::Regex;
 
+pub struct ExpandedNode {
+    pub depth: u8,
+    pub path: String,
+    pub node: Node,
+}
+
 #[derive(Serialize, Debug)]
 pub struct Schema(Node);
 
 impl Schema {
     pub fn root(self) -> Node {
         self.0
+    }
+
+    pub fn expand(&self) -> Vec<ExpandedNode> {
+        let mut expanded = Vec::new();
+        for node in self.0.children {
+            node.expand("", 0, &mut expanded);
+        }
+        expanded
     }
 }
 
@@ -19,14 +33,14 @@ lazy_static! {
         r"(?x)           # enable whitespace-insensitive mode
           ^pars\(\d\)    # always starts with a numbered part
           (?:            # do not capture
-            :([a-z]+)    # a fragment type
+            :([a-z_]+)    # a fragment type
             (?:
               \((\d+)\)
             )?           # an optional index
-          )+             # any number of times
+          )*             # any number of times
           $              # until the end of the string"
       ).unwrap();
-    static ref SEGMENT_RE: Regex = Regex::new(r"([a-z]+)(?:\((\d+)\))").unwrap();
+    static ref SEGMENT_RE: Regex = Regex::new(r"([a-z_]+)(?:\((\d+)\))?").unwrap();
 }
 
 impl FromStr for Path {
@@ -45,14 +59,10 @@ impl Schema {
     pub fn contains_path(&self, path: &Path) -> bool {
         self.0.contains_path(&path.0)
     }
-
-    // fn all_paths(&self) -> Vec<Path> {
-    //     unimplemented!();
-    // }
 }
 
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub enum NodeType {
     AnonymousFragment,
     Aliter,
@@ -87,7 +97,7 @@ impl NodeType {
             Lemma => "lemma",
             Pars => "pars",
             Postulatum => "postulatum",
-            Root => unreachable!(),
+            Root => panic!("Root node should not appear in paths"),
             Scope(title) => title,
             Propositio => "propositio",
             Scholium => "scholium",
@@ -95,7 +105,7 @@ impl NodeType {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Node {
     node_type: NodeType,
     num: Option<u8>,
@@ -138,12 +148,34 @@ impl Node {
         node
     }
 
+    fn expand(&self, prefix: &str, depth: u8, target: &mut Vec<ExpandedNode>) {
+        let path = format![
+            "{}{}{}{}",
+            prefix,
+            if depth == 0 { "" } else { ":" },
+            self.node_type.segment_title(),
+            self.num.map(|num| format!("({})", num)).unwrap_or_else(|| "".to_string()),
+        ];
+        let expanded = ExpandedNode {
+            depth,
+            path: path.clone(),
+            node: self.clone(),
+        };
+        target.push(expanded);
+        for child in self.children {
+            child.expand(&path, depth + 1, target);
+        }
+    }
+
     fn contains_path(&self, path: &str) -> bool {
         let mut node = Some(self);
         for segment in path.split(':') {
             match node {
                 Some(current) => for child in current.children.iter() {
-                    let captures = SEGMENT_RE.captures(segment).unwrap();
+                    // println!("segment: {:?}, path: {:?}", segment, path);
+                    let captures = SEGMENT_RE
+                        .captures(segment)
+                        .expect("segment is parseable");
                     let found_name: &str = &captures[1];
                     let found_num: Option<u8> = captures
                         .get(2)
@@ -158,13 +190,6 @@ impl Node {
                         child.num
                     );
                     if found_name == child.node_type.segment_title() && found_num == child.num {
-                        println!(
-                            "{:?} {:?} == {:?} {:?}",
-                            found_name,
-                            found_num,
-                            child.node_type.segment_title(),
-                            child.num
-                        );
                         node = Some(child);
                         break;
                     }
@@ -193,7 +218,7 @@ pub mod schema {
             num: Some(1),
             children: &[
                 Node {
-                    node_type: Scope("Definitiones"),
+                    node_type: Scope("definitiones"),
                     num: None,
                     children: &[
                         Node {
@@ -251,7 +276,7 @@ pub mod schema {
                     ],
                 },
                 Node {
-                    node_type: Scope("Axiomata"),
+                    node_type: Scope("axiomata"),
                     num: None,
                     children: &[
                         Node {
@@ -848,7 +873,7 @@ pub mod schema {
                     ],
                 },
                 Node {
-                    node_type: Scope("Appendix"),
+                    node_type: Scope("appendix"),
                     num: None,
                     children: &[],
                 },
@@ -859,12 +884,12 @@ pub mod schema {
             num: Some(2),
             children: &[
                 Node {
-                    node_type: Scope("Praefatio"),
+                    node_type: Scope("praefatio"),
                     num: None,
                     children: &[],
                 },
                 Node {
-                    node_type: Scope("Definitiones"),
+                    node_type: Scope("definitiones"),
                     num: None,
                     children: &[
                         Node {
@@ -923,7 +948,7 @@ pub mod schema {
                     ],
                 },
                 Node {
-                    node_type: Scope("Axiomata"),
+                    node_type: Scope("axiomata"),
                     num: None,
                     children: &[
                         Node {
@@ -1300,7 +1325,7 @@ pub mod schema {
                     ],
                 },
                 Node {
-                    node_type: Scope("Postulata"),
+                    node_type: Scope("postulata"),
                     num: None,
                     children: &[
                         Node {
@@ -1888,7 +1913,7 @@ pub mod schema {
             num: Some(3),
             children: &[
                 Node {
-                    node_type: Scope("Praefatio"),
+                    node_type: Scope("praefatio"),
                     num: None,
                     children: &[
                         Node {
@@ -1899,7 +1924,7 @@ pub mod schema {
                     ],
                 },
                 Node {
-                    node_type: Scope("Definitiones"),
+                    node_type: Scope("definitiones"),
                     num: None,
                     children: &[
                         Node {
@@ -1920,7 +1945,7 @@ pub mod schema {
                     ],
                 },
                 Node {
-                    node_type: Scope("Postulata"),
+                    node_type: Scope("postulata"),
                     num: None,
                     children: &[
                         Node {
@@ -2859,7 +2884,7 @@ pub mod schema {
                     ],
                 },
                 Node {
-                    node_type: Scope("Affectuum definitiones"),
+                    node_type: Scope("affectuum_definitiones"),
                     num: None,
                     children: &[
                         Node {
@@ -3272,7 +3297,7 @@ pub mod schema {
                     ],
                 },
                 Node {
-                    node_type: Scope("Affectuus generalis definitio"),
+                    node_type: Scope("affectuus_generalis_definitio"),
                     num: None,
                     children: &[
                         Node {
@@ -3294,12 +3319,12 @@ pub mod schema {
             num: Some(4),
             children: &[
                 Node {
-                    node_type: Scope("Praefatio"),
+                    node_type: Scope("praefatio"),
                     num: None,
                     children: &[],
                 },
                 Node {
-                    node_type: Scope("Praefatio"),
+                    node_type: Scope("praefatio"),
                     num: None,
                     children: &[
                         Node {
@@ -4443,7 +4468,7 @@ pub mod schema {
                     ],
                 },
                 Node {
-                    node_type: Scope("Appendix"),
+                    node_type: Scope("appendix"),
                     num: None,
                     children: &[
                         Node {
@@ -4630,12 +4655,12 @@ pub mod schema {
             num: Some(5),
             children: &[
                 Node {
-                    node_type: Scope("Praefatio"),
+                    node_type: Scope("praefatio"),
                     num: None,
                     children: &[],
                 },
                 Node {
-                    node_type: Scope("Axiomata"),
+                    node_type: Scope("axiomata"),
                     num: None,
                     children: &[
                         Node {

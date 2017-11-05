@@ -77,6 +77,7 @@ pub fn start() {
                 pages::editions_create,
                 pages::editions_new,
                 pages::editions_edit,
+                pages::ethics_fragment,
                 pages::ethics_home,
                 edition,
                 editions_index,
