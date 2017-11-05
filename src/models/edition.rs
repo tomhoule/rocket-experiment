@@ -8,7 +8,7 @@ use error;
 
 use db::schema::*;
 
-#[derive(Queryable, Serialize)]
+#[derive(Identifiable, Queryable, Serialize)]
 pub struct Edition {
     id: Uuid,
     title: String,

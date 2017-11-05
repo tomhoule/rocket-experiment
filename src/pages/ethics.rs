@@ -3,20 +3,26 @@ use rocket::response::{Flash, Redirect};
 use rocket::request::Form;
 use json;
 use models::edition::{Edition, EditionNew};
+use models::fragment::Fragment;
 use validator::Validate;
 use error::{validation_errors_to_json, Error};
 use super::DbConn;
 
 #[get("/ethics/editions/<edition_slug>/fragments/<fragment_path>")]
-pub fn ethics_fragment(edition_slug: String, fragment_path: String) -> Result<Template, Error> {
-    unimplemented!()
+pub fn ethics_fragment(edition_slug: String, fragment_path: String, conn: DbConn) -> Result<Template, Error> {
+    use diesel::*;
+    let conn = &*conn.inner().get()?;
+    let edition = Edition::by_slug(&edition_slug, &conn)?;
+    let fragments: Vec<Fragment> = Fragment::belonging_to(&edition).load(conn)?;
+    unimplemented!();
 }
 
 #[get("/ethics/editions/<slug>")]
 pub fn ethics_home(slug: String) -> Template {
     let context = json!({
         "slug": slug,
-        "schema": ::schemas::ethics::ETHICA
+        "schema": ::schemas::ethics::ETHICA,
+        "expanded_schema": ::schemas::ethics::ETHICA.expand()
     });
     Template::render("editions/home", context)
 }

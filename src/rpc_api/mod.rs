@@ -11,7 +11,6 @@ use models;
 use dotenv;
 use grpcio;
 use rpc;
-use models::*;
 use error::Error;
 use futures::Future;
 use schemas::ethics::ETHICA;
@@ -61,9 +60,6 @@ fn get_schema(
     _ctx: &Repository,
     _req: rpc::repository::GetSchemaParams,
 ) -> Result<rpc::repository::EthicsSchema, Error> {
-    use protobuf::RepeatedField;
-    use std::iter::*;
-
     let mut schema = rpc::repository::EthicsSchema::new();
     schema.set_root(ETHICA.root().to_proto());
     Ok(schema)

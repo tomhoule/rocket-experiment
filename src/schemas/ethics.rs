@@ -2,6 +2,7 @@ pub use self::schema::ETHICA;
 use std::str::FromStr;
 use regex::Regex;
 
+#[derive(Serialize, Debug)]
 pub struct ExpandedNode {
     pub depth: u8,
     pub path: String,

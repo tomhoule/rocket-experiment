@@ -3,12 +3,14 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::*;
 use validator::Validate;
-use db::schema::*;
 use uuid::Uuid;
 use error::Error;
 use rpc::repository::EthicsFragment;
+use models::Edition;
+use db::schema::fragments;
 
-#[derive(Queryable, Deserialize, Serialize)]
+#[derive(Identifiable, Queryable, Deserialize, Serialize, Associations)]
+#[belongs_to(Edition, foreign_key="edition_id")]
 pub struct Fragment {
     pub id: Uuid,
     pub edition_id: Uuid,

@@ -1,6 +1,6 @@
 use rocket_contrib::Json;
 use error::Error;
-use schemas::ethics::{Path, Schema};
+use schemas::ethics::Schema;
 use schemas::ethics::schema::ETHICA;
 use diesel::pg::PgConnection;
 use r2d2::Pool;
