@@ -45,7 +45,7 @@ fn bench_expand(bench: &mut Bencher) {
 }
 
 #[bench]
-fn bench_contains_path(bench: &mut Bencher) {
+fn bench_contains_path_whole_schema(bench: &mut Bencher) {
     let expanded = ETHICA.expand();
     bench.iter(|| {
         for node in &expanded {
@@ -54,4 +54,9 @@ fn bench_contains_path(bench: &mut Bencher) {
         }
         true
     });
+}
+
+#[bench]
+fn bench_contains_path(bench: &mut Bencher) {
+    bench.iter(|| assert!(ETHICA.contains_path(&"pars(3):propositio(25):demonstratio".parse().unwrap())));
 }
