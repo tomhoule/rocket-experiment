@@ -3,6 +3,7 @@
 use super::ethics::{Path, ETHICA};
 use std::str::FromStr;
 use test::Bencher;
+use std::collections::*;
 
 #[test]
 fn path_from_str_returns_err_on_invalid_path() {
@@ -53,6 +54,28 @@ fn bench_contains_path_whole_schema(bench: &mut Bencher) {
             if !ETHICA.contains_path(&path) { return false }
         }
         true
+    });
+}
+
+#[bench]
+fn bench_contains_path_whole_schema_hashset(bench: &mut Bencher) {
+    let expanded = ETHICA.expand();
+    let set: HashSet<String> = expanded.iter().map(|node| node.path.clone()).collect();
+    bench.iter(|| {
+        for node in &expanded {
+            assert!(set.contains(&node.path));
+        }
+    });
+}
+
+#[bench]
+fn bench_contains_path_whole_schema_btreeset(bench: &mut Bencher) {
+    let expanded = ETHICA.expand();
+    let set: BTreeSet<String> = expanded.iter().map(|node| node.path.clone()).collect();
+    bench.iter(|| {
+        for node in &expanded {
+            assert!(set.contains(&node.path));
+        }
     });
 }
 

@@ -3,10 +3,10 @@ use std::str::FromStr;
 use regex::Regex;
 
 #[derive(Serialize, Debug)]
-pub struct ExpandedNode {
+pub struct ExpandedNode<'a> {
     pub depth: u8,
     pub path: String,
-    pub node: Node,
+    pub node: &'a Node,
 }
 
 #[derive(Serialize, Debug)]
@@ -149,7 +149,7 @@ impl Node {
         node
     }
 
-    fn expand(&self, prefix: &str, depth: u8, target: &mut Vec<ExpandedNode>) {
+    fn expand<'a>(&'a self, prefix: &str, depth: u8, target: &mut Vec<ExpandedNode<'a>>) {
         let path = format![
             "{}{}{}{}",
             prefix,
@@ -160,7 +160,7 @@ impl Node {
         let expanded = ExpandedNode {
             depth,
             path: path.clone(),
-            node: self.clone(),
+            node: self,
         };
         target.push(expanded);
         for child in self.children {
