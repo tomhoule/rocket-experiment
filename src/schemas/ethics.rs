@@ -171,18 +171,18 @@ impl Node {
     fn contains_path(&self, path: &str) -> bool {
         let mut node = Some(self);
         for segment in path.split(':') {
+            let captures = SEGMENT_RE
+                .captures(segment)
+                .expect("segment is parseable");
+            let found_name: &str = &captures[1];
+            let found_num: Option<u8> = captures
+                .get(2)
+                .map(|m| m.as_str())
+                .and_then(|s| u8::from_str(s).ok());
+
             match node {
                 Some(current) => for child in current.children.iter() {
                     // println!("segment: {:?}, path: {:?}", segment, path);
-                    let captures = SEGMENT_RE
-                        .captures(segment)
-                        .expect("segment is parseable");
-                    let found_name: &str = &captures[1];
-                    let found_num: Option<u8> = captures
-                        .get(2)
-                        .map(|m| m.as_str())
-                        .and_then(|s| u8::from_str(s).ok());
-
                     // println!(
                     //     "name {:?}, num {:?}  / name {:?}, num {:?}",
                     //     found_name,
