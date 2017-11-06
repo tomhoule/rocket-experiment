@@ -4,28 +4,28 @@ use super::ethics::{Path, ETHICA};
 use std::str::FromStr;
 use test::Bencher;
 use std::collections::*;
-use inlinable_string::InlinableString;
+use inlinable_string::{INLINE_STRING_CAPACITY, InlinableString};
 
 #[test]
 fn path_from_str_returns_err_on_invalid_path() {
     assert!(Path::from_str("meow").is_err());
-    assert!(Path::from_str("pars:definitio").is_err());
-    assert!(Path::from_str("pars(1):definitio(2)(3)").is_err());
+    assert!(Path::from_str("pars:def").is_err());
+    assert!(Path::from_str("pars/1:def/2/3").is_err());
 }
 
 #[test]
 fn path_from_str_returns_a_path_when_valid() {
-    assert!(Path::from_str("pars(1):yolo").is_ok());
+    assert!(Path::from_str("pars/1:yolo").is_ok());
     assert!(
-        Path::from_str("pars(9):praefatio:axioma(3):aliter:scholium(2):dem(3)").is_ok()
+        Path::from_str("pars/9:praefatio:axioma/3:aliter:scholium/2:dem/3").is_ok()
     );
 }
 
 #[test]
 fn schema_contains_path_works() {
-    assert!(ETHICA.contains_path(&"pars(1):p(1)".parse().unwrap()));
+    assert!(ETHICA.contains_path(&"pars/1:p/1".parse().unwrap()));
     assert!(!ETHICA
-        .contains_path(&"pars(1):p(82)".parse().unwrap()));
+        .contains_path(&"pars/1:p/82".parse().unwrap()));
 }
 
 #[test]
@@ -38,6 +38,14 @@ fn expanded_paths_are_contained_paths() {
         assert!(path.is_ok(), "Path is ok: {:?}", node.path);
         let path = path.unwrap();
         assert!(ETHICA.contains_path(&path), "Path is contained: {:?}", path);
+    }
+}
+
+#[test]
+fn all_paths_are_inlinable() {
+    let expanded = ETHICA.expand();
+    for node in expanded {
+        assert!(node.path.len() < INLINE_STRING_CAPACITY, "{}", node.path);
     }
 }
 
@@ -82,5 +90,5 @@ fn bench_contains_path_whole_schema_btreeset(bench: &mut Bencher) {
 
 #[bench]
 fn bench_contains_path(bench: &mut Bencher) {
-    bench.iter(|| assert!(ETHICA.contains_path(&"pars(3):p(25):dem".parse().unwrap())));
+    bench.iter(|| assert!(ETHICA.contains_path(&"pars/3:p/25:dem".parse().unwrap())));
 }

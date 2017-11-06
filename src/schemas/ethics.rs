@@ -33,16 +33,16 @@ pub struct Path(String);
 lazy_static! {
     static ref PATH_RE: Regex = Regex::new(
         r"(?x)           # enable whitespace-insensitive mode
-          ^pars\(\d\)    # always starts with a numbered part
+          ^pars/\d       # always starts with a numbered part
           (?:            # do not capture
-            :([a-z_]+)    # a fragment type
+            :([a-z_]+)   # a fragment type
             (?:
-              \((\d+)\)
+              /(\d+)
             )?           # an optional index
           )*             # any number of times
           $              # until the end of the string"
-      ).unwrap();
-    static ref SEGMENT_RE: Regex = Regex::new(r"([a-z_]+)(?:\((\d+)\))?").unwrap();
+      ).expect("re is valid");
+    static ref SEGMENT_RE: Regex = Regex::new(r"([a-z_]+)(?:/(\d+))?").unwrap();
 }
 
 impl FromStr for Path {
@@ -93,12 +93,12 @@ impl NodeType {
             Axioma => "axioma",
             Caput => "caput",
             Corollarium => "corollarium",
-            Definitio => "definitio",
+            Definitio => "def",
             Demonstratio => "dem",
-            Explicatio => "explicatio",
+            Explicatio => "expl",
             Lemma => "lemma",
             Pars => "pars",
-            Postulatum => "postulatum",
+            Postulatum => "postul",
             Root => panic!("Root node should not appear in paths"),
             Scope(title) => title,
             Propositio => "p",
@@ -156,7 +156,7 @@ impl Node {
         if depth > 0 { path.push(':') }
         path.push_str(self.node_type.segment_title());
         if let Some(num) = self.num {
-            write!(path, "({})", num);
+            write!(path, "/{}", num);
         }
         let expanded = ExpandedNode {
             depth,
@@ -220,7 +220,7 @@ pub mod schema {
             num: Some(1),
             children: &[
                 Node {
-                    node_type: Scope("definitiones"),
+                    node_type: Scope("defs"),
                     num: None,
                     children: &[
                         Node {
@@ -891,7 +891,7 @@ pub mod schema {
                     children: &[],
                 },
                 Node {
-                    node_type: Scope("definitiones"),
+                    node_type: Scope("defs"),
                     num: None,
                     children: &[
                         Node {
@@ -2886,7 +2886,7 @@ pub mod schema {
                     ],
                 },
                 Node {
-                    node_type: Scope("affectuum_definitiones"),
+                    node_type: Scope("defs_aff"),
                     num: None,
                     children: &[
                         Node {
@@ -3299,7 +3299,7 @@ pub mod schema {
                     ],
                 },
                 Node {
-                    node_type: Scope("affectuus_generalis_definitio"),
+                    node_type: Scope("gen_def_aff"),
                     num: None,
                     children: &[
                         Node {
