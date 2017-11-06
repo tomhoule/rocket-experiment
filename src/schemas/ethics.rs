@@ -1,11 +1,12 @@
 pub use self::schema::ETHICA;
 use std::str::FromStr;
 use regex::Regex;
+use inlinable_string::{InlinableString, StringExt};
 
 #[derive(Serialize, Debug)]
 pub struct ExpandedNode<'a> {
     pub depth: u8,
-    pub path: String,
+    pub path: InlinableString,
     pub node: &'a Node,
 }
 
@@ -87,20 +88,20 @@ impl NodeType {
         use self::NodeType::*;
 
         match *self {
-            AnonymousFragment => "anonymous",
+            AnonymousFragment => "anon",
             Aliter => "aliter",
             Axioma => "axioma",
             Caput => "caput",
             Corollarium => "corollarium",
             Definitio => "definitio",
-            Demonstratio => "demonstratio",
+            Demonstratio => "dem",
             Explicatio => "explicatio",
             Lemma => "lemma",
             Pars => "pars",
             Postulatum => "postulatum",
             Root => panic!("Root node should not appear in paths"),
             Scope(title) => title,
-            Propositio => "propositio",
+            Propositio => "p",
             Scholium => "scholium",
         }
     }
@@ -150,13 +151,13 @@ impl Node {
     }
 
     fn expand<'a>(&'a self, prefix: &str, depth: u8, target: &mut Vec<ExpandedNode<'a>>) {
-        let path = format![
-            "{}{}{}{}",
-            prefix,
-            if depth == 0 { "" } else { ":" },
-            self.node_type.segment_title(),
-            self.num.map(|num| format!("({})", num)).unwrap_or_else(|| "".to_string()),
-        ];
+        use std::fmt::Write;
+        let mut path = InlinableString::from(prefix);
+        if depth > 0 { path.push(':') }
+        path.push_str(self.node_type.segment_title());
+        if let Some(num) = self.num {
+            write!(path, "({})", num);
+        }
         let expanded = ExpandedNode {
             depth,
             path: path.clone(),

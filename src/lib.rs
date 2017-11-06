@@ -12,6 +12,7 @@ extern crate dotenv;
 extern crate error_chain;
 extern crate futures;
 extern crate grpcio;
+extern crate inlinable_string;
 #[macro_use]
 extern crate lazy_static;
 extern crate protobuf;

@@ -12,6 +12,7 @@ error-chain = "*"
 futures = "*"
 grpcio = "*"
 handlebars = "0.29"
+inlinable_string = { version = "0.1.9", features = ["serde"] }
 lazy_static = "*"
 protobuf = "*"
 r2d2 = "*"
