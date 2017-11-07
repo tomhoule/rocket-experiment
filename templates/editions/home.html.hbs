@@ -19,14 +19,15 @@
 
       <div>Schema</div>
       <div>
-        {{#each schema.children}}
-          <div>
-            {{node_type}}
-            {{num}}
-            {{#each children}}
-              {{> node }}
-            {{/each}}
-          </div>
+        {{#each schema}}
+        <div>
+          {{expanded_node.depth}} - <br />
+          {{fragment_url}}<br />
+          {{expanded_node.path}} - {{expanded_node.node.node_type}}
+          {{# with expanded_node }}
+            {{>node}}
+          {{/with}}
+        </div>
         {{/each}}
       </div>
     </div>

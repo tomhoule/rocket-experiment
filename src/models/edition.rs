@@ -17,7 +17,7 @@ pub struct Edition {
     language_code: String,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
-    slug: String,
+    pub slug: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Insertable, Validate, FromForm)]
