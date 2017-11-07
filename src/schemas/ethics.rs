@@ -4,10 +4,11 @@ use regex::Regex;
 use inlinable_string::{InlinableString, StringExt};
 
 #[derive(Serialize, Debug)]
-pub struct ExpandedNode<'a> {
+pub struct ExpandedNode {
     pub depth: u8,
     pub path: InlinableString,
-    pub node: &'a Node,
+    pub node_type: NodeType,
+    pub num: Option<u8>,
 }
 
 #[derive(Serialize, Debug)]
@@ -150,7 +151,7 @@ impl Node {
         node
     }
 
-    fn expand<'a>(&'a self, prefix: &str, depth: u8, target: &mut Vec<ExpandedNode<'a>>) {
+    fn expand<'a>(&'a self, prefix: &str, depth: u8, target: &mut Vec<ExpandedNode>) {
         use std::fmt::Write;
         let mut path = InlinableString::from(prefix);
         if depth > 0 { path.push(':') }
@@ -161,7 +162,8 @@ impl Node {
         let expanded = ExpandedNode {
             depth,
             path: path.clone(),
-            node: self,
+            node_type: self.node_type.clone(),
+            num: self.num.clone(),
         };
         target.push(expanded);
         for child in self.children {

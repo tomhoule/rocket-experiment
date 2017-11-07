@@ -92,3 +92,9 @@ fn bench_contains_path_whole_schema_btreeset(bench: &mut Bencher) {
 fn bench_contains_path(bench: &mut Bencher) {
     bench.iter(|| assert!(ETHICA.contains_path(&"pars/3:p/25:dem".parse().unwrap())));
 }
+
+#[bench]
+fn bench_serialize_expanded(bench: &mut Bencher) {
+    let expanded = ETHICA.expand();
+    bench.iter(|| json!({ "expanded": expanded }));
+}
