@@ -4,7 +4,7 @@ use rocket::request::Form;
 use json;
 use models::edition::{Edition, EditionNew};
 use models::fragment::{Fragment, FragmentPatch};
-use schemas::ethics::ETHICA;
+use schemas::ethics::{Path, ETHICA};
 use validator::Validate;
 use error::{validation_errors_to_json, Error};
 use super::DbConn;
@@ -26,6 +26,10 @@ pub fn put_ethics_fragment(
     let conn = &*conn.inner().get()?;
     let edition = Edition::by_slug(&edition_slug, &conn)?;
     let patch = patch.into_inner();
+    match path.parse::<Path>().map(|p| ETHICA.contains_path(&p)) {
+        Ok(true) => (),
+        _ => return Ok(Flash::error(Redirect::to("/ethics"), "ouch"))
+    }
     let frag = FragmentPatch {
         fragment_path: path,
         edition_id: edition.id,
@@ -37,11 +41,7 @@ pub fn put_ethics_fragment(
                 json::to_string(&validation_errors_to_json(errors))?
                 ))
     }
-    let frag = frag.save(conn)?;
-    let context = json!({
-        "fragment": frag,
-        "back": format!("/ethics/editions/{}", edition_slug)
-    });
+    frag.save(conn)?;
     Ok(Flash::success(Redirect::to("/ethics"), ""))
 }
 

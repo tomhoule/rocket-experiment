@@ -89,6 +89,7 @@ pub fn start() {
                 pages::ethics_fragment,
                 pages::ethics_part,
                 pages::ethics_home,
+                pages::put_ethics_fragment,
                 // api
                 // edition,
                 // editions_index,
