@@ -8,7 +8,7 @@ use schemas::ethics::{Path, ETHICA};
 use validator::Validate;
 use error::{validation_errors_to_json, Error};
 use super::DbConn;
-use percent_encoding::{percent_encode, PATH_SEGMENT_ENCODE_SET};
+use percent_encoding::{PercentEncode, percent_encode, PATH_SEGMENT_ENCODE_SET};
 use pages::fail::Failure;
 
 #[derive(Debug, FromForm)]
@@ -16,7 +16,11 @@ pub struct FragmentEdit {
     value: String
 }
 
-#[put("/ethics/editions/<edition_slug>/fragments/<path>", data = "<patch>")]
+fn encode_path(path: &[u8]) -> PercentEncode<PATH_SEGMENT_ENCODE_SET> {
+    percent_encode(path, PATH_SEGMENT_ENCODE_SET)
+}
+
+#[post("/ethics/editions/<edition_slug>/fragments/<path>", data = "<patch>")]
 pub fn put_ethics_fragment(
     edition_slug: String,
     path: String,
@@ -61,7 +65,8 @@ pub fn ethics_fragment(
         .load(conn)?;
     let context = json!({
         "fragment": frags.get(0),
-        "back": format!("/ethics/editions/{}", edition_slug)
+        "back": format!("/ethics/editions/{}", edition_slug),
+        "url": format!("/ethics/editions/{}/fragments/{}", edition_slug, encode_path(&path.as_bytes())),
     });
     Ok(Template::render("ethics/fragment", context))
 }
@@ -73,7 +78,7 @@ pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Fai
     let conn = &*conn.inner().get()?;
     let edition = Edition::by_slug(&slug, &conn)?;
     let frags: Vec<Fragment> = Fragment::belonging_to(&edition)
-        .filter(fragment_path.like(format!("pt/{}%", part)))
+        .filter(fragment_path.like(format!("pars/{}%", part)))
         .load(conn)?;
     let schema: Vec<json::Value> = ETHICA
         .expand_part(part)
@@ -82,16 +87,16 @@ pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Fai
             let url = format!(
                 "/ethics/editions/{}/fragments/{}",
                 edition.slug,
-                percent_encode(expanded.path.as_bytes(), PATH_SEGMENT_ENCODE_SET)
+                encode_path(expanded.path.as_bytes())
             );
             json!({
-            "expanded_node": expanded,
-            "fragment_url": url
-        })
+                "expanded_node": expanded,
+                "fragment_url": url,
+                "fragment": frags.iter().find(|f| f.fragment_path == expanded.path),
+            })
         })
         .collect();
     let context = json!({
-        "fragments": frags,
         "schema": schema,
     });
     Ok(Template::render("ethics/part", context))

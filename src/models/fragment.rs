@@ -9,7 +9,7 @@ use rpc::repository::EthicsFragment;
 use models::Edition;
 use db::schema::fragments;
 
-#[derive(Identifiable, Queryable, Deserialize, Serialize, Associations)]
+#[derive(Debug, Identifiable, Queryable, Deserialize, Serialize, Associations)]
 #[belongs_to(Edition, foreign_key = "edition_id")]
 pub struct Fragment {
     pub id: Uuid,
@@ -20,7 +20,7 @@ pub struct Fragment {
     pub updated_at: DateTime<Utc>,
 }
 
-#[derive(Validate, AsChangeset, Insertable)]
+#[derive(Debug, Validate, AsChangeset, Insertable)]
 #[table_name = "fragments"]
 pub struct FragmentPatch {
     #[validate(length(min = "1"))] pub fragment_path: String,

@@ -1,10 +1,15 @@
 {{#*inline "node"}}
 <div style="margin-left: 12px">
-  {{#if expanded_node.node_type.Scope }}
-    {{expanded_node.node_type.Scope}}
-  {{else}}
-    {{expanded_node.node_type}} {{expanded_node.num}}
-  {{/if}}
+  <a href="{{fragment_url}}">
+    {{#if expanded_node.node_type.Scope }}
+      {{expanded_node.node_type.Scope}}
+    {{else}}
+      {{expanded_node.node_type}} {{expanded_node.num}}
+    {{/if}}
+    <div>
+      {{fragment.value}}
+    </div>
+  </a>
 </div>
 {{/inline}}
 

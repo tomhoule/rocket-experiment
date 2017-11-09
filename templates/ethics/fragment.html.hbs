@@ -1,6 +1,11 @@
 {{#*inline "page"}}
 <div class="container">
-  <form class="box" action="" method="put">
+  <form
+    class="box"
+    action="{{url}}"
+    enctype="application/x-www-form-url-encoded"
+    method="post"
+  >
     {{> partials/textarea name="value" label="Text" value=fragment.value }}
     {{> partials/savebutton }}
     <div>
