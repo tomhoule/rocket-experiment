@@ -1,0 +1,13 @@
+{{#*inline "page"}}
+<div class="container">
+  <form class="box" action="" method="put">
+    {{> partials/textarea name="value" label="Text" value=fragment.value }}
+    {{> partials/savebutton }}
+    <div>
+      <a href="{{back}}">Back</a>
+    </div>
+  </form>
+</div>
+{{/inline}}
+
+{{> base}}

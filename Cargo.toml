@@ -5,10 +5,12 @@ authors = ["Tom Houlé <tom@tomhoule.com>"]
 
 [dependencies]
 chrono = { version = "*", features = ["serde"] }
+derive-fail = { git = "https://github.com/withoutboats/derive-fail" }
 diesel = { version = "*", features = ["chrono", "postgres", "uuid"] }
 diesel_codegen = { version = "*", default-features = false, features = ["postgres"] }
 dotenv = "*"
 error-chain = "*"
+failure = { git = "https://github.com/withoutboats/failure" }
 futures = "*"
 grpcio = "*"
 handlebars = "0.29"
@@ -26,6 +28,7 @@ rocket_cors = "*"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
+time = "*"
 percent-encoding = "1.0"
 uuid = { version = "*", features = ["v4", "serde"] }
 validator = "0.6"

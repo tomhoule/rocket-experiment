@@ -10,6 +10,8 @@ extern crate diesel_codegen;
 extern crate dotenv;
 #[macro_use]
 extern crate error_chain;
+#[macro_use] extern crate derive_fail;
+extern crate failure;
 extern crate futures;
 extern crate grpcio;
 extern crate inlinable_string;
@@ -30,6 +32,7 @@ extern crate serde_derive;
 extern crate serde_json as json;
 #[cfg(test)]
 extern crate test;
+extern crate time;
 extern crate uuid;
 extern crate validator;
 #[macro_use]
@@ -38,7 +41,7 @@ extern crate validator_derive;
 use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 
-mod api;
+// mod api;
 pub mod rpc_api;
 mod error;
 mod files;
@@ -48,8 +51,8 @@ mod pages;
 pub mod rpc;
 mod schemas;
 
-use api::editions::*;
-use api::ethics::*;
+// use api::editions::*;
+// use api::ethics::*;
 
 use rocket_contrib::Template;
 
@@ -83,13 +86,15 @@ pub fn start() {
                 pages::editions_new,
                 pages::editions_edit,
                 pages::ethics_fragment,
+                pages::ethics_part,
                 pages::ethics_home,
-                edition,
-                editions_index,
-                editions_create,
-                edition_delete,
-                edition_patch,
-                schema,
+                // api
+                // edition,
+                // editions_index,
+                // editions_create,
+                // edition_delete,
+                // edition_patch,
+                // schema,
             ],
         )
         .attach(cors_options)

@@ -26,6 +26,14 @@ impl Schema {
         }
         expanded
     }
+
+    pub fn expand_part(&self, part_num: u8) -> Vec<ExpandedNode> {
+        let mut expanded = Vec::new();
+        if let Some(part) = self.0.children.get((part_num - 1) as usize) {
+            part.expand(&format!("pt/{}", part_num), 0, &mut expanded)
+        }
+        expanded
+    }
 }
 
 #[derive(Debug, Serialize, PartialEq)]
@@ -157,7 +165,7 @@ impl Node {
         if depth > 0 { path.push(':') }
         path.push_str(self.node_type.segment_title());
         if let Some(num) = self.num {
-            write!(path, "/{}", num);
+            write!(path, "/{}", num).expect("String is writeable");
         }
         let expanded = ExpandedNode {
             depth,

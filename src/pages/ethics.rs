@@ -4,54 +4,69 @@ use rocket::request::Form;
 use json;
 use models::edition::{Edition, EditionNew};
 use models::fragment::Fragment;
+use schemas::ethics::ETHICA;
 use validator::Validate;
 use error::{validation_errors_to_json, Error};
 use super::DbConn;
 use percent_encoding::{percent_encode, PATH_SEGMENT_ENCODE_SET};
+use pages::fail::Failure;
 
-#[get("/ethics/editions/<edition_slug>/fragments/<fragment_path>")]
-pub fn ethics_fragment(edition_slug: String, fragment_path: String, conn: DbConn) -> Result<Template, Error> {
+#[get("/ethics/editions/<edition_slug>/fragments/<path>")]
+pub fn ethics_fragment(edition_slug: String, path: String, conn: DbConn) -> Result<Template, Failure> {
     use diesel::*;
+    use db::schema::fragments::dsl::*;
     let conn = &*conn.inner().get()?;
     let edition = Edition::by_slug(&edition_slug, &conn)?;
-    let fragments: Vec<Fragment> = Fragment::belonging_to(&edition).load(conn)?;
-    unimplemented!();
+    let frags: Vec<Fragment> = Fragment::belonging_to(&edition)
+        .filter(fragment_path.eq(&path))
+        .limit(1)
+        .load(conn)?;
+    let context = json!({
+        "fragment": frags.get(0),
+        "back": format!("/ethics/editions/{}", edition_slug)
+    });
+    Ok(Template::render("ethics/fragment", context))
 }
 
-#[get("/ethics/editions/<slug>")]
-pub fn ethics_home(slug: String, conn: DbConn) -> Result<Template, Error> {
+#[get("/ethics/editions/<slug>/part/<part>")]
+pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Failure> {
     use diesel::*;
+    use db::schema::fragments::dsl::*;
     let conn = &*conn.inner().get()?;
     let edition = Edition::by_slug(&slug, &conn)?;
-    let fragments: Vec<Fragment> = Fragment::belonging_to(&edition).load(conn)?;
-    let schema: Vec<json::Value> = ::schemas::ethics::ETHICA.expand().into_iter().map(|exp| {
+    let frags: Vec<Fragment> = Fragment::belonging_to(&edition)
+        .filter(fragment_path.like(format!("pt/{}%", part)))
+        .load(conn)?;
+    let schema: Vec<json::Value> = ETHICA
+        .expand_part(part)
+        .into_iter()
+        .map(|expanded| {
         let url = format!(
             "/ethics/editions/{}/fragments/{}",
             edition.slug,
-            percent_encode(exp.path.as_bytes(), PATH_SEGMENT_ENCODE_SET)
+            percent_encode(expanded.path.as_bytes(), PATH_SEGMENT_ENCODE_SET)
         );
         json!({
-            "expanded_node": exp,
+            "expanded_node": expanded,
             "fragment_url": url
         })
     }).collect();
-    // let fragments: Vec<json::Value> = fragments.into_iter().map(|fragment| {
-    //     let url = format!(
-    //         "/ethics/editions/{}/fragments/{}",
-    //         edition.slug,
-    //         percent_encode(fragment.fragment_path.as_bytes(), PATH_SEGMENT_ENCODE_SET)
-    //     );
-    //     json!({
-    //         "fragment": fragment,
-    //         "url": url
-    //     })
-    // }).collect();
+    let context = json!({
+        "fragments": frags,
+        "schema": schema,
+    });
+    Ok(Template::render("ethics/part", context))
+}
+
+#[get("/ethics/editions/<slug>")]
+pub fn ethics_home(slug: String, conn: DbConn) -> Result<Template, Failure> {
+    use diesel::*;
+    let conn = &*conn.inner().get()?;
+    let edition = Edition::by_slug(&slug, &conn)?;
     let context = json!({
         "slug": slug,
-        "schema": schema,
-        "fragments": fragments,
     });
-    Ok(Template::render("editions/home", context))
+    Ok(Template::render("editions/show", context))
 }
 
 #[get("/ethics")]
