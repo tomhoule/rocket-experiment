@@ -21,9 +21,9 @@ r2d2 = "*"
 r2d2-diesel = "*"
 regex = "*"
 reqwest = "*"
-rocket = "*"
+rocket = { version = "*", features = [] }
 rocket_codegen = "*"
-rocket_contrib ={ version = "*", features = ["handlebars_templates"] }
+rocket_contrib ={ version = "*", features = ["handlebars_templates", "uuid"] }
 rocket_cors = "*"
 serde = "1.0"
 serde_derive = "1.0"

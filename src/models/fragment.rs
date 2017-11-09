@@ -10,7 +10,7 @@ use models::Edition;
 use db::schema::fragments;
 
 #[derive(Identifiable, Queryable, Deserialize, Serialize, Associations)]
-#[belongs_to(Edition, foreign_key="edition_id")]
+#[belongs_to(Edition, foreign_key = "edition_id")]
 pub struct Fragment {
     pub id: Uuid,
     pub edition_id: Uuid,

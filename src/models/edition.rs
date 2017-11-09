@@ -10,7 +10,7 @@ use db::schema::*;
 
 #[derive(Identifiable, Queryable, Serialize)]
 pub struct Edition {
-    id: Uuid,
+    pub id: Uuid,
     title: String,
     editor: String,
     year: i32,

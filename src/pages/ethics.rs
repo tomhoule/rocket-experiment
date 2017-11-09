@@ -3,7 +3,7 @@ use rocket::response::{Flash, Redirect};
 use rocket::request::Form;
 use json;
 use models::edition::{Edition, EditionNew};
-use models::fragment::Fragment;
+use models::fragment::{Fragment, FragmentPatch};
 use schemas::ethics::ETHICA;
 use validator::Validate;
 use error::{validation_errors_to_json, Error};
@@ -11,8 +11,46 @@ use super::DbConn;
 use percent_encoding::{percent_encode, PATH_SEGMENT_ENCODE_SET};
 use pages::fail::Failure;
 
+#[derive(Debug, FromForm)]
+pub struct FragmentEdit {
+    value: String
+}
+
+#[put("/ethics/editions/<edition_slug>/fragments/<path>", data = "<patch>")]
+pub fn put_ethics_fragment(
+    edition_slug: String,
+    path: String,
+    patch: Form<FragmentEdit>,
+    conn: DbConn,
+) -> Result<Flash<Redirect>, Failure> {
+    let conn = &*conn.inner().get()?;
+    let edition = Edition::by_slug(&edition_slug, &conn)?;
+    let patch = patch.into_inner();
+    let frag = FragmentPatch {
+        fragment_path: path,
+        edition_id: edition.id,
+        value: patch.value,
+    };
+    if let Err(errors) = frag.validate() {
+        return Ok(Flash::error(
+                Redirect::to("/ethics"),
+                json::to_string(&validation_errors_to_json(errors))?
+                ))
+    }
+    let frag = frag.save(conn)?;
+    let context = json!({
+        "fragment": frag,
+        "back": format!("/ethics/editions/{}", edition_slug)
+    });
+    Ok(Flash::success(Redirect::to("/ethics"), ""))
+}
+
 #[get("/ethics/editions/<edition_slug>/fragments/<path>")]
-pub fn ethics_fragment(edition_slug: String, path: String, conn: DbConn) -> Result<Template, Failure> {
+pub fn ethics_fragment(
+    edition_slug: String,
+    path: String,
+    conn: DbConn,
+) -> Result<Template, Failure> {
     use diesel::*;
     use db::schema::fragments::dsl::*;
     let conn = &*conn.inner().get()?;
@@ -41,16 +79,17 @@ pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Fai
         .expand_part(part)
         .into_iter()
         .map(|expanded| {
-        let url = format!(
-            "/ethics/editions/{}/fragments/{}",
-            edition.slug,
-            percent_encode(expanded.path.as_bytes(), PATH_SEGMENT_ENCODE_SET)
-        );
-        json!({
+            let url = format!(
+                "/ethics/editions/{}/fragments/{}",
+                edition.slug,
+                percent_encode(expanded.path.as_bytes(), PATH_SEGMENT_ENCODE_SET)
+            );
+            json!({
             "expanded_node": expanded,
             "fragment_url": url
         })
-    }).collect();
+        })
+        .collect();
     let context = json!({
         "fragments": frags,
         "schema": schema,
@@ -104,9 +143,7 @@ pub fn editions_create(flash: Option<Flash<()>>) -> Template {
 #[get("/ethics/editions/<slug>/edit")]
 pub fn editions_edit(slug: String, conn: DbConn) -> Result<Template, Error> {
     let edition = Edition::by_slug(&slug, &*conn.inner().get()?)?;
-    let context = json!({
-        "edition": edition
-    });
+    let context = json!({ "edition": edition });
     Ok(Template::render("editions/edit", &context))
 }
 

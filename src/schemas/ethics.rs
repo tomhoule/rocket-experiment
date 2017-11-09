@@ -162,7 +162,9 @@ impl Node {
     fn expand<'a>(&'a self, prefix: &str, depth: u8, target: &mut Vec<ExpandedNode>) {
         use std::fmt::Write;
         let mut path = InlinableString::from(prefix);
-        if depth > 0 { path.push(':') }
+        if depth > 0 {
+            path.push(':')
+        }
         path.push_str(self.node_type.segment_title());
         if let Some(num) = self.num {
             write!(path, "/{}", num).expect("String is writeable");
@@ -182,9 +184,7 @@ impl Node {
     fn contains_path(&self, path: &str) -> bool {
         let mut node = Some(self);
         for segment in path.split(':') {
-            let captures = SEGMENT_RE
-                .captures(segment)
-                .expect("segment is parseable");
+            let captures = SEGMENT_RE.captures(segment).expect("segment is parseable");
             let found_name: &str = &captures[1];
             let found_num: Option<u8> = captures
                 .get(2)

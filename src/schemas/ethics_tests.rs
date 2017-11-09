@@ -4,7 +4,7 @@ use super::ethics::{Path, ETHICA};
 use std::str::FromStr;
 use test::Bencher;
 use std::collections::*;
-use inlinable_string::{INLINE_STRING_CAPACITY, InlinableString};
+use inlinable_string::{InlinableString, INLINE_STRING_CAPACITY};
 
 #[test]
 fn path_from_str_returns_err_on_invalid_path() {
@@ -16,16 +16,13 @@ fn path_from_str_returns_err_on_invalid_path() {
 #[test]
 fn path_from_str_returns_a_path_when_valid() {
     assert!(Path::from_str("pars/1:yolo").is_ok());
-    assert!(
-        Path::from_str("pars/9:praefatio:axioma/3:aliter:scholium/2:dem/3").is_ok()
-    );
+    assert!(Path::from_str("pars/9:praefatio:axioma/3:aliter:scholium/2:dem/3").is_ok());
 }
 
 #[test]
 fn schema_contains_path_works() {
     assert!(ETHICA.contains_path(&"pars/1:p/1".parse().unwrap()));
-    assert!(!ETHICA
-        .contains_path(&"pars/1:p/82".parse().unwrap()));
+    assert!(!ETHICA.contains_path(&"pars/1:p/82".parse().unwrap()));
 }
 
 #[test]
@@ -60,7 +57,9 @@ fn bench_contains_path_whole_schema(bench: &mut Bencher) {
     bench.iter(|| {
         for node in &expanded {
             let path = Path::from_str(&node.path).unwrap();
-            if !ETHICA.contains_path(&path) { return false }
+            if !ETHICA.contains_path(&path) {
+                return false;
+            }
         }
         true
     });
@@ -70,10 +69,8 @@ fn bench_contains_path_whole_schema(bench: &mut Bencher) {
 fn bench_contains_path_whole_schema_hashset(bench: &mut Bencher) {
     let expanded = ETHICA.expand();
     let set: HashSet<InlinableString> = expanded.iter().map(|node| node.path.clone()).collect();
-    bench.iter(|| {
-        for node in &expanded {
-            assert!(set.contains(&node.path));
-        }
+    bench.iter(|| for node in &expanded {
+        assert!(set.contains(&node.path));
     });
 }
 
@@ -81,16 +78,16 @@ fn bench_contains_path_whole_schema_hashset(bench: &mut Bencher) {
 fn bench_contains_path_whole_schema_btreeset(bench: &mut Bencher) {
     let expanded = ETHICA.expand();
     let set: BTreeSet<InlinableString> = expanded.iter().map(|node| node.path.clone()).collect();
-    bench.iter(|| {
-        for node in &expanded {
-            assert!(set.contains(&node.path));
-        }
+    bench.iter(|| for node in &expanded {
+        assert!(set.contains(&node.path));
     });
 }
 
 #[bench]
 fn bench_contains_path(bench: &mut Bencher) {
-    bench.iter(|| assert!(ETHICA.contains_path(&"pars/3:p/25:dem".parse().unwrap())));
+    bench.iter(|| {
+        assert!(ETHICA.contains_path(&"pars/3:p/25:dem".parse().unwrap()))
+    });
 }
 
 #[bench]
