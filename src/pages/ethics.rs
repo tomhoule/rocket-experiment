@@ -60,10 +60,10 @@ pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Fai
 
 #[get("/ethics/editions/<slug>")]
 pub fn ethics_home(slug: String, conn: DbConn) -> Result<Template, Failure> {
-    use diesel::*;
     let conn = &*conn.inner().get()?;
     let edition = Edition::by_slug(&slug, &conn)?;
     let context = json!({
+        "edition": edition,
         "slug": slug,
     });
     Ok(Template::render("editions/show", context))
