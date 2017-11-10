@@ -1,4 +1,4 @@
-pub use self::schema::ETHICA;
+pub use self::schema::ETHICS;
 use std::str::FromStr;
 use regex::Regex;
 use inlinable_string::{InlinableString, StringExt};
@@ -218,7 +218,7 @@ pub mod schema {
     use super::*;
     use super::NodeType::*;
 
-    pub const ETHICA: Schema = Schema(Node {
+    pub const ETHICS: Schema = Schema(Node {
         node_type: Root,
         num: None,
         children: PARTS,

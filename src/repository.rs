@@ -36,7 +36,7 @@ mod rpc;
 mod schemas;
 
 use futures::Future;
-use schemas::ethica::ETHICA;
+use schemas::ethics::ETHICS;
 
 fn bail(err: grpcio::Error) {
     panic!("{}", err)
@@ -98,7 +98,7 @@ impl rpc::repository_grpc::EthicsRepository for Repository {
         use ::std::iter::*;
 
         let mut schema = rpc::repository::EthicsSchema::new();
-        let parts = ETHICA.0.iter().map(|node| node.to_protobuf());
+        let parts = ETHICS.0.iter().map(|node| node.to_protobuf());
         schema.set_parts(RepeatedField::from_iter(parts));
         ctx.spawn(sink.success(schema).map_err(bail));
     }

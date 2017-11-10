@@ -4,7 +4,7 @@ use rocket::request::Form;
 use json;
 use models::edition::{Edition, EditionNew};
 use models::fragment::{Fragment, FragmentPatch};
-use schemas::ethics::{Path, ETHICA};
+use schemas::ethics::{Path, ETHICS};
 use validator::Validate;
 use error::{validation_errors_to_json, Error};
 use super::DbConn;
@@ -30,7 +30,7 @@ pub fn put_ethics_fragment(
     let conn = &*conn.inner().get()?;
     let edition = Edition::by_slug(&edition_slug, &conn)?;
     let patch = patch.into_inner();
-    match path.parse::<Path>().map(|p| ETHICA.contains_path(&p)) {
+    match path.parse::<Path>().map(|p| ETHICS.contains_path(&p)) {
         Ok(true) => (),
         _ => return Ok(Flash::error(Redirect::to("/ethics"), "ouch"))
     }
@@ -80,7 +80,7 @@ pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Fai
     let frags: Vec<Fragment> = Fragment::belonging_to(&edition)
         .filter(fragment_path.like(format!("pars/{}%", part)))
         .load(conn)?;
-    let schema: Vec<json::Value> = ETHICA
+    let schema: Vec<json::Value> = ETHICS
         .expand_part(part)
         .into_iter()
         .map(|expanded| {

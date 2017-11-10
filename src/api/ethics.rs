@@ -1,7 +1,7 @@
 use rocket_contrib::Json;
 use error::Error;
 use schemas::ethics::Schema;
-use schemas::ethics::schema::ETHICA;
+use schemas::ethics::schema::ETHICS;
 use diesel::pg::PgConnection;
 use r2d2::Pool;
 use r2d2_diesel::ConnectionManager;
@@ -12,7 +12,7 @@ type DbConn<'a> = State<'a, Pool<ConnectionManager<PgConnection>>>;
 
 #[get("/v1/ethics/schema")]
 pub fn schema() -> Json<Schema> {
-    Json(ETHICA)
+    Json(ETHICS)
 }
 
 #[put("/v1/ethics/editions/<edition_id>/fragments", data = "<fragment>")]

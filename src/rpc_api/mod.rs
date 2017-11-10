@@ -13,7 +13,7 @@ use grpcio;
 use rpc;
 use error::Error;
 use futures::Future;
-use schemas::ethics::ETHICA;
+use schemas::ethics::ETHICS;
 use rpc_api::editions::*;
 use diesel::pg::PgConnection;
 
@@ -60,7 +60,7 @@ fn get_schema(
     _req: rpc::repository::GetSchemaParams,
 ) -> Result<rpc::repository::EthicsSchema, Error> {
     let mut schema = rpc::repository::EthicsSchema::new();
-    schema.set_root(ETHICA.root().to_proto());
+    schema.set_root(ETHICS.root().to_proto());
     Ok(schema)
 }
 
