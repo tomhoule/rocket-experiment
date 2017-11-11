@@ -42,14 +42,12 @@ fn integration() {
         .spawn()
         .expect("Could not start geckodriver");
 
-    wait_ms(100);
-
     let mut child = ::std::process::Command::new("cargo")
         .arg("run")
         .spawn()
         .expect("Could not start server");
 
-    wait_ms(300);
+    wait_ms(20);
 
     let result = ::std::panic::catch_unwind(|| {
         let mut core = tokio_core::reactor::Core::new().expect("started tokio");
