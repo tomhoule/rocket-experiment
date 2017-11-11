@@ -4,8 +4,6 @@
 
 extern crate chrono;
 #[macro_use]
-extern crate derive_fail;
-#[macro_use]
 extern crate diesel;
 #[macro_use]
 extern crate diesel_codegen;
@@ -13,6 +11,8 @@ extern crate dotenv;
 #[macro_use]
 extern crate error_chain;
 extern crate failure;
+#[macro_use]
+extern crate failure_derive;
 extern crate futures;
 extern crate grpcio;
 extern crate inlinable_string;
@@ -43,7 +43,7 @@ use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 
 // mod api;
-pub mod rpc_api;
+// pub mod rpc_api;
 mod error;
 mod files;
 pub mod db;
