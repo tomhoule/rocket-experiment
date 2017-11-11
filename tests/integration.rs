@@ -16,6 +16,12 @@ fn wait_ms(ms: u64) {
     ::std::thread::sleep(::std::time::Duration::from_millis(ms));
 }
 
+const APP_URL: &'static str = "http://127.0.0.1:8000";
+
+struct TestContext {
+    client: Rc<fantoccini::Client>,
+}
+
 #[test]
 fn integration() {
     dotenv::dotenv().ok();
@@ -36,20 +42,21 @@ fn integration() {
         .spawn()
         .expect("Could not start geckodriver");
 
-    ::std::thread::sleep(::std::time::Duration::from_millis(100));
+    wait_ms(100);
 
     let mut child = ::std::process::Command::new("cargo")
         .arg("run")
         .spawn()
         .expect("Could not start server");
 
-    ::std::thread::sleep(::std::time::Duration::from_millis(300));
+    wait_ms(300);
 
     let result = ::std::panic::catch_unwind(|| {
         let mut core = tokio_core::reactor::Core::new().expect("started tokio");
         let (c, fin) = Client::new("http://localhost:4444", &core.handle());
         let client = core.run(c).expect("created client");
-        core.run(tests(Rc::new(client))).expect("tests failed");
+        let ctx = TestContext { client: Rc::new(client) };
+        core.run(tests(ctx)).expect("tests failed");
         // and wait for cleanup to finish
         core.run(fin).ok();
     });
@@ -61,35 +68,34 @@ fn integration() {
 }
 
 #[async]
-fn tests(client: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::CmdError> {
-    let c = client.clone();
-    let app_url = "http://127.0.0.1:8000";
+fn tests(c: TestContext) -> Result<(), fantoccini::error::CmdError> {
+    await!(create_edition(c.client.clone()))?;
+    Ok(())
+}
 
-    await!(c.clone().goto(app_url))?;
-    let url = await!(c.current_url())?;
-    assert_eq!(url.as_ref(), &format!("{}/", app_url));
+#[async]
+fn create_edition(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::CmdError> {
+    await!(c.goto(APP_URL))?;
+    assert_eq!(await!(c.current_url())?.as_ref(), &format!("{}/", APP_URL));
     let link = await!(c.by_selector("a[data-book=\"ethics\"]"))?;
     await!(link.click())?;
-    let url = await!(c.current_url())?;
-    assert_eq!(url.as_ref(), &format!("{}/ethics", app_url));
+    assert_eq!(await!(c.current_url())?.as_ref(), &format!("{}/ethics", APP_URL));
     let link = await!(c.by_link_text("Make a new one"))?;
     await!(link.click())?;
-    let url = await!(c.current_url())?;
-    assert_eq!(url.as_ref(), &format!("{}/ethics/editions/create", app_url));
+    assert_eq!(await!(c.current_url())?.as_ref(), &format!("{}/ethics/editions/create", APP_URL));
 
     let form = await!(c.form("form"))?;
     await!(form.set_by_name("title", "test edition fren"))?;
     await!(form.submit())?;
-    assert_eq!(url.as_ref(), &format!("{}/ethics/editions/create", app_url));
+    assert_eq!(await!(c.current_url())?.as_ref(), &format!("{}/ethics/editions/create", APP_URL));
     let form = await!(c.form("form"))?;
     await!(form.set_by_name("title", "test edition fren"))?;
     await!(form.set_by_name("editor", "testditor"))?;
     await!(form.set_by_name("slug", "test_ed"))?;
     await!(form.set_by_name("year", "2010"))?;
-    let option = await!(c.by_selector("option[value=de]"))?;
-    await!(option.click())?;
+    await!(await!(c.by_selector("option[value=de]"))?.click())?;
     await!(form.submit())?;
-    assert_eq!(await!(c.current_url())?.as_ref(), &format!("{}/ethics", app_url));
+    assert_eq!(await!(c.current_url())?.as_ref(), &format!("{}/ethics", APP_URL));
 
     Ok(())
 }
