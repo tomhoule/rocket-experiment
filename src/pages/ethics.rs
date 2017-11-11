@@ -20,6 +20,11 @@ fn encode_path(path: &[u8]) -> PercentEncode<PATH_SEGMENT_ENCODE_SET> {
     percent_encode(path, PATH_SEGMENT_ENCODE_SET)
 }
 
+fn unwrap_flash(flash: Flash<()>) -> json::Value {
+    let msg = json::from_str::<json::Value>(flash.msg()).unwrap_or_else(|_| json!(flash.msg()));
+    json!({ flash.name(): msg })
+}
+
 #[post("/ethics/editions/<edition_slug>/fragments/<path>", data = "<patch>")]
 pub fn put_ethics_fragment(
     edition_slug: String,
@@ -32,13 +37,13 @@ pub fn put_ethics_fragment(
     let patch = patch.into_inner();
     let to = &format!(
         "/ethics/editions/{}/fragments/{}",
-        edition_slug,
+        &edition_slug,
         encode_path(&path.as_bytes())
     );
 
     match path.parse::<Path>().map(|p| ETHICS.contains_path(&p)) {
         Ok(true) => (),
-        _ => return Ok(Flash::error(Redirect::to(to), "ouch")),
+        _ => return Ok(Flash::error(Redirect::to(to), "Wrong path")),
     }
     let frag = FragmentPatch {
         fragment_path: path.clone(),
@@ -59,7 +64,10 @@ pub fn put_ethics_fragment(
             ),
         ));
     }
-    Ok(Flash::success(Redirect::to("/ethics"), ""))
+    Ok(Flash::success(
+        Redirect::to(&format!("/ethics/editions/{}", &edition_slug)),
+        "",
+    ))
 }
 
 #[get("/ethics/editions/<edition_slug>/fragments/<path>")]
@@ -81,9 +89,7 @@ pub fn ethics_fragment(
         "fragment": frags.get(0),
         "back": format!("/ethics/editions/{}", edition_slug),
         "url": format!("/ethics/editions/{}/fragments/{}", edition_slug, encode_path(&path.as_bytes())),
-        "flash": flash.map(|f| {
-            json!({ f.name(): json::from_str::<json::Value>(f.msg()).expect("flash is json") })
-        }),
+        "flash": flash.map(unwrap_flash),
     });
     Ok(Template::render("ethics/fragment", context))
 }

@@ -129,7 +129,10 @@ fn edit_fragment(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::Cmd
     await!(form.submit())?;
     assert_eq!(
         await!(c.current_url())?.as_ref(),
-        &format!("{}/ethics/editions/test_ed/fragments/pars%2F2:p%2F3", APP_URL)
+        &format!(
+            "{}/ethics/editions/test_ed/fragments/pars%2F2:p%2F3",
+            APP_URL
+        )
     );
     // assert_eq!(
     //     await!(c.current_url())?.as_ref(),
