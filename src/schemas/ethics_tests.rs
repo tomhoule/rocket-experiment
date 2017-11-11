@@ -69,8 +69,10 @@ fn bench_contains_path_whole_schema(bench: &mut Bencher) {
 fn bench_contains_path_whole_schema_hashset(bench: &mut Bencher) {
     let expanded = ETHICS.expand();
     let set: HashSet<InlinableString> = expanded.iter().map(|node| node.path.clone()).collect();
-    bench.iter(|| for node in &expanded {
-        assert!(set.contains(&node.path));
+    bench.iter(|| {
+        for node in &expanded {
+            assert!(set.contains(&node.path));
+        }
     });
 }
 
@@ -78,8 +80,10 @@ fn bench_contains_path_whole_schema_hashset(bench: &mut Bencher) {
 fn bench_contains_path_whole_schema_btreeset(bench: &mut Bencher) {
     let expanded = ETHICS.expand();
     let set: BTreeSet<InlinableString> = expanded.iter().map(|node| node.path.clone()).collect();
-    bench.iter(|| for node in &expanded {
-        assert!(set.contains(&node.path));
+    bench.iter(|| {
+        for node in &expanded {
+            assert!(set.contains(&node.path));
+        }
     });
 }
 

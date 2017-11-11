@@ -8,12 +8,12 @@ use schemas::ethics::{Path, ETHICS};
 use validator::Validate;
 use error::{validation_errors_to_json, Error};
 use super::DbConn;
-use percent_encoding::{PercentEncode, percent_encode, PATH_SEGMENT_ENCODE_SET};
+use percent_encoding::{percent_encode, PercentEncode, PATH_SEGMENT_ENCODE_SET};
 use pages::fail::Failure;
 
 #[derive(Debug, FromForm)]
 pub struct FragmentEdit {
-    value: String
+    value: String,
 }
 
 fn encode_path(path: &[u8]) -> PercentEncode<PATH_SEGMENT_ENCODE_SET> {
@@ -32,7 +32,7 @@ pub fn put_ethics_fragment(
     let patch = patch.into_inner();
     match path.parse::<Path>().map(|p| ETHICS.contains_path(&p)) {
         Ok(true) => (),
-        _ => return Ok(Flash::error(Redirect::to("/ethics"), "ouch"))
+        _ => return Ok(Flash::error(Redirect::to("/ethics"), "ouch")),
     }
     let frag = FragmentPatch {
         fragment_path: path,
@@ -41,9 +41,9 @@ pub fn put_ethics_fragment(
     };
     if let Err(errors) = frag.validate() {
         return Ok(Flash::error(
-                Redirect::to("/ethics"),
-                json::to_string(&validation_errors_to_json(errors))?
-                ))
+            Redirect::to("/ethics"),
+            json::to_string(&validation_errors_to_json(errors))?,
+        ));
     }
     frag.save(conn)?;
     Ok(Flash::success(Redirect::to("/ethics"), ""))

@@ -33,7 +33,7 @@ fn integration() {
 
     loop {
         if diesel::migrations::revert_latest_migration(&conn).is_err() {
-            break
+            break;
         }
     }
     diesel::migrations::run_pending_migrations(&conn).unwrap();
@@ -55,7 +55,9 @@ fn integration() {
         let mut core = tokio_core::reactor::Core::new().expect("started tokio");
         let (c, fin) = Client::new("http://localhost:4444", &core.handle());
         let client = core.run(c).expect("created client");
-        let ctx = TestContext { client: Rc::new(client) };
+        let ctx = TestContext {
+            client: Rc::new(client),
+        };
         core.run(tests(ctx)).expect("tests failed");
         // and wait for cleanup to finish
         core.run(fin).ok();
@@ -79,15 +81,24 @@ fn create_edition(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::Cm
     assert_eq!(await!(c.current_url())?.as_ref(), &format!("{}/", APP_URL));
     let link = await!(c.by_selector("a[data-book=\"ethics\"]"))?;
     await!(link.click())?;
-    assert_eq!(await!(c.current_url())?.as_ref(), &format!("{}/ethics", APP_URL));
+    assert_eq!(
+        await!(c.current_url())?.as_ref(),
+        &format!("{}/ethics", APP_URL)
+    );
     let link = await!(c.by_link_text("Make a new one"))?;
     await!(link.click())?;
-    assert_eq!(await!(c.current_url())?.as_ref(), &format!("{}/ethics/editions/create", APP_URL));
+    assert_eq!(
+        await!(c.current_url())?.as_ref(),
+        &format!("{}/ethics/editions/create", APP_URL)
+    );
 
     let form = await!(c.form("form"))?;
     await!(form.set_by_name("title", "test edition fren"))?;
     await!(form.submit())?;
-    assert_eq!(await!(c.current_url())?.as_ref(), &format!("{}/ethics/editions/create", APP_URL));
+    assert_eq!(
+        await!(c.current_url())?.as_ref(),
+        &format!("{}/ethics/editions/create", APP_URL)
+    );
     let form = await!(c.form("form"))?;
     await!(form.set_by_name("title", "test edition fren"))?;
     await!(form.set_by_name("editor", "testditor"))?;
@@ -95,7 +106,10 @@ fn create_edition(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::Cm
     await!(form.set_by_name("year", "2010"))?;
     await!(await!(c.by_selector("option[value=de]"))?.click())?;
     await!(form.submit())?;
-    assert_eq!(await!(c.current_url())?.as_ref(), &format!("{}/ethics", APP_URL));
+    assert_eq!(
+        await!(c.current_url())?.as_ref(),
+        &format!("{}/ethics", APP_URL)
+    );
 
     Ok(())
 }
