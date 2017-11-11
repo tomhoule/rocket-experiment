@@ -47,7 +47,7 @@ fn integration() {
         .spawn()
         .expect("Could not start server");
 
-    wait_ms(20);
+    wait_ms(60);
 
     let result = ::std::panic::catch_unwind(|| {
         let mut core = tokio_core::reactor::Core::new().expect("started tokio");
@@ -70,6 +70,7 @@ fn integration() {
 #[async]
 fn tests(c: TestContext) -> Result<(), fantoccini::error::CmdError> {
     await!(create_edition(c.client.clone()))?;
+    await!(edit_fragment(c.client.clone()))?;
     Ok(())
 }
 
@@ -109,5 +110,30 @@ fn create_edition(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::Cm
         &format!("{}/ethics", APP_URL)
     );
 
+    Ok(())
+}
+
+#[async]
+fn edit_fragment(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::CmdError> {
+    await!(c.goto(&format!("{}/ethics/editions/test_ed", APP_URL)))?;
+    let link = await!(c.by_link_text("Part 2"))?;
+    await!(link.click())?;
+    assert_eq!(
+        await!(c.current_url())?.as_ref(),
+        &format!("{}/ethics/editions/test_ed/part/2", APP_URL)
+    );
+    await!(await!(c.by_link_text("Propositio 3"))?.click())?;
+
+    let form = await!(c.form("form"))?;
+    // await!(form.set_by_name("value", "meow, said the cat"))?;
+    await!(form.submit())?;
+    assert_eq!(
+        await!(c.current_url())?.as_ref(),
+        &format!("{}/ethics/editions/test_ed/fragments/pars%2F2:p%2F3", APP_URL)
+    );
+    // assert_eq!(
+    //     await!(c.current_url())?.as_ref(),
+    //     &format!("{}/ethics", APP_URL)
+    // );
     Ok(())
 }

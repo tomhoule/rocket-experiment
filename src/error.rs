@@ -1,7 +1,7 @@
 use diesel::result::Error as DieselError;
 use r2d2::GetTimeout;
 use validator;
-use json::{to_value, Value};
+use json::{to_string, to_value, Value};
 use grpcio::{RpcStatus, RpcStatusCode};
 use uuid;
 
@@ -41,6 +41,10 @@ pub fn validation_errors_to_json(errs: validator::ValidationErrors) -> Value {
         })
         .collect();
     to_value(&map).unwrap()
+}
+
+pub fn pack_errs(errs: validator::ValidationErrors) -> Result<String, ::json::Error> {
+    to_string(&validation_errors_to_json(errs))
 }
 
 fn report<T: ::std::fmt::Display>(status: RpcStatusCode, err: T) -> RpcStatus {

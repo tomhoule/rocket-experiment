@@ -1,5 +1,11 @@
 {{#*inline "page"}}
 <div class="container">
+  {{#if flash.error}}
+    <div class="box notification is-danger">
+      {{flash.error.message}}
+      {{flash.error.value}}
+    </div>
+  {{/if}}
   <form
     class="box"
     action="{{url}}"

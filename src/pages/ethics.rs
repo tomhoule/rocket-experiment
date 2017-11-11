@@ -6,7 +6,7 @@ use models::edition::{Edition, EditionNew};
 use models::fragment::{Fragment, FragmentPatch};
 use schemas::ethics::{Path, ETHICS};
 use validator::Validate;
-use error::{validation_errors_to_json, Error};
+use error::{pack_errs, validation_errors_to_json, Error};
 use super::DbConn;
 use percent_encoding::{percent_encode, PercentEncode, PATH_SEGMENT_ENCODE_SET};
 use pages::fail::Failure;
@@ -30,22 +30,35 @@ pub fn put_ethics_fragment(
     let conn = &*conn.inner().get()?;
     let edition = Edition::by_slug(&edition_slug, &conn)?;
     let patch = patch.into_inner();
+    let to = &format!(
+        "/ethics/editions/{}/fragments/{}",
+        edition_slug,
+        encode_path(&path.as_bytes())
+    );
+
     match path.parse::<Path>().map(|p| ETHICS.contains_path(&p)) {
         Ok(true) => (),
-        _ => return Ok(Flash::error(Redirect::to("/ethics"), "ouch")),
+        _ => return Ok(Flash::error(Redirect::to(to), "ouch")),
     }
     let frag = FragmentPatch {
-        fragment_path: path,
+        fragment_path: path.clone(),
         edition_id: edition.id,
         value: patch.value,
     };
     if let Err(errors) = frag.validate() {
+        return Ok(Flash::error(Redirect::to(to), &pack_errs(errors)?));
+    }
+    if let Err(err) = frag.save(conn) {
         return Ok(Flash::error(
-            Redirect::to("/ethics"),
-            json::to_string(&validation_errors_to_json(errors))?,
+            Redirect::to(to),
+            format!(
+                "{}",
+                json!({
+                    "message": format!("{}", err)
+                })
+            ),
         ));
     }
-    frag.save(conn)?;
     Ok(Flash::success(Redirect::to("/ethics"), ""))
 }
 
@@ -53,6 +66,7 @@ pub fn put_ethics_fragment(
 pub fn ethics_fragment(
     edition_slug: String,
     path: String,
+    flash: Option<Flash<()>>,
     conn: DbConn,
 ) -> Result<Template, Failure> {
     use diesel::*;
@@ -67,6 +81,9 @@ pub fn ethics_fragment(
         "fragment": frags.get(0),
         "back": format!("/ethics/editions/{}", edition_slug),
         "url": format!("/ethics/editions/{}/fragments/{}", edition_slug, encode_path(&path.as_bytes())),
+        "flash": flash.map(|f| {
+            json!({ f.name(): json::from_str::<json::Value>(f.msg()).expect("flash is json") })
+        }),
     });
     Ok(Template::render("ethics/fragment", context))
 }
