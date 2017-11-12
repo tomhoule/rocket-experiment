@@ -81,6 +81,7 @@ impl Fragment {
 
 #[cfg(test)]
 mod tests {
+    use diesel;
     use super::*;
     use models::edition::*;
     use dotenv;
@@ -88,11 +89,16 @@ mod tests {
 
     #[test]
     fn fragment_upsert_works() {
+        use db::schema::editions;
+
         dotenv::dotenv().ok();
         let database_url = env::var("TEST_DATABASE_URL")
             .expect("database url")
             .to_string();
         let conn = PgConnection::establish(&database_url).expect("Database is up");
+
+        diesel::delete(fragments::table).execute(&conn);
+        diesel::delete(editions::table).execute(&conn);
         let edition = EditionNew {
             title: "".to_string(),
             editor: "".to_string(),

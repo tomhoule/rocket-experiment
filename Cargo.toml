@@ -19,6 +19,7 @@ handlebars = "0.29"
 inlinable_string = { version = "0.1.9", features = ["serde"] }
 lazy_static = "*"
 protobuf = "*"
+pulldown-cmark = "0.0"
 r2d2 = "*"
 r2d2-diesel = "*"
 regex = "*"
