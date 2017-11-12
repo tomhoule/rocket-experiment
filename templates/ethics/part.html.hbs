@@ -1,25 +1,24 @@
 {{#*inline "node"}}
-<div style="margin-left: 12px">
-  <a data-depth="{{depth}}" href="{{fragment_url}}">
+  <h2>
     {{#if expanded_node.node_type.Scope }}
       {{expanded_node.node_type.Scope}}
     {{else}}
       {{expanded_node.node_type}} {{expanded_node.num}}
     {{/if}}
-  </a>
-  <div class="content">
-    {{{rendered}}}
-  </div>
-</div>
+    <a data-depth="{{depth}}" href="{{fragment_url}}">
+      <span class="icon">
+        <i class="fa fa-link"></i>
+      </span>
+    </a>
+  </h2>
+  {{{rendered}}}
 {{/inline}}
 
 {{#*inline "page"}}
 <div class="container">
-  <div class="box">
+  <div class="content box">
     {{#each schema}}
-      <div>
-        {{>node}}
-      </div>
+      {{>node}}
     {{/each}}
   </div>
 </div>
