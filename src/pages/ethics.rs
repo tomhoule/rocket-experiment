@@ -112,10 +112,12 @@ pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Fai
                 edition.slug,
                 encode_path(expanded.path.as_bytes())
             );
+            let frag = frags.iter().find(|f| f.fragment_path == expanded.path);
             json!({
                 "expanded_node": expanded,
                 "fragment_url": url,
-                "fragment": frags.iter().find(|f| f.fragment_path == expanded.path),
+                "fragment": frag,
+                "rendered": frag.map(|f| ::md_transform::render(&f.value, &slug)),
             })
         })
         .collect();

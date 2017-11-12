@@ -57,8 +57,11 @@ mod tests {
     fn md_transform_render_works() {
         let result = render(r##"
 # Meow
+
+This is [a link](ethics://pt/1:p:20:sch)
         "##, "collector");
         let expected = r##"<h1>Meow</h1>
+<p>This is <a href="/ethics/editions/collector/fragments/pt/1:p:20:sch">a link</a></p>
 "##;
         assert_eq!(&result, expected);
     }
