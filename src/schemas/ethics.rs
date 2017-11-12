@@ -3336,7 +3336,7 @@ pub mod schema {
                     children: &[],
                 },
                 Node {
-                    node_type: Scope("praefatio"),
+                    node_type: Scope("defs"),
                     num: None,
                     children: &[
                         Node {
