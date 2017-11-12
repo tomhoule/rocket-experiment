@@ -25,7 +25,7 @@ pub struct Fragment {
 pub struct FragmentPatch {
     #[validate(length(message = "Invalid path", min = "1"))] pub fragment_path: String,
     pub edition_id: Uuid,
-    #[validate(length(message = "No empty value pls", min = "1"))] pub value: String,
+    pub value: String,
 }
 
 impl FragmentPatch {
