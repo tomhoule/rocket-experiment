@@ -122,18 +122,18 @@ fn edit_fragment(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::Cmd
         await!(c.current_url())?.as_ref(),
         &format!("{}/ethics/editions/test_ed/part/2", APP_URL)
     );
-    await!(await!(c.by_link_text("Propositio 3"))?.click())?;
+    await!(await!(c.by_selector("i.fa-link"))?.click())?;
 
     let form = await!(c.form("form"))?;
     // await!(form.set_by_name("value", "meow, said the cat"))?;
-    await!(form.submit())?;
     assert_eq!(
         await!(c.current_url())?.as_ref(),
         &format!(
-            "{}/ethics/editions/test_ed/fragments/pars%2F2:p%2F3",
+            "{}/ethics/editions/test_ed/fragments/pars%2F2",
             APP_URL
         )
     );
+    await!(form.submit())?;
     // assert_eq!(
     //     await!(c.current_url())?.as_ref(),
     //     &format!("{}/ethics", APP_URL)
