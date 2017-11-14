@@ -2,8 +2,8 @@ codegen: compile-proto compile-swagger
 
 do-frontend:
   yarn frontend/build
-  rm static/*
   cp frontend/dist/* static/
+  cp frontend/assets/* static/
 
 watch-frontend:
   yarn frontend/watch
