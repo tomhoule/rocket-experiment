@@ -2,6 +2,7 @@ use pulldown_cmark::{Event, Parser, Tag};
 use pulldown_cmark::html::push_html;
 use std::borrow::Cow;
 use regex::Regex;
+use percent_encoding::{percent_encode, PATH_SEGMENT_ENCODE_SET};
 
 /// Renders a md string with custom link schemes to html, transforming the links into ones that
 /// work on the app.
@@ -28,10 +29,11 @@ pub fn transform_link<'a>(edition_slug: &str, original: Cow<'a, str>) -> Cow<'a,
     {
         let captures = ETHICS_URI.captures(&original.as_ref());
         if let Some(captures) = captures {
+            let path = &captures[1];
             let mut transformed = format!(
                 "/ethics/editions/{}/fragments/{}",
                 edition_slug,
-                &captures[1]
+                percent_encode(path.as_bytes(), PATH_SEGMENT_ENCODE_SET)
             );
             return Cow::from(transformed)
         }
@@ -49,7 +51,7 @@ mod tests {
         let link = Cow::from("ethics://pt/1:p:33/demo");
         assert_eq!(
             transform_link(edition_slug, link).as_ref(),
-            "/ethics/editions/slugs_are_delicious/fragments/pt/1:p:33/demo"
+            "/ethics/editions/slugs_are_delicious/fragments/pt%2F1:p:33%2Fdemo"
         );
     }
 
@@ -61,7 +63,7 @@ mod tests {
 This is [a link](ethics://pt/1:p:20:sch)
         "##, "collector");
         let expected = r##"<h1>Meow</h1>
-<p>This is <a href="/ethics/editions/collector/fragments/pt/1:p:20:sch">a link</a></p>
+<p>This is <a href="/ethics/editions/collector/fragments/pt%2F1:p:20:sch">a link</a></p>
 "##;
         assert_eq!(&result, expected);
     }
