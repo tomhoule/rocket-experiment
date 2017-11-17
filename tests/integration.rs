@@ -16,10 +16,15 @@ fn wait_ms(ms: u64) {
     ::std::thread::sleep(::std::time::Duration::from_millis(ms));
 }
 
+fn wait_ms_fut(ms: u64, handle: &tokio_core::reactor::Handle) -> tokio_core::reactor::Timeout {
+    tokio_core::reactor::Timeout::new(::std::time::Duration::from_millis(ms), &handle).unwrap()
+}
+
 const APP_URL: &'static str = "http://127.0.0.1:8000";
 
 struct TestContext {
     client: Rc<fantoccini::Client>,
+    handle: tokio_core::reactor::Handle,
 }
 
 #[test]
@@ -55,6 +60,7 @@ fn integration() {
         let client = core.run(c).expect("created client");
         let ctx = TestContext {
             client: Rc::new(client),
+            handle: core.handle(),
         };
         core.run(tests(ctx)).expect("tests failed");
         // and wait for cleanup to finish
@@ -70,7 +76,7 @@ fn integration() {
 #[async]
 fn tests(c: TestContext) -> Result<(), fantoccini::error::CmdError> {
     await!(create_edition(c.client.clone()))?;
-    await!(edit_fragment(c.client.clone()))?;
+    await!(edit_fragment(c.client.clone(), c.handle.clone()))?;
     Ok(())
 }
 
@@ -114,7 +120,7 @@ fn create_edition(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::Cm
 }
 
 #[async]
-fn edit_fragment(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::CmdError> {
+fn edit_fragment(c: Rc<fantoccini::Client>, h: tokio_core::reactor::Handle) -> Result<(), fantoccini::error::CmdError> {
     await!(c.goto(&format!("{}/ethics/editions/test_ed", APP_URL)))?;
     let link = await!(c.by_link_text("Part 2"))?;
     await!(link.click())?;
@@ -122,6 +128,7 @@ fn edit_fragment(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::Cmd
         await!(c.current_url())?.as_ref(),
         &format!("{}/ethics/editions/test_ed/part/2", APP_URL)
     );
+    await!(wait_ms_fut(800, &h));
     await!(await!(c.by_selector("i.fa-link"))?.click())?;
 
     let form = await!(c.form("form"))?;

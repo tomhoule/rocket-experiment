@@ -474,12 +474,12 @@ pub mod schema {
                         },
                         Node {
                             node_type: Aliter,
-                            num: None,
+                            num: Some(1),
                             children: &[],
                         },
                         Node {
                             node_type: Aliter,
-                            num: None,
+                            num: Some(2),
                             children: &[],
                         },
                         Node {
