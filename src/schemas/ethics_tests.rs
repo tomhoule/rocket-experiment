@@ -7,6 +7,13 @@ use std::collections::*;
 use inlinable_string::{InlinableString, INLINE_STRING_CAPACITY};
 
 #[test]
+fn path_part() {
+    assert_eq!(Path::from_str("pars/1:p/3").unwrap().part(), Some(1));
+    assert_eq!(Path::from_str("pars/2:p/3").unwrap().part(), Some(2));
+    assert_eq!(Path::from_str("pars/3:p/3:demo").unwrap().part(), Some(3));
+}
+
+#[test]
 fn path_from_str_returns_err_on_invalid_path() {
     assert!(Path::from_str("meow").is_err());
     assert!(Path::from_str("pars:def").is_err());

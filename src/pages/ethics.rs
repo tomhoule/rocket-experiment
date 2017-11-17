@@ -41,10 +41,16 @@ pub fn put_ethics_fragment(
         encode_path(&path.as_bytes())
     );
 
-    match path.parse::<Path>().map(|p| ETHICS.contains_path(&p)) {
-        Ok(true) => (),
-        _ => return Ok(Flash::error(Redirect::to(to), "Wrong path")),
-    }
+    let parsed_path = match path.parse::<Path>() {
+        Ok(p) => {
+            if !ETHICS.contains_path(&p) {
+                return Ok(Flash::error(Redirect::to(to), "Wrong path"))
+            }
+            p
+        },
+        Err(_) => return Ok(Flash::error(Redirect::to(to), "Wrong path"))
+    };
+
     let frag = FragmentPatch {
         fragment_path: path.clone(),
         edition_id: edition.id,
@@ -65,7 +71,7 @@ pub fn put_ethics_fragment(
         ));
     }
     Ok(Flash::success(
-        Redirect::to(&format!("/ethics/editions/{}", &edition_slug)),
+        Redirect::to(&format!("/ethics/editions/{}/part/{}#{}", &edition_slug, parsed_path.part().unwrap_or(0), path)),
         "",
     ))
 }

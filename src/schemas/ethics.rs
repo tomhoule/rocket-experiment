@@ -39,17 +39,29 @@ impl Schema {
 #[derive(Debug, Serialize, PartialEq)]
 pub struct Path(String);
 
+impl Path {
+    pub fn part(&self) -> Option<u8> {
+        PATH_RE
+            .captures(&self.0)
+            .and_then(|cap| {
+                cap
+                    .name("part")
+                    .and_then(|m| m.as_str().parse().ok())
+            })
+    }
+}
+
 lazy_static! {
     static ref PATH_RE: Regex = Regex::new(
-        r"(?x)           # enable whitespace-insensitive mode
-          ^pars/\d       # always starts with a numbered part
-          (?:            # do not capture
-            :([a-z_]+)   # a fragment type
+        r"(?x)               # enable whitespace-insensitive mode
+          ^pars/(?P<part>\d) # always starts with a numbered part
+          (?:                # do not capture
+            :([a-z_]+)       # a fragment type
             (?:
               /(\d+)
-            )?           # an optional index
-          )*             # any number of times
-          $              # until the end of the string"
+            )?               # an optional index
+          )*                 # any number of times
+          $                  # until the end of the string"
       ).expect("re is valid");
     static ref SEGMENT_RE: Regex = Regex::new(r"([a-z_]+)(?:/(\d+))?").unwrap();
 }

@@ -1,11 +1,14 @@
 {{#*inline "node"}}
-  <h2>
+  <h2 id='{{expanded_node.path}}'>
     {{#if expanded_node.node_type.Scope }}
       {{expanded_node.node_type.Scope}}
     {{else}}
       {{expanded_node.node_type}} {{expanded_node.num}}
     {{/if}}
-    <a data-depth="{{depth}}" href="{{fragment_url}}">
+    <a
+      data-depth="{{depth}}"
+      href="{{fragment_url}}"
+    >
       <span class="icon">
         <i class="fa fa-link"></i>
       </span>
