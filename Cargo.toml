@@ -9,8 +9,8 @@ diesel = { version = "*", features = ["chrono", "postgres", "uuid"] }
 diesel_codegen = { version = "*", default-features = false, features = ["postgres"] }
 dotenv = "*"
 error-chain = "*"
-failure = { git = "https://github.com/withoutboats/failure" }
-failure_derive= { git = "https://github.com/withoutboats/failure_derive" }
+failure = "0.1.0"
+failure_derive = "0.1.0"
 fantoccini = "*"
 futures = "*"
 futures-await = "0.1"
