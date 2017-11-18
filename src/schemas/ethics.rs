@@ -2835,7 +2835,7 @@ pub mod schema {
                         },
                         Node {
                             node_type: Corollarium,
-                            num: None,
+                            num: Some(1),
                             children: &[
                                 Node {
                                     node_type: Scholium,
@@ -2846,7 +2846,7 @@ pub mod schema {
                         },
                         Node {
                             node_type: Corollarium,
-                            num: None,
+                            num: Some(2),
                             children: &[
                                 Node {
                                     node_type: Demonstratio,
