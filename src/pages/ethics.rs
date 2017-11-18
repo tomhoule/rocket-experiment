@@ -6,7 +6,7 @@ use models::edition::{Edition, EditionNew};
 use models::fragment::{Fragment, FragmentPatch};
 use schemas::ethics::{Path, ETHICS};
 use validator::Validate;
-use error::{pack_errs, validation_errors_to_json, Error};
+use error::{pack_errs, validation_errors_to_json};
 use super::DbConn;
 use percent_encoding::{percent_encode, PercentEncode, PATH_SEGMENT_ENCODE_SET};
 use pages::fail::Failure;
@@ -145,7 +145,7 @@ pub fn ethics_home(slug: String, conn: DbConn) -> Result<Template, Failure> {
 }
 
 #[get("/ethics")]
-pub fn editions_index(flash: Option<Flash<()>>, conn: DbConn) -> Result<Template, Error> {
+pub fn editions_index(flash: Option<Flash<()>>, conn: DbConn) -> Result<Template, Failure> {
     let mut context = json::Map::new();
     let editions = Edition::all(&*conn.inner().get()?)?;
     if let Some(flash) = flash {
@@ -177,14 +177,14 @@ pub fn editions_create(flash: Option<Flash<()>>) -> Template {
 }
 
 #[get("/ethics/editions/<slug>/edit")]
-pub fn editions_edit(slug: String, conn: DbConn) -> Result<Template, Error> {
+pub fn editions_edit(slug: String, conn: DbConn) -> Result<Template, Failure> {
     let edition = Edition::by_slug(&slug, &*conn.inner().get()?)?;
     let context = json!({ "edition": edition });
     Ok(Template::render("editions/edit", &context))
 }
 
 #[post("/ethics/editions/new", data = "<form>")]
-pub fn editions_new(form: Form<EditionNew>, conn: DbConn) -> Result<Flash<Redirect>, Error> {
+pub fn editions_new(form: Form<EditionNew>, conn: DbConn) -> Result<Flash<Redirect>, Failure> {
     let payload = form.into_inner();
     match payload.validate() {
         Ok(()) => {
