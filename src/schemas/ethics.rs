@@ -1570,12 +1570,13 @@ pub mod schema {
                         Node {
                             node_type: Corollarium,
                             num: None,
-                            children: &[],
-                        },
-                        Node {
-                            node_type: Demonstratio,
-                            num: None,
-                            children: &[],
+                            children: &[
+                                Node {
+                                    node_type: Demonstratio,
+                                    num: None,
+                                    children: &[],
+                                },
+                            ],
                         },
                     ],
                 },
@@ -1838,12 +1839,13 @@ pub mod schema {
                         Node {
                             node_type: Corollarium,
                             num: Some(2),
-                            children: &[],
-                        },
-                        Node {
-                            node_type: Demonstratio,
-                            num: None,
-                            children: &[],
+                            children: &[
+                                Node {
+                                    node_type: Demonstratio,
+                                    num: None,
+                                    children: &[],
+                                },
+                            ],
                         },
                     ],
                 },
@@ -1918,12 +1920,13 @@ pub mod schema {
                         Node {
                             node_type: Corollarium,
                             num: None,
-                            children: &[],
-                        },
-                        Node {
-                            node_type: Demonstratio,
-                            num: None,
-                            children: &[],
+                            children: &[
+                                Node {
+                                    node_type: Demonstratio,
+                                    num: None,
+                                    children: &[],
+                                },
+                            ],
                         },
                         Node {
                             node_type: Scholium,
