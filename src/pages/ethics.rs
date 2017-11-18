@@ -170,7 +170,7 @@ pub fn editions_create(flash: Option<Flash<()>>) -> Template {
         .map(|(name, value)| json!({ name: value.unwrap_or(json::Value::Null) }))
         .unwrap_or(json::Value::Null);
     let context = json!({
-        "language_codes": ["fr", "de", "la"],
+        "language_codes": ["fr", "de", "la", "en"],
         "flash": flash
     });
     Template::render("editions/new", &context)
