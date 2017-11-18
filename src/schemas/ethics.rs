@@ -113,7 +113,7 @@ impl NodeType {
             Aliter => "aliter",
             Axioma => "axioma",
             Caput => "caput",
-            Corollarium => "corollarium",
+            Corollarium => "coroll",
             Definitio => "def",
             Demonstratio => "dem",
             Explicatio => "expl",
