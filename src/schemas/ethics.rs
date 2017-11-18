@@ -1058,7 +1058,7 @@ pub mod schema {
                 },
                 Node {
                     node_type: Propositio,
-                    num: Some(4),
+                    num: Some(5),
                     children: &[
                         Node {
                             node_type: Demonstratio,
