@@ -1,29 +1,35 @@
 {{#*inline "node"}}
-  <h3
-    class="depth-{{expanded_node.depth}}"
-    id='{{expanded_node.path}}'
-  >
-    {{#if expanded_node.node_type.Scope }}
-      {{expanded_node.node_type.Scope}}
-    {{else}}
-      {{expanded_node.node_type}} {{expanded_node.num}}
-      <a
-        href="{{fragment_url}}"
-      >
-        <span class="icon">
-          <i class="fa fa-link"></i>
-        </span>
-      </a>
-    {{/if}}
-  </h3>
-  {{{rendered}}}
+  <div class="column">
+    <h3
+      class="depth-{{expanded_node.depth}}"
+      id='{{expanded_node.path}}'
+    >
+      {{#if expanded_node.node_type.Scope }}
+        {{expanded_node.node_type.Scope}}
+      {{else}}
+        {{expanded_node.node_type}} {{expanded_node.num}}
+        <a
+          href="{{fragment_url}}"
+        >
+          <span class="icon">
+            <i class="fa fa-link"></i>
+          </span>
+        </a>
+      {{/if}}
+    </h3>
+    {{{rendered}}}
+  </div>
 {{/inline}}
 
 {{#*inline "page"}}
 <div class="container">
   <div class="content box">
-    {{#each schema}}
-      {{>node}}
+    {{#each schemas}}
+      <div class="columns">
+        {{#each this}}
+            {{>node}}
+        {{/each}}
+      </div>
     {{/each}}
   </div>
 </div>

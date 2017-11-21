@@ -104,6 +104,12 @@ impl Edition {
         editions.filter(slug.eq(req_slug)).first(conn)
     }
 
+    pub fn by_slugs<'a, T: Iterator<Item=&'a str>>(req_slug: T, conn: &PgConnection) -> Result<Vec<Edition>, diesel::result::Error> {
+        use db::schema::editions::dsl::*;
+        use diesel::*;
+        editions.filter(slug.eq_any(req_slug)).load(conn)
+    }
+
     pub fn delete(uuid: Uuid, conn: &PgConnection) -> Result<usize, diesel::result::Error> {
         use db::schema::editions::dsl::*;
         use diesel::*;

@@ -105,30 +105,34 @@ pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Fai
     use diesel::*;
     use db::schema::fragments::dsl::*;
     let conn = &*conn.inner().get()?;
-    let edition = Edition::by_slug(&slug, &conn)?;
-    let frags: Vec<Fragment> = Fragment::belonging_to(&edition)
+    let editions = Edition::by_slugs(slug.split("+"), &conn)?;
+    let frags: Vec<Fragment> = Fragment::belonging_to(&editions)
         .filter(fragment_path.like(format!("pars/{}%", part)))
         .load(conn)?;
-    let schema: Vec<json::Value> = ETHICS
+    let schemas = ETHICS
         .expand_part(part)
         .into_iter()
         .map(|expanded| {
-            let url = format!(
-                "/ethics/editions/{}/fragments/{}",
-                edition.slug,
-                encode_path(expanded.path.as_bytes())
-            );
-            let frag = frags.iter().find(|f| f.fragment_path == expanded.path);
-            json!({
-                "expanded_node": expanded,
-                "fragment_url": url,
-                "fragment": frag,
-                "rendered": frag.map(|f| ::md_transform::render(&f.value, &slug)),
-            })
-        })
-        .collect();
+            editions.iter().map(|edition| {
+                let url = format!(
+                    "/ethics/editions/{}/fragments/{}",
+                    edition.slug,
+                    encode_path(expanded.path.as_bytes())
+                );
+                let frag = frags.iter().find(|f| {
+                    f.fragment_path == expanded.path &&
+                        f.edition_id == edition.id
+                });
+                json!({
+                    "expanded_node": expanded,
+                    "fragment_url": url,
+                    "fragment": frag,
+                    "rendered": frag.map(|f| ::md_transform::render(&f.value, &slug)),
+                })
+            }).collect::<Vec<json::Value>>()
+        }).collect::<Vec<Vec<json::Value>>>();
     let context = json!({
-        "schema": schema,
+        "schemas": schemas,
     });
     Ok(Template::render("ethics/part", context))
 }
