@@ -1,5 +1,4 @@
 use chrono::{DateTime, Utc};
-use diesel;
 use uuid::Uuid;
 use db::schema::accounts;
 

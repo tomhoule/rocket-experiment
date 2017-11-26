@@ -2,7 +2,7 @@ use rocket_contrib::Template;
 use rocket::response::{Flash, Redirect};
 use rocket::request::Form;
 use json;
-use models::edition::{Edition, EditionNew};
+use models::edition::{Edition, EditionNew, EditionPatch};
 use models::fragment::{Fragment, FragmentPatch};
 use schemas::ethics::{Path, ETHICS};
 use validator::Validate;
@@ -151,9 +151,7 @@ pub fn ethics_part(slug: String, part: u8, i18n: I18n, conn: DbConn) -> Result<T
                     let title = expanded.title();
                     json!({
                         "expanded_node": expanded,
-                        "title": i18n.get_message(title)
-                            .and_then(|msg| i18n.format(msg, None))
-                            .unwrap_or_else(|| title.to_string()),
+                        "title": i18n.localize(&edition.language_code, title),
                         "fragment_url": url,
                         "fragment": frag,
                         "rendered": frag.map(|f| ::md_transform::render(&f.value, &slug)),

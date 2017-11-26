@@ -14,7 +14,7 @@ pub struct Edition {
     title: String,
     editor: String,
     year: i32,
-    language_code: String,
+    pub language_code: String,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     pub slug: String,
