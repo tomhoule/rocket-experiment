@@ -3086,13 +3086,7 @@ pub mod schema {
                         Node {
                             node_type: Definitio,
                             num: Some(17),
-                            children: &[
-                                Node {
-                                    node_type: Explicatio,
-                                    num: None,
-                                    children: &[],
-                                },
-                            ],
+                            children: &[],
                         },
                         Node {
                             node_type: Definitio,
