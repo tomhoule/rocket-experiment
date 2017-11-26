@@ -2950,7 +2950,7 @@ pub mod schema {
                     num: None,
                     children: &[
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(1),
                             children: &[
                                 Node {
@@ -2961,12 +2961,12 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(2),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(3),
                             children: &[
                                 Node {
@@ -2977,7 +2977,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(4),
                             children: &[
                                 Node {
@@ -2988,12 +2988,12 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(5),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(6),
                             children: &[
                                 Node {
@@ -3004,7 +3004,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(7),
                             children: &[
                                 Node {
@@ -3015,17 +3015,17 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(8),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(9),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(10),
                             children: &[
                                 Node {
@@ -3036,7 +3036,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(11),
                             children: &[
                                 Node {
@@ -3047,12 +3047,12 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(12),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(13),
                             children: &[
                                 Node {
@@ -3063,12 +3063,12 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(14),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(15),
                             children: &[
                                 Node {
@@ -3079,12 +3079,12 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(16),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(17),
                             children: &[
                                 Node {
@@ -3095,7 +3095,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(18),
                             children: &[
                                 Node {
@@ -3106,12 +3106,12 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(19),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(20),
                             children: &[
                                 Node {
@@ -3122,12 +3122,12 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(21),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(22),
                             children: &[
                                 Node {
@@ -3138,7 +3138,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(23),
                             children: &[
                                 Node {
@@ -3149,7 +3149,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(24),
                             children: &[
                                 Node {
@@ -3160,12 +3160,12 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(25),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(26),
                             children: &[
                                 Node {
@@ -3176,7 +3176,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(27),
                             children: &[
                                 Node {
@@ -3187,7 +3187,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(28),
                             children: &[
                                 Node {
@@ -3198,7 +3198,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(29),
                             children: &[
                                 Node {
@@ -3209,12 +3209,12 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(30),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(31),
                             children: &[
                                 Node {
@@ -3225,7 +3225,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(32),
                             children: &[
                                 Node {
@@ -3236,7 +3236,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(33),
                             children: &[
                                 Node {
@@ -3247,27 +3247,27 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(34),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(35),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(36),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(37),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(38),
                             children: &[
                                 Node {
@@ -3278,17 +3278,17 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(39),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(40),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(41),
                             children: &[
                                 Node {
@@ -3299,7 +3299,7 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(42),
                             children: &[
                                 Node {
@@ -3310,12 +3310,12 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(43),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(44),
                             children: &[
                                 Node {
@@ -3326,22 +3326,22 @@ pub mod schema {
                             ],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(45),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(46),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(47),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Definitio,
                             num: Some(48),
                             children: &[
                                 Node {
@@ -3362,6 +3362,11 @@ pub mod schema {
                     node_type: Scope("gen_def_aff"),
                     num: None,
                     children: &[
+                        Node {
+                            node_type: Definitio,
+                            num: None,
+                            children: &[],
+                        },
                         Node {
                             node_type: Explicatio,
                             num: None,
