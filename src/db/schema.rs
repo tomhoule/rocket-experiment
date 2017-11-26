@@ -1,4 +1,16 @@
 table! {
+    accounts (id) {
+        id -> Uuid,
+        email -> Text,
+        password_hash -> Text,
+        confirmed_at -> Nullable<Timestamptz>,
+        admin -> Bool,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+table! {
     editions (id) {
         id -> Uuid,
         title -> Text,
@@ -21,3 +33,5 @@ table! {
         updated_at -> Timestamptz,
     }
 }
+
+joinable!(fragments -> editions (edition_id));
