@@ -11,6 +11,7 @@ pub enum Failure {
     #[fail(display = "Database error: {}", _0)] Db(#[cause] DieselError),
     #[fail(display = "Database conn timeout: {}", _0)] DbTimeout(#[cause] GetTimeout),
     #[fail(display = "Server error: {}", _0)] ServerError(Error),
+    #[fail(display = "Bad Request: {}", _0)] BadRequest(Error),
     #[fail(display = "Not found")] NotFound,
 }
 
@@ -27,6 +28,7 @@ macro_rules! impl_from {
 impl_from!(Failure, DieselError, Failure::Db);
 impl_from!(Failure, GetTimeout, Failure::DbTimeout);
 impl_from!(Failure, ::json::Error, Failure::ServerError);
+impl_from!(Failure, ::uuid::ParseError, Failure::BadRequest);
 
 impl<'r> Responder<'r> for Failure {
     fn respond_to(self, _req: &Request) -> Result<Response<'r>, Status> {

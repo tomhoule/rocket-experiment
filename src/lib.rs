@@ -100,6 +100,7 @@ pub fn start() {
                 pages::editions_create,
                 pages::editions_new,
                 pages::editions_edit,
+                pages::editions_patch,
                 pages::ethics_fragment,
                 pages::ethics_part,
                 pages::ethics_home,

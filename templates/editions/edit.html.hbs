@@ -1,10 +1,49 @@
 {{#*inline "page"}}
 <section>
   <div class="container">
-    <form class="box" action="/ethics/editions/new" method="post">
+    <form class="box" action="{{action}}" method="post">
       {{> partials/textinput name="title" label="Title"}}
       {{> partials/textinput name="editor" label="Editor"}}
       {{> partials/textinput name="slug" label="Slug"}}
+      <div class="field is-horizontal">
+        <div class="field-label">
+          <label class="label">
+            Language code
+          </label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <div class="select is-disabled">
+              <select
+                name="language_code"
+                value="{{edition.language_code}}"
+              >
+                {{#each language_codes}}
+                <option value="{{this}}">{{this}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field is-horizontal">
+        <div class="field-label">
+          <label class="label">Year</label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <div class="control">
+              <input
+                class="input"
+                placeholder="Year"
+                type="number"
+                name="year"
+                value="{{edition.year}}"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       {{> partials/savebutton }}
     </form>
   </div>
