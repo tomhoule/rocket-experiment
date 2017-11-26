@@ -4722,19 +4722,25 @@ pub mod schema {
                 Node {
                     node_type: Scope("praefatio"),
                     num: None,
-                    children: &[],
+                    children: &[
+                        Node {
+                            node_type: AnonymousFragment,
+                            num: None,
+                            children: &[],
+                        },
+                    ],
                 },
                 Node {
                     node_type: Scope("axiomata"),
                     num: None,
                     children: &[
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Axioma,
                             num: Some(1),
                             children: &[],
                         },
                         Node {
-                            node_type: AnonymousFragment,
+                            node_type: Axioma,
                             num: Some(2),
                             children: &[],
                         },
