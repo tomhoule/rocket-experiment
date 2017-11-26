@@ -13,6 +13,7 @@ extern crate error_chain;
 extern crate failure;
 #[macro_use]
 extern crate failure_derive;
+extern crate fluent;
 extern crate futures;
 extern crate grpcio;
 extern crate inlinable_string;
@@ -78,6 +79,10 @@ pub fn start() {
 
     let cors_options: rocket_cors::Cors = ::std::default::Default::default();
 
+    let mut fluent_context = fluent::MessageContext::new(&["en-US"]);
+    let l10n_messages = include_str!("l10n/en.fluent");
+    fluent_context.add_messages(l10n_messages);
+
     rocket::ignite()
         .mount(
             "/",
@@ -104,5 +109,6 @@ pub fn start() {
         .attach(cors_options)
         .attach(Template::fairing())
         .manage(pool)
+        .manage(fluent_context)
         .launch();
 }

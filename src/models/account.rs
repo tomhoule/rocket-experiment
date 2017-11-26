@@ -13,4 +13,3 @@ pub struct Account {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
-

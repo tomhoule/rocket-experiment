@@ -74,7 +74,7 @@ start-proxy:
     --backend_tls_noverify
 
 watch:
-  watchexec -c --exts rs,hbs --restart "cargo run"
+  watchexec -c --exts rs,hbs,fluent --restart "cargo run"
 
 watch-go:
   watchexec -c --exts go --restart "go build"

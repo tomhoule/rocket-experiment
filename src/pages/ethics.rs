@@ -7,7 +7,7 @@ use models::fragment::{Fragment, FragmentPatch};
 use schemas::ethics::{Path, ETHICS};
 use validator::Validate;
 use error::{pack_errs, validation_errors_to_json};
-use super::DbConn;
+use super::{DbConn, I18n};
 use percent_encoding::{percent_encode, PercentEncode, PATH_SEGMENT_ENCODE_SET};
 use pages::fail::Failure;
 
@@ -124,7 +124,7 @@ pub fn ethics_fragment(
 }
 
 #[get("/ethics/editions/<slug>/part/<part>")]
-pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Failure> {
+pub fn ethics_part(slug: String, part: u8, i18n: I18n, conn: DbConn) -> Result<Template, Failure> {
     use diesel::*;
     use db::schema::fragments::dsl::*;
     let conn = &*conn.inner().get()?;
@@ -147,13 +147,17 @@ pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Fai
                     let frag = frags.iter().find(|f| {
                         f.fragment_path == expanded.path && f.edition_id == edition.id
                     });
+
+                    let title = expanded.title();
                     json!({
-                    "expanded_node": expanded,
-                    "title": expanded.title(),
-                    "fragment_url": url,
-                    "fragment": frag,
-                    "rendered": frag.map(|f| ::md_transform::render(&f.value, &slug)),
-                })
+                        "expanded_node": expanded,
+                        "title": i18n.get_message(title)
+                            .and_then(|msg| i18n.format(msg, None))
+                            .unwrap_or_else(|| title.to_string()),
+                        "fragment_url": url,
+                        "fragment": frag,
+                        "rendered": frag.map(|f| ::md_transform::render(&f.value, &slug)),
+                    })
                 })
                 .collect::<Vec<json::Value>>()
         })

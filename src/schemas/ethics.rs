@@ -2388,8 +2388,7 @@ pub mod schema {
                                 Node {
                                     node_type: Demonstratio,
                                     num: None,
-                                    children: &[
-                                    ],
+                                    children: &[],
                                 },
                             ],
                         },
