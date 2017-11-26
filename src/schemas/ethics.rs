@@ -4706,11 +4706,6 @@ pub mod schema {
                             num: Some(32),
                             children: &[],
                         },
-                        Node {
-                            node_type: Caput,
-                            num: Some(33),
-                            children: &[],
-                        },
                     ],
                 },
                 Node {
