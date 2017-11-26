@@ -6,9 +6,9 @@
         id='{{expanded_node.path}}'
       >
         {{#if expanded_node.node_type.Scope }}
-          {{expanded_node.node_type.Scope}}
+          {{title}}
         {{else}}
-          {{expanded_node.node_type}} {{expanded_node.num}}
+          {{title}} {{expanded_node.num}}
           <a
             href="{{fragment_url}}"
           >

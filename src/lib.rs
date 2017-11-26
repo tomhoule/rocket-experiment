@@ -13,6 +13,7 @@ extern crate error_chain;
 extern crate failure;
 #[macro_use]
 extern crate failure_derive;
+extern crate fluent;
 extern crate futures;
 extern crate grpcio;
 extern crate inlinable_string;
@@ -48,6 +49,7 @@ use r2d2_diesel::ConnectionManager;
 mod error;
 mod files;
 pub mod db;
+pub mod i18n;
 pub mod md_transform;
 pub mod models;
 mod pages;
@@ -58,6 +60,7 @@ mod schemas;
 // use api::ethics::*;
 
 use rocket_contrib::Template;
+use i18n::I18nContexts;
 
 #[get("/")]
 fn index() -> Template {
@@ -78,6 +81,15 @@ pub fn start() {
 
     let cors_options: rocket_cors::Cors = ::std::default::Default::default();
 
+    let mut en_context = fluent::MessageContext::new(&["en-US"]);
+    en_context.add_messages(include_str!("l10n/en.fluent"));
+    let mut la_context = fluent::MessageContext::new(&["en-GB"]);
+    la_context.add_messages(include_str!("l10n/la.fluent"));
+    let l10n_messages = I18nContexts {
+        en: en_context,
+        la: la_context,
+    };
+
     rocket::ignite()
         .mount(
             "/",
@@ -88,6 +100,7 @@ pub fn start() {
                 pages::editions_create,
                 pages::editions_new,
                 pages::editions_edit,
+                pages::editions_patch,
                 pages::ethics_fragment,
                 pages::ethics_part,
                 pages::ethics_home,
@@ -104,5 +117,6 @@ pub fn start() {
         .attach(cors_options)
         .attach(Template::fairing())
         .manage(pool)
+        .manage(l10n_messages)
         .launch();
 }

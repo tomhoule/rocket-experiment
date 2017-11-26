@@ -2,12 +2,12 @@ use rocket_contrib::Template;
 use rocket::response::{Flash, Redirect};
 use rocket::request::Form;
 use json;
-use models::edition::{Edition, EditionNew};
+use models::edition::{Edition, EditionNew, EditionPatch};
 use models::fragment::{Fragment, FragmentPatch};
 use schemas::ethics::{Path, ETHICS};
 use validator::Validate;
 use error::{pack_errs, validation_errors_to_json};
-use super::DbConn;
+use super::{DbConn, I18n};
 use percent_encoding::{percent_encode, PercentEncode, PATH_SEGMENT_ENCODE_SET};
 use pages::fail::Failure;
 
@@ -124,7 +124,7 @@ pub fn ethics_fragment(
 }
 
 #[get("/ethics/editions/<slug>/part/<part>")]
-pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Failure> {
+pub fn ethics_part(slug: String, part: u8, i18n: I18n, conn: DbConn) -> Result<Template, Failure> {
     use diesel::*;
     use db::schema::fragments::dsl::*;
     let conn = &*conn.inner().get()?;
@@ -147,13 +147,15 @@ pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Fai
                     let frag = frags.iter().find(|f| {
                         f.fragment_path == expanded.path && f.edition_id == edition.id
                     });
+
+                    let title = expanded.title();
                     json!({
-                    "expanded_node": expanded,
-                    "title": expanded.title(),
-                    "fragment_url": url,
-                    "fragment": frag,
-                    "rendered": frag.map(|f| ::md_transform::render(&f.value, &slug)),
-                })
+                        "expanded_node": expanded,
+                        "title": i18n.localize(&edition.language_code, title),
+                        "fragment_url": url,
+                        "fragment": frag,
+                        "rendered": frag.map(|f| ::md_transform::render(&f.value, &slug)),
+                    })
                 })
                 .collect::<Vec<json::Value>>()
         })
@@ -210,7 +212,11 @@ pub fn editions_create(flash: Option<Flash<()>>) -> Template {
 #[get("/ethics/editions/<slug>/edit")]
 pub fn editions_edit(slug: String, conn: DbConn) -> Result<Template, Failure> {
     let edition = Edition::by_slug(&slug, &*conn.inner().get()?)?;
-    let context = json!({ "edition": edition });
+    let context = json!({
+        "action": format!("/ethics/editions/{}", edition.id),
+        "edition": edition,
+        "language_codes": ["fr", "de", "la", "en"],
+    });
     Ok(Template::render("editions/edit", &context))
 }
 
@@ -232,6 +238,30 @@ pub fn editions_new(form: Form<EditionNew>, conn: DbConn) -> Result<Flash<Redire
             let json_err = json::to_string(&json_err).unwrap();
             Ok(Flash::error(
                 Redirect::to("/ethics/editions/create"),
+                json_err,
+            ))
+        }
+    }
+}
+
+#[post("/ethics/editions/<edition_id>", data = "<form>")]
+pub fn editions_patch(form: Form<EditionPatch>, edition_id: String, conn: DbConn) -> Result<Flash<Redirect>, Failure> {
+    let payload = form.into_inner();
+    match payload.validate() {
+        Ok(()) => {
+            payload.save(edition_id.parse()?, &*conn.inner().get()?)?;
+            Ok(Flash::success(
+                Redirect::to("/ethics"),
+                r##""Successfully edited an edition""##,
+            ))
+        }
+        Err(errors) => {
+            let mut json_err = json::Map::new();
+            json_err.insert("original".to_string(), json::to_value(&payload)?);
+            json_err.insert("errors".to_string(), validation_errors_to_json(errors));
+            let json_err = json::to_string(&json_err).unwrap();
+            Ok(Flash::error(
+                Redirect::to(&format!("/ethics/editions/{}", edition_id)),
                 json_err,
             ))
         }

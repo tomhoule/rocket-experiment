@@ -14,7 +14,7 @@ pub struct Edition {
     title: String,
     editor: String,
     year: i32,
-    language_code: String,
+    pub language_code: String,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     pub slug: String,
@@ -31,11 +31,12 @@ pub struct EditionNew {
     #[validate(length(message = "The edition needs a valid slug", min = "2"))] pub slug: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, AsChangeset)]
+#[derive(Debug, Deserialize, Serialize, AsChangeset, FromForm, Validate)]
 #[table_name = "editions"]
 pub struct EditionPatch {
     pub title: Option<String>,
     pub editor: Option<String>,
+    pub slug: Option<String>,
     pub year: Option<i32>,
     pub language_code: Option<String>,
 }
@@ -55,6 +56,7 @@ impl EditionPatch {
         EditionPatch {
             title: take!(proto, title, ""),
             editor: take!(proto, editor, ""),
+            slug: None,
             year: take!(proto, year, 0),
             language_code: take!(proto, language_code, ""),
         }

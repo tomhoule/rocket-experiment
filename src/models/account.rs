@@ -1,5 +1,4 @@
 use chrono::{DateTime, Utc};
-use diesel;
 use uuid::Uuid;
 use db::schema::accounts;
 
@@ -13,4 +12,3 @@ pub struct Account {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
 }
-
