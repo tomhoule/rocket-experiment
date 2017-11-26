@@ -2592,6 +2592,22 @@ pub mod schema {
                 },
                 Node {
                     node_type: Propositio,
+                    num: Some(39),
+                    children: &[
+                        Node {
+                            node_type: Demonstratio,
+                            num: None,
+                            children: &[],
+                        },
+                        Node {
+                            node_type: Scholium,
+                            num: None,
+                            children: &[],
+                        },
+                    ],
+                },
+                Node {
+                    node_type: Propositio,
                     num: Some(40),
                     children: &[
                         Node {
