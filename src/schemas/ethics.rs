@@ -11,6 +11,16 @@ pub struct ExpandedNode {
     pub num: Option<u8>,
 }
 
+impl ExpandedNode {
+    pub fn title(&self) -> &str {
+        match self.node_type {
+            NodeType::Scope(title) => title,
+            NodeType::AnonymousFragment => "",
+            ref other => other.segment_title(),
+        }
+    }
+}
+
 #[derive(Serialize, Debug)]
 pub struct Schema(Node);
 

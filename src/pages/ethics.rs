@@ -149,6 +149,7 @@ pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Fai
                     });
                     json!({
                     "expanded_node": expanded,
+                    "title": expanded.title(),
                     "fragment_url": url,
                     "fragment": frag,
                     "rendered": frag.map(|f| ::md_transform::render(&f.value, &slug)),
