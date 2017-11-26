@@ -43,11 +43,7 @@ impl Path {
     pub fn part(&self) -> Option<u8> {
         PATH_RE
             .captures(&self.0)
-            .and_then(|cap| {
-                cap
-                    .name("part")
-                    .and_then(|m| m.as_str().parse().ok())
-            })
+            .and_then(|cap| cap.name("part").and_then(|m| m.as_str().parse().ok()))
     }
 }
 
@@ -1291,7 +1287,7 @@ pub mod schema {
                         Node {
                             node_type: Axioma,
                             num: Some(2),
-                            children: &[]
+                            children: &[],
                         },
                         Node {
                             node_type: Definitio,

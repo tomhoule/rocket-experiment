@@ -11,6 +11,7 @@ pub enum Failure {
     #[fail(display = "Database error: {}", _0)] Db(#[cause] DieselError),
     #[fail(display = "Database conn timeout: {}", _0)] DbTimeout(#[cause] GetTimeout),
     #[fail(display = "Server error: {}", _0)] ServerError(Error),
+    #[fail(display = "Not found")] NotFound,
 }
 
 macro_rules! impl_from {
@@ -32,6 +33,7 @@ impl<'r> Responder<'r> for Failure {
         use self::Failure::*;
         match self {
             Db(DieselError::NotFound) => Err(Status::NotFound),
+            NotFound => Err(Status::NotFound),
             _ => Err(Status::InternalServerError),
         }
     }

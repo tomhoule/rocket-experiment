@@ -9,13 +9,11 @@ use percent_encoding::{percent_encode, PATH_SEGMENT_ENCODE_SET};
 pub fn render(md: &str, edition_slug: &str) -> String {
     let tags = Parser::new(md);
     let mut rendered = String::new();
-    let transformed = tags.map(|tag| {
-        match tag {
-            Event::Start(Tag::Link(target, inner)) => {
-                Event::Start(Tag::Link(transform_link(edition_slug, target), inner))
-            }
-            other => other
+    let transformed = tags.map(|tag| match tag {
+        Event::Start(Tag::Link(target, inner)) => {
+            Event::Start(Tag::Link(transform_link(edition_slug, target), inner))
         }
+        other => other,
     });
     push_html(&mut rendered, transformed);
     rendered
@@ -35,7 +33,7 @@ pub fn transform_link<'a>(edition_slug: &str, original: Cow<'a, str>) -> Cow<'a,
                 edition_slug,
                 percent_encode(path.as_bytes(), PATH_SEGMENT_ENCODE_SET)
             );
-            return Cow::from(transformed)
+            return Cow::from(transformed);
         }
     }
     original
@@ -57,11 +55,14 @@ mod tests {
 
     #[test]
     fn md_transform_render_works() {
-        let result = render(r##"
+        let result = render(
+            r##"
 # Meow
 
 This is [a link](ethics://pt/1:p:20:sch)
-        "##, "collector");
+        "##,
+            "collector",
+        );
         let expected = r##"<h1>Meow</h1>
 <p>This is <a href="/ethics/editions/collector/fragments/pt%2F1:p:20:sch">a link</a></p>
 "##;

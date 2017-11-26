@@ -120,7 +120,10 @@ fn create_edition(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::Cm
 }
 
 #[async]
-fn edit_fragment(c: Rc<fantoccini::Client>, h: tokio_core::reactor::Handle) -> Result<(), fantoccini::error::CmdError> {
+fn edit_fragment(
+    c: Rc<fantoccini::Client>,
+    h: tokio_core::reactor::Handle,
+) -> Result<(), fantoccini::error::CmdError> {
     await!(c.goto(&format!("{}/ethics/editions/test_ed", APP_URL)))?;
     let link = await!(c.by_link_text("Part 2"))?;
     await!(link.click())?;
@@ -128,17 +131,13 @@ fn edit_fragment(c: Rc<fantoccini::Client>, h: tokio_core::reactor::Handle) -> R
         await!(c.current_url())?.as_ref(),
         &format!("{}/ethics/editions/test_ed/part/2", APP_URL)
     );
-    await!(wait_ms_fut(800, &h));
     await!(await!(c.by_selector("i.fa-link"))?.click())?;
 
     let form = await!(c.form("form"))?;
     // await!(form.set_by_name("value", "meow, said the cat"))?;
     assert_eq!(
         await!(c.current_url())?.as_ref(),
-        &format!(
-            "{}/ethics/editions/test_ed/fragments/pars%2F2",
-            APP_URL
-        )
+        &format!("{}/ethics/editions/test_ed/fragments/pars%2F2", APP_URL)
     );
     await!(form.submit())?;
     // assert_eq!(

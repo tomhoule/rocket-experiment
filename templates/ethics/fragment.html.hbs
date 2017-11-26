@@ -12,12 +12,29 @@
     enctype="application/x-www-form-url-encoded"
     method="post"
   >
+    <div class="title">
+      {{edition.title}} - {{path}}
+    </div>
+    <br />
     {{> partials/textarea name="value" label="Text" value=fragment.value }}
     {{> partials/savebutton }}
     <div>
       <a href="{{back}}">Back</a>
     </div>
   </form>
+  <div class="box">
+    <h2 class="title">Other editions</h2><br />
+  {{#each others}}
+    <h3 class="subtitle">{{0.title}}</h3>
+    <div class="box">
+      {{#if this.1 and this.1.id}}
+        {{1.value}}
+      {{else}}
+        <em>No entry yet</em>
+      {{/if}}
+    </div>
+  {{/each}}
+  </div>
 </div>
 {{/inline}}
 

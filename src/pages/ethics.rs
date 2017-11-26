@@ -44,11 +44,11 @@ pub fn put_ethics_fragment(
     let parsed_path = match path.parse::<Path>() {
         Ok(p) => {
             if !ETHICS.contains_path(&p) {
-                return Ok(Flash::error(Redirect::to(to), "Wrong path"))
+                return Ok(Flash::error(Redirect::to(to), "Wrong path"));
             }
             p
-        },
-        Err(_) => return Ok(Flash::error(Redirect::to(to), "Wrong path"))
+        }
+        Err(_) => return Ok(Flash::error(Redirect::to(to), "Wrong path")),
     };
 
     let frag = FragmentPatch {
@@ -71,7 +71,12 @@ pub fn put_ethics_fragment(
         ));
     }
     Ok(Flash::success(
-        Redirect::to(&format!("/ethics/editions/{}/part/{}#{}", &edition_slug, parsed_path.part().unwrap_or(0), path)),
+        Redirect::to(&format!(
+            "/ethics/editions/{}/part/{}#{}",
+            &edition_slug,
+            parsed_path.part().unwrap_or(0),
+            path
+        )),
         "",
     ))
 }
@@ -86,16 +91,34 @@ pub fn ethics_fragment(
     use diesel::*;
     use db::schema::fragments::dsl::*;
     let conn = &*conn.inner().get()?;
-    let edition = Edition::by_slug(&edition_slug, &conn)?;
-    let frags: Vec<Fragment> = Fragment::belonging_to(&edition)
-        .filter(fragment_path.eq(&path))
-        .limit(1)
-        .load(conn)?;
+
+    let editions = Edition::all(&conn)?;
+    let edition = editions
+        .iter()
+        .find(|ed| ed.slug == edition_slug)
+        .ok_or(Failure::NotFound)?;
+
+    let frags: Vec<Fragment> = fragments.filter(fragment_path.eq(&path)).load(conn)?;
+    let frag = frags.iter().find(|f| f.edition_id == edition.id);
+
+    let others: Vec<(&Edition, Option<&Fragment>)> = editions
+        .iter()
+        .filter(|ed| ed.id != edition.id)
+        .map(|ed| (ed, frags.iter().find(|f| f.edition_id == ed.id)))
+        .collect();
+
     let context = json!({
-        "fragment": frags.get(0),
+        "fragment": frag,
+        "path": path,
+        "edition": edition,
         "back": format!("/ethics/editions/{}", edition_slug),
-        "url": format!("/ethics/editions/{}/fragments/{}", edition_slug, encode_path(&path.as_bytes())),
+        "url": format!(
+            "/ethics/editions/{}/fragments/{}",
+            edition_slug,
+            encode_path(&path.as_bytes())
+        ),
         "flash": flash.map(unwrap_flash),
+        "others": others,
     });
     Ok(Template::render("ethics/fragment", context))
 }
@@ -113,24 +136,27 @@ pub fn ethics_part(slug: String, part: u8, conn: DbConn) -> Result<Template, Fai
         .expand_part(part)
         .into_iter()
         .map(|expanded| {
-            editions.iter().map(|edition| {
-                let url = format!(
-                    "/ethics/editions/{}/fragments/{}",
-                    edition.slug,
-                    encode_path(expanded.path.as_bytes())
-                );
-                let frag = frags.iter().find(|f| {
-                    f.fragment_path == expanded.path &&
-                        f.edition_id == edition.id
-                });
-                json!({
+            editions
+                .iter()
+                .map(|edition| {
+                    let url = format!(
+                        "/ethics/editions/{}/fragments/{}",
+                        edition.slug,
+                        encode_path(expanded.path.as_bytes())
+                    );
+                    let frag = frags.iter().find(|f| {
+                        f.fragment_path == expanded.path && f.edition_id == edition.id
+                    });
+                    json!({
                     "expanded_node": expanded,
                     "fragment_url": url,
                     "fragment": frag,
                     "rendered": frag.map(|f| ::md_transform::render(&f.value, &slug)),
                 })
-            }).collect::<Vec<json::Value>>()
-        }).collect::<Vec<Vec<json::Value>>>();
+                })
+                .collect::<Vec<json::Value>>()
+        })
+        .collect::<Vec<Vec<json::Value>>>();
     let context = json!({
         "schemas": schemas,
     });

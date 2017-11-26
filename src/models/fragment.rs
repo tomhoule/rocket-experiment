@@ -44,7 +44,9 @@ impl FragmentPatch {
         use diesel::pg::upsert::*;
         // use diesel::pg::upsert::*;
         insert(
-            &self.on_conflict(on_constraint("fragment_uniqueness"), do_update().set(value.eq(excluded(value))))
+            &self.on_conflict(
+                on_constraint("fragment_uniqueness"), do_update().set(value.eq(excluded(value)))
+            )
         ).into(fragments)
             // .values(self)
             // .on_conflict(())
