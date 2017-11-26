@@ -15,7 +15,7 @@ impl ExpandedNode {
     pub fn title(&self) -> &str {
         match self.node_type {
             NodeType::Scope(title) => title,
-            NodeType::AnonymousFragment => "",
+            // NodeType::AnonymousFragment => "",
             ref other => other.segment_title(),
         }
     }
@@ -2382,13 +2382,14 @@ pub mod schema {
                             children: &[],
                         },
                         Node {
-                            node_type: Demonstratio,
-                            num: None,
+                            node_type: Corollarium,
+                            num: Some(1),
                             children: &[
                                 Node {
-                                    node_type: Corollarium,
-                                    num: Some(1),
-                                    children: &[],
+                                    node_type: Demonstratio,
+                                    num: None,
+                                    children: &[
+                                    ],
                                 },
                             ],
                         },
@@ -2410,14 +2411,15 @@ pub mod schema {
                                 Node {
                                     node_type: Demonstratio,
                                     num: None,
-                                    children: &[],
+                                    children: &[
+                                        Node {
+                                            node_type: Scholium,
+                                            num: None,
+                                            children: &[],
+                                        },
+                                    ],
                                 },
                             ],
-                        },
-                        Node {
-                            node_type: Scholium,
-                            num: None,
-                            children: &[],
                         },
                     ],
                 },
