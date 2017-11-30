@@ -1,7 +1,6 @@
 use chrono::{DateTime, Utc};
 use diesel;
 use diesel::pg::PgConnection;
-use diesel::*;
 use validator::Validate;
 use uuid::Uuid;
 use error::Error;
@@ -42,16 +41,12 @@ impl FragmentPatch {
     pub fn save(&self, conn: &PgConnection) -> Result<Fragment, diesel::result::Error> {
         use db::schema::fragments::dsl::*;
         use diesel::pg::upsert::*;
-        // use diesel::pg::upsert::*;
-        insert(
-            &self.on_conflict(
-                on_constraint("fragment_uniqueness"), do_update().set(value.eq(excluded(value)))
-            )
-        ).into(fragments)
-            // .values(self)
-            // .on_conflict(())
-            // .do_update()
-            // .set(value.eq(self.value))
+        use diesel::prelude::*;
+        diesel::insert_into(fragments)
+            .values(self)
+            .on_conflict(on_constraint("fragment_uniqueness"))
+            .do_update()
+            .set(value.eq(excluded(value)))
             .get_result(conn)
     }
 }
@@ -62,6 +57,7 @@ impl Fragment {
         conn: &PgConnection,
     ) -> Result<Vec<Fragment>, diesel::result::Error> {
         use db::schema::fragments::dsl::*;
+        use diesel::prelude::*;
         fragments.filter(edition_id.eq(edid)).load(conn)
     }
 
@@ -92,6 +88,7 @@ mod tests {
     #[test]
     fn fragment_upsert_works() {
         use db::schema::editions;
+        use diesel::prelude::*;
 
         dotenv::dotenv().ok();
         let database_url = env::var("TEST_DATABASE_URL")
@@ -99,8 +96,8 @@ mod tests {
             .to_string();
         let conn = PgConnection::establish(&database_url).expect("Database is up");
 
-        diesel::delete(fragments::table).execute(&conn);
-        diesel::delete(editions::table).execute(&conn);
+        diesel::delete(fragments::table).execute(&conn).unwrap();
+        diesel::delete(editions::table).execute(&conn).unwrap();
         let edition = EditionNew {
             title: "".to_string(),
             editor: "".to_string(),
