@@ -5,8 +5,6 @@
 extern crate chrono;
 #[macro_use]
 extern crate diesel;
-#[macro_use]
-extern crate diesel_codegen;
 extern crate dotenv;
 #[macro_use]
 extern crate error_chain;
@@ -72,11 +70,10 @@ fn index() -> Template {
 
 pub fn start() {
     dotenv::dotenv().ok();
-    let pool_config = r2d2::Config::default();
     let database_url = ::std::env::var("DATABASE_URL").unwrap();
     let pool_manager = ConnectionManager::<PgConnection>::new(database_url);
     let pool: r2d2::Pool<ConnectionManager<PgConnection>> =
-        r2d2::Pool::new(pool_config, pool_manager)
+        r2d2::Pool::new(pool_manager)
             .expect("Failed to create a database connection pool");
 
     let cors_options: rocket_cors::Cors = ::std::default::Default::default();

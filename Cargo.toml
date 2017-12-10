@@ -4,40 +4,42 @@ version = "0.1.0"
 authors = ["Tom Houlé <tom@tomhoule.com>"]
 
 [dependencies]
-chrono = { version = "*", features = ["serde"] }
-diesel = { version = "*", features = ["chrono", "postgres", "uuid"] }
-diesel_codegen = { version = "*", default-features = false, features = ["postgres"] }
+chrono = { version = "0.4", features = ["serde"] }
+diesel = { version = "0.99", features = ["chrono", "postgres", "uuid"] }
 dotenv = "*"
 error-chain = "*"
 failure = "0.1.0"
 failure_derive = "0.1.0"
-fantoccini = "*"
 fluent = "0.1.2"
-futures = "*"
+futures = "0.1"
 futures-await = "0.1"
 grpcio = "*"
 handlebars = "0.29"
 inlinable_string = { version = "0.1.9", features = ["serde"] }
-lazy_static = "*"
+lazy_static = "1.0"
 protobuf = "*"
 pulldown-cmark = "0.0"
-r2d2 = "*"
-r2d2-diesel = "*"
-regex = "*"
-reqwest = "*"
-rocket = { version = "*", features = [] }
-rocket_codegen = "*"
-rocket_contrib ={ version = "*", features = ["handlebars_templates", "uuid"] }
-rocket_cors = "*"
+r2d2 = "0.8.1"
+r2d2-diesel = "0.99"
+regex = "0.2"
+rocket = { version = "0.3", features = [] }
+rocket_codegen = "0.3"
+rocket_contrib ={ version = "0.3", features = ["handlebars_templates", "uuid"] }
+rocket_cors = "0.2"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
 tokio-core = "*"
-time = "*"
+time = "0.1"
 percent-encoding = "1.0"
 uuid = { version = "*", features = ["v4", "serde"] }
 validator = "0.6"
 validator_derive = "0.6"
+
+[dev-dependencies]
+diesel_migrations = { version = "0.99", features = ["postgres"] }
+fantoccini = "0.7"
+reqwest = "*"
 
 [[bin]]
 name = "main"

@@ -139,6 +139,6 @@ impl EditionNew {
         use db::schema::editions::dsl::*;
         use diesel::*;
 
-        insert(self).into(editions).get_result(conn)
+        insert_into(editions).values(self).get_result(conn)
     }
 }

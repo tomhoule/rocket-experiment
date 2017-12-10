@@ -1,5 +1,5 @@
 use diesel::result::Error as DieselError;
-use r2d2::GetTimeout;
+use r2d2::Error as GetTimeout;
 use validator;
 use json::{to_string, to_value, Value};
 use grpcio::{RpcStatus, RpcStatusCode};
