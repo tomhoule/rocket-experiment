@@ -63,7 +63,8 @@ use i18n::I18nContexts;
 #[get("/")]
 fn index() -> Template {
     let context = json!({
-        "links": { "editions_index": "/ethics" }
+        "links": { "editions_index": "/ethics" },
+        "title": "Welcome",
     });
     Template::render("index", &context)
 }

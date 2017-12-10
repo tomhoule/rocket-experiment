@@ -4,7 +4,6 @@ do-frontend:
   yarn frontend/build
   cp frontend/dist/* static/
   cp frontend/assets/* static/
-  cp node_modules/turbolinks/dist/turbolinks.js static/
 
 watch-frontend:
   yarn frontend/watch
