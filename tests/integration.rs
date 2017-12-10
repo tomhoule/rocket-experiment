@@ -1,12 +1,14 @@
 #![feature(proc_macro, conservative_impl_trait, generators)]
 
 extern crate diesel;
+extern crate diesel_migrations;
 extern crate dotenv;
 extern crate fantoccini;
 extern crate futures_await as futures;
 extern crate tokio_core;
 
 use diesel::*;
+use diesel_migrations as migrations;
 use futures::prelude::*;
 use fantoccini::Client;
 use std::rc::Rc;
@@ -37,11 +39,11 @@ fn integration() {
     let conn = PgConnection::establish(&database_url).expect("Database is up");
 
     loop {
-        if diesel::migrations::revert_latest_migration(&conn).is_err() {
+        if migrations::revert_latest_migration(&conn).is_err() {
             break;
         }
     }
-    diesel::migrations::run_pending_migrations(&conn).unwrap();
+    migrations::run_pending_migrations(&conn).unwrap();
 
     let mut driver = ::std::process::Command::new("geckodriver")
         .spawn()
@@ -122,7 +124,7 @@ fn create_edition(c: Rc<fantoccini::Client>) -> Result<(), fantoccini::error::Cm
 #[async]
 fn edit_fragment(
     c: Rc<fantoccini::Client>,
-    h: tokio_core::reactor::Handle,
+    _h: tokio_core::reactor::Handle,
 ) -> Result<(), fantoccini::error::CmdError> {
     await!(c.goto(&format!("{}/ethics/editions/test_ed", APP_URL)))?;
     let link = await!(c.by_link_text("Part 2"))?;
