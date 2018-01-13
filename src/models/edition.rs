@@ -3,7 +3,7 @@ use uuid::Uuid;
 use diesel;
 use diesel::pg::PgConnection;
 use validator::Validate;
-use rpc::repository as rpc;
+// use rpc::repository as rpc;
 use error;
 
 use db::schema::*;
@@ -41,26 +41,26 @@ pub struct EditionPatch {
     pub language_code: Option<String>,
 }
 
-macro_rules! take {
-    ($proto:ident, $field_name:ident, $default:expr) => {
-        if $proto.$field_name == $default {
-            None
-        } else {
-            Some($proto.$field_name)
-        }
-    }
-}
+// macro_rules! take {
+//     ($proto:ident, $field_name:ident, $default:expr) => {
+//         if $proto.$field_name == $default {
+//             None
+//         } else {
+//             Some($proto.$field_name)
+//         }
+//     }
+// }
 
 impl EditionPatch {
-    pub fn from_proto(proto: rpc::Edition) -> Self {
-        EditionPatch {
-            title: take!(proto, title, ""),
-            editor: take!(proto, editor, ""),
-            slug: None,
-            year: take!(proto, year, 0),
-            language_code: take!(proto, language_code, ""),
-        }
-    }
+    // pub fn from_proto(proto: rpc::Edition) -> Self {
+    //     EditionPatch {
+    //         title: take!(proto, title, ""),
+    //         editor: take!(proto, editor, ""),
+    //         slug: None,
+    //         year: take!(proto, year, 0),
+    //         language_code: take!(proto, language_code, ""),
+    //     }
+    // }
 
     pub fn save(&self, id_: Uuid, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
         use db::schema::editions::dsl::*;
@@ -78,15 +78,15 @@ macro_rules! self_into {
 }
 
 impl Edition {
-    #[deny(unused_variables)]
-    pub fn into_proto(self) -> rpc::Edition {
-        let mut edition = rpc::Edition::new();
-        self_into!(self, edition: year, editor, title, slug, language_code);
-        edition.id = self.id.to_string();
-        edition.created_at = self.created_at.to_rfc3339();
-        edition.updated_at = self.updated_at.to_rfc3339();
-        edition
-    }
+    // #[deny(unused_variables)]
+    // pub fn into_proto(self) -> rpc::Edition {
+    //     let mut edition = rpc::Edition::new();
+    //     self_into!(self, edition: year, editor, title, slug, language_code);
+    //     edition.id = self.id.to_string();
+    //     edition.created_at = self.created_at.to_rfc3339();
+    //     edition.updated_at = self.updated_at.to_rfc3339();
+    //     edition
+    // }
 
     pub fn all(conn: &PgConnection) -> Result<Vec<Edition>, diesel::result::Error> {
         use db::schema::editions::dsl::*;
@@ -123,17 +123,17 @@ impl Edition {
 }
 
 impl EditionNew {
-    pub fn from_proto(proto: rpc::Edition) -> Result<Self, error::Error> {
-        let payload = EditionNew {
-            title: proto.title,
-            editor: proto.editor,
-            year: proto.year,
-            slug: proto.slug,
-            language_code: proto.language_code,
-        };
-        payload.validate()?;
-        Ok(payload)
-    }
+    // pub fn from_proto(proto: rpc::Edition) -> Result<Self, error::Error> {
+    //     let payload = EditionNew {
+    //         title: proto.title,
+    //         editor: proto.editor,
+    //         year: proto.year,
+    //         slug: proto.slug,
+    //         language_code: proto.language_code,
+    //     };
+    //     payload.validate()?;
+    //     Ok(payload)
+    // }
 
     pub fn save(&self, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
         use db::schema::editions::dsl::*;

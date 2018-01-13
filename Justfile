@@ -4,6 +4,9 @@ do-frontend:
   yarn frontend/build
   cp frontend/dist/* static/
   cp frontend/assets/* static/
+  cp wasm-experiment/target/wasm32-unknown-unknown/release/*.js static/
+  cp wasm-experiment/target/wasm32-unknown-unknown/release/*.wasm static/
+
 
 watch-frontend:
   yarn frontend/watch

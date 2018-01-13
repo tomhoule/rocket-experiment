@@ -13,7 +13,6 @@ extern crate failure;
 extern crate failure_derive;
 extern crate fluent;
 extern crate futures;
-extern crate grpcio;
 extern crate inlinable_string;
 #[macro_use]
 extern crate lazy_static;
@@ -51,7 +50,6 @@ pub mod i18n;
 pub mod md_transform;
 pub mod models;
 mod pages;
-pub mod rpc;
 mod schemas;
 
 // use api::editions::*;

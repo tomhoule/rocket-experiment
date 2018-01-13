@@ -2,7 +2,7 @@ use diesel::result::Error as DieselError;
 use r2d2::Error as GetTimeout;
 use validator;
 use json::{to_string, to_value, Value};
-use grpcio::{RpcStatus, RpcStatusCode};
+// use grpcio::{RpcStatus, RpcStatusCode};
 use uuid;
 
 error_chain! {
@@ -47,25 +47,25 @@ pub fn pack_errs(errs: validator::ValidationErrors) -> Result<String, ::json::Er
     to_string(&validation_errors_to_json(errs))
 }
 
-fn report<T: ::std::fmt::Display>(status: RpcStatusCode, err: T) -> RpcStatus {
-    RpcStatus {
-        status,
-        details: Some(format!("{}", err)),
-    }
-}
+// fn report<T: ::std::fmt::Display>(status: RpcStatusCode, err: T) -> RpcStatus {
+//     RpcStatus {
+//         status,
+//         details: Some(format!("{}", err)),
+//     }
+// }
 
-impl Error {
-    pub fn into_grpc_status(self) -> RpcStatus {
-        use self::ErrorKind::*;
-        match self {
-            Error(Validation(errs), _) => report(
-                RpcStatusCode::InvalidArgument,
-                validation_errors_to_json(errs),
-            ),
-            other => report(RpcStatusCode::Internal, format!("{}", other)),
-        }
-    }
-}
+// impl Error {
+//     pub fn into_grpc_status(self) -> RpcStatus {
+//         use self::ErrorKind::*;
+//         match self {
+//             Error(Validation(errs), _) => report(
+//                 RpcStatusCode::InvalidArgument,
+//                 validation_errors_to_json(errs),
+//             ),
+//             other => report(RpcStatusCode::Internal, format!("{}", other)),
+//         }
+//     }
+// }
 
 impl ::std::convert::From<validator::ValidationErrors> for Error {
     fn from(errs: validator::ValidationErrors) -> Error {

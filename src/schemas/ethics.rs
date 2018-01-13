@@ -142,40 +142,40 @@ pub struct Node {
 }
 
 impl Node {
-    pub fn to_proto(&self) -> ::rpc::repository::EthicsSchema_Node {
-        use protobuf::RepeatedField;
-        use std::iter::FromIterator;
-        use self::NodeType::*;
-        use rpc::repository::EthicsSchema_NodeType::*;
+    // pub fn to_proto(&self) -> ::rpc::repository::EthicsSchema_Node {
+    //     use protobuf::RepeatedField;
+    //     use std::iter::FromIterator;
+    //     use self::NodeType::*;
+    //     use rpc::repository::EthicsSchema_NodeType::*;
 
-        let mut node = ::rpc::repository::EthicsSchema_Node::new();
-        let children = self.children.iter().map(|child| child.to_proto());
-        let children = RepeatedField::from_iter(children);
-        node.set_children(children);
-        node.set_num(self.num.unwrap_or(0) as i32);
-        let node_type = match self.node_type {
-            AnonymousFragment => UNTITLED,
-            Aliter => ALITER,
-            Axioma => AXIOMA,
-            Caput => CAPUT,
-            Corollarium => COROLLARIUM,
-            Definitio => DEFINITIO,
-            Demonstratio => DEMONSTRATIO,
-            Explicatio => EXPLICATIO,
-            Lemma => LEMMA,
-            Pars => PARS,
-            Propositio => PROPOSITIO,
-            Postulatum => POSTULATUM,
-            Root => UNSPECIFIED,
-            Scholium => SCHOLIUM,
-            Scope(title) => {
-                node.set_title(title.to_string());
-                UNSPECIFIED
-            }
-        };
-        node.set_node_type(node_type);
-        node
-    }
+    //     let mut node = ::rpc::repository::EthicsSchema_Node::new();
+    //     let children = self.children.iter().map(|child| child.to_proto());
+    //     let children = RepeatedField::from_iter(children);
+    //     node.set_children(children);
+    //     node.set_num(self.num.unwrap_or(0) as i32);
+    //     let node_type = match self.node_type {
+    //         AnonymousFragment => UNTITLED,
+    //         Aliter => ALITER,
+    //         Axioma => AXIOMA,
+    //         Caput => CAPUT,
+    //         Corollarium => COROLLARIUM,
+    //         Definitio => DEFINITIO,
+    //         Demonstratio => DEMONSTRATIO,
+    //         Explicatio => EXPLICATIO,
+    //         Lemma => LEMMA,
+    //         Pars => PARS,
+    //         Propositio => PROPOSITIO,
+    //         Postulatum => POSTULATUM,
+    //         Root => UNSPECIFIED,
+    //         Scholium => SCHOLIUM,
+    //         Scope(title) => {
+    //             node.set_title(title.to_string());
+    //             UNSPECIFIED
+    //         }
+    //     };
+    //     node.set_node_type(node_type);
+    //     node
+    // }
 
     fn expand<'a>(&'a self, prefix: &str, depth: u8, target: &mut Vec<ExpandedNode>) {
         use std::fmt::Write;
