@@ -1,8 +1,14 @@
-$body-background-color: rgba(140, 90, 40, 0.3);
 $body-background-color: #4c4b63;
 $body-size: 18px;
 $family-primary: 'Noto Serif';
 $weight-normal: 440;
+$sepia: lighten(#704214, 75%);
+
+$text: darken($body-background-color, 20%);
+$text-strong: $text;
+$box-color: $text;
+$title-color: $text;
+$box-background-color: $sepia;
 
 @import 'bulma/bulma';
 
@@ -12,7 +18,7 @@ body {
 
 .container {
   h1, h2 {
-    font-weight: 200;
+    // font-weight: 200;
     text-transform: uppercase;
   }
 
@@ -21,7 +27,7 @@ body {
   }
 
   h1 {
-    letter-spacing: 20px;
+    letter-spacing: 10px;
   }
 }
 
