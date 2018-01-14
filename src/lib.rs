@@ -42,7 +42,6 @@ use diesel::pg::PgConnection;
 use r2d2_diesel::ConnectionManager;
 
 // mod api;
-// pub mod rpc_api;
 mod error;
 mod files;
 pub mod db;
@@ -91,6 +90,7 @@ pub fn start() {
             "/",
             routes![
                 index,
+                files::wasm_experiment,
                 files::files,
                 pages::editions_index,
                 pages::editions_create,
