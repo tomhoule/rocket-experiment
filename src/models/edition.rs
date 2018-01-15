@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
-use diesel;
+use diesel::{delete, update, insert_into};
+use diesel::prelude::*;
 use diesel::pg::PgConnection;
 use validator::Validate;
 
@@ -60,9 +61,8 @@ impl EditionPatch {
     //     }
     // }
 
-    pub fn save(&self, id_: Uuid, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
+    pub fn save(&self, id_: Uuid, conn: &PgConnection) -> QueryResult<Edition> {
         use db::schema::editions::dsl::*;
-        use diesel::*;
         update(editions.filter(id.eq(id_)))
             .set(self)
             .get_result(conn)
@@ -70,57 +70,38 @@ impl EditionPatch {
 }
 
 impl Edition {
-    pub fn all(conn: &PgConnection) -> Result<Vec<Edition>, diesel::result::Error> {
+    pub fn all(conn: &PgConnection) -> QueryResult<Vec<Edition>> {
         use db::schema::editions::dsl::*;
-        use diesel::*;
         editions.load(conn)
     }
 
-    pub fn by_id(uuid: Uuid, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
+    pub fn by_id(uuid: Uuid, conn: &PgConnection) -> QueryResult<Edition> {
         use db::schema::editions::dsl::*;
-        use diesel::*;
         editions.find(uuid).first(conn)
     }
 
-    pub fn by_slug(req_slug: &str, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
+    pub fn by_slug(req_slug: &str, conn: &PgConnection) -> QueryResult<Edition> {
         use db::schema::editions::dsl::*;
-        use diesel::*;
         editions.filter(slug.eq(req_slug)).first(conn)
     }
 
     pub fn by_slugs<'a, T: Iterator<Item = &'a str>>(
         req_slug: T,
         conn: &PgConnection,
-    ) -> Result<Vec<Edition>, diesel::result::Error> {
+    ) -> QueryResult<Vec<Edition>> {
         use db::schema::editions::dsl::*;
-        use diesel::*;
         editions.filter(slug.eq_any(req_slug)).load(conn)
     }
 
-    pub fn delete(uuid: Uuid, conn: &PgConnection) -> Result<usize, diesel::result::Error> {
+    pub fn delete(uuid: Uuid, conn: &PgConnection) -> QueryResult<usize> {
         use db::schema::editions::dsl::*;
-        use diesel::*;
         delete(editions.find(uuid)).execute(conn)
     }
 }
 
 impl EditionNew {
-    // pub fn from_proto(proto: rpc::Edition) -> Result<Self, error::Error> {
-    //     let payload = EditionNew {
-    //         title: proto.title,
-    //         editor: proto.editor,
-    //         year: proto.year,
-    //         slug: proto.slug,
-    //         language_code: proto.language_code,
-    //     };
-    //     payload.validate()?;
-    //     Ok(payload)
-    // }
-
-    pub fn save(&self, conn: &PgConnection) -> Result<Edition, diesel::result::Error> {
+    pub fn save(&self, conn: &PgConnection) -> QueryResult<Edition> {
         use db::schema::editions::dsl::*;
-        use diesel::*;
-
         insert_into(editions).values(self).get_result(conn)
     }
 }

@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
-use diesel;
-use diesel::pg::PgConnection;
+use diesel::{insert_into};
+use diesel::prelude::*;
 use validator::Validate;
 use uuid::Uuid;
 use models::Edition;
@@ -26,11 +26,10 @@ pub struct FragmentPatch {
 }
 
 impl FragmentPatch {
-    pub fn save(&self, conn: &PgConnection) -> Result<Fragment, diesel::result::Error> {
+    pub fn save(&self, conn: &PgConnection) -> QueryResult<Fragment> {
         use db::schema::fragments::dsl::*;
         use diesel::pg::upsert::*;
-        use diesel::prelude::*;
-        diesel::insert_into(fragments)
+        insert_into(fragments)
             .values(self)
             .on_conflict(on_constraint("fragment_uniqueness"))
             .do_update()
@@ -39,35 +38,10 @@ impl FragmentPatch {
     }
 }
 
-impl Fragment {
-    pub fn for_edition(
-        edid: &Uuid,
-        conn: &PgConnection,
-    ) -> Result<Vec<Fragment>, diesel::result::Error> {
-        use db::schema::fragments::dsl::*;
-        use diesel::prelude::*;
-        fragments.filter(edition_id.eq(edid)).load(conn)
-    }
-
-    // #[deny(unused_variables)]
-    // pub fn into_proto(self) -> EthicsFragment {
-    //     let Fragment {
-    //         fragment_path,
-    //         edition_id,
-    //         value,
-    //         ..
-    //     } = self;
-    //     let mut proto = EthicsFragment::new();
-    //     proto.set_path(fragment_path);
-    //     proto.set_edition_id(format!("{}", edition_id));
-    //     proto.set_value(value);
-    //     proto
-    // }
-}
-
 #[cfg(test)]
 mod tests {
     use diesel;
+    use diesel::prelude::*;
     use super::*;
     use models::edition::*;
     use dotenv;
@@ -76,7 +50,6 @@ mod tests {
     #[test]
     fn fragment_upsert_works() {
         use db::schema::editions;
-        use diesel::prelude::*;
 
         dotenv::dotenv().ok();
         let database_url = env::var("TEST_DATABASE_URL")
@@ -109,7 +82,9 @@ mod tests {
         };
         repatch.save(&conn).unwrap();
 
-        let fragments = Fragment::for_edition(&edition_id, &conn).unwrap();
+        let fragments: Vec<Fragment> = Fragment::belonging_to(&edition)
+            .load(&conn)
+            .unwrap();
         assert_eq!(fragments.len(), 1);
         assert_eq!(fragments[0].value, "defg");
     }

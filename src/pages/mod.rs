@@ -1,6 +1,7 @@
 mod ethics;
-#[cfg(test)] mod ethics_tests;
 mod fail;
+
+#[cfg(test)] mod ethics_tests;
 
 pub use self::ethics::*;
 
