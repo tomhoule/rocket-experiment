@@ -1,4 +1,5 @@
 mod ethics;
+mod ethics_tests;
 mod fail;
 
 pub use self::ethics::*;
