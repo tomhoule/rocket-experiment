@@ -17,7 +17,6 @@ extern crate inlinable_string;
 #[macro_use]
 extern crate lazy_static;
 extern crate percent_encoding;
-extern crate protobuf;
 extern crate pulldown_cmark;
 extern crate r2d2;
 extern crate r2d2_diesel;
