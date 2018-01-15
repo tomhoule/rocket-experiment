@@ -65,7 +65,7 @@ fn index() -> Template {
     Template::render("index", &context)
 }
 
-pub fn start() {
+pub fn start() -> rocket::Rocket {
     dotenv::dotenv().ok();
     let database_url = ::std::env::var("DATABASE_URL").unwrap();
     let pool_manager = ConnectionManager::<PgConnection>::new(database_url);
@@ -89,7 +89,6 @@ pub fn start() {
             "/",
             routes![
                 index,
-                files::wasm_experiment,
                 files::files,
                 pages::editions_index,
                 pages::editions_create,
@@ -113,5 +112,4 @@ pub fn start() {
         .attach(Template::fairing())
         .manage(pool)
         .manage(l10n_messages)
-        .launch();
 }
