@@ -1,7 +1,4 @@
-#![cfg(test)]
-
 use dotenv;
-use super::ethics::*;
 use models::edition::*;
 use diesel::prelude::*;
 use rocket::local::*;
@@ -38,5 +35,5 @@ fn test_ethics_part() {
     assert!(body.len() > 1000);
     let elapsed = SystemTime::now().duration_since(start).unwrap();
 
-    assert!(elapsed < Duration::from_millis(40));
+    assert!(elapsed < Duration::from_millis(40), "Elapsed: {:?}", elapsed);
 }

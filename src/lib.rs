@@ -6,11 +6,7 @@ extern crate chrono;
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
-#[macro_use]
-extern crate error_chain;
-extern crate failure;
-#[macro_use]
-extern crate failure_derive;
+#[macro_use] extern crate failure;
 extern crate fluent;
 extern crate futures;
 extern crate inlinable_string;
@@ -31,7 +27,6 @@ extern crate serde_derive;
 extern crate serde_json as json;
 #[cfg(test)]
 extern crate test;
-extern crate time;
 extern crate uuid;
 extern crate validator;
 #[macro_use]

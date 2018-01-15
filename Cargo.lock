@@ -246,14 +246,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "error-chain"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "backtrace 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "failure"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -599,9 +591,7 @@ dependencies = [
  "diesel 0.99.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "diesel_migrations 0.99.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "dotenv 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "error-chain 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "failure_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "fantoccini 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "fluent 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.1.17 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -622,7 +612,6 @@ dependencies = [
  "serde 1.0.27 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.27 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 1.0.9 (registry+https://github.com/rust-lang/crates.io-index)",
- "time 0.1.39 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio-core 0.1.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "uuid 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "validator 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1636,7 +1625,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum dtoa 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "09c3753c3db574d215cba4ea76018483895d7bff25a31b49ba45db21c48e50ab"
 "checksum either 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "740178ddf48b1a9e878e6d6509a1442a2d42fd2928aae8e7a6f8a36fb01981b3"
 "checksum error-chain 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d9435d864e017c3c6afeac1654189b06cdb491cf2ff73dbf0d73b0f292f42ff8"
-"checksum error-chain 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ff511d5dc435d703f4971bc399647c9bc38e20cb41452e3b9feb4765419ed3f3"
 "checksum failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "934799b6c1de475a012a02dab0ace1ace43789ee4b99bcfbf1a2e3e8ced5de82"
 "checksum failure_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "c7cdda555bb90c9bb67a3b670a0f42de8e73f5981524123ad8578aafec8ddb8b"
 "checksum fantoccini 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)" = "9df63d111b9c9990a2cf23e69cef044d1af264da24d9f0bd3ad836b7145ef99f"

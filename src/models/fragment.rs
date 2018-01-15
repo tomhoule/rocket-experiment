@@ -3,8 +3,6 @@ use diesel;
 use diesel::pg::PgConnection;
 use validator::Validate;
 use uuid::Uuid;
-use error::Error;
-// use rpc::repository::EthicsFragment;
 use models::Edition;
 use db::schema::fragments;
 
@@ -28,16 +26,6 @@ pub struct FragmentPatch {
 }
 
 impl FragmentPatch {
-    // pub fn from_proto(proto: EthicsFragment) -> Result<Self, Error> {
-    //     let patch = FragmentPatch {
-    //         fragment_path: proto.path,
-    //         edition_id: proto.edition_id.parse()?,
-    //         value: proto.value,
-    //     };
-    //     patch.validate()?;
-    //     Ok(patch)
-    // }
-
     pub fn save(&self, conn: &PgConnection) -> Result<Fragment, diesel::result::Error> {
         use db::schema::fragments::dsl::*;
         use diesel::pg::upsert::*;
